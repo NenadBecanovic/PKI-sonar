@@ -1,0 +1,15 @@
+.search-bar{
+  display: grid;
+  grid-auto-columns: auto;
+  justify-items: stretch;
+  grid-auto-flow: column;
+  padding: 0 125px;
+}
+
+mat-chip{
+  padding: 1.5em!important;
+}
+
+.mat-form-field{
+  padding: 0 .75em 0 .75em!important;
+}

@@ -1,0 +1,11 @@
+<br/>
+<br/>
+<app-search></app-search>
+<br/>
+<br/>
+<div class="certificate-container" >
+  <div *ngFor="let cert of certificates ">
+    <app-certificate [certificate]="cert"></app-certificate>
+    <br/>
+  </div>
+</div>

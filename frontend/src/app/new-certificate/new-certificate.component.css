@@ -1,0 +1,67 @@
+mat-stepper{
+  /*background-color: #ffffff3b;*/
+  background-color: #42424200;
+  margin: 0 200px;
+  height: 90vh;
+}
+
+mat-card{
+  width: 100%;
+  margin: 2rem;
+  background-color: #ffffff3b;
+  border-radius: 30px;
+  align-self: normal;
+  text-align: center;
+  text-transform: capitalize;
+  border: 5px solid transparent;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+}
+
+mat-card:hover {
+  border: 5px solid #e73f81;
+}
+
+.check-icon{
+  transform: scale(2);
+  color: #e73f81;
+  margin-top: 0.5em;
+}
+.selected-card{
+  border: 5px solid #e73f81;
+}
+
+.next-btn{
+  width: 20%;
+}
+
+mat-checkbox{
+  color: white;
+  font-size: 18px;
+}
+
+h1{
+  color: white;
+  text-align: center;
+  margin: 0;
+}
+
+.checkbox-container{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.action-buttons{
+  display: flex;
+  margin: auto;
+  gap: 20px;
+  justify-content: center;
+}
+
+.field-container{
+  display: flex;
+  flex-direction: column;
+  margin: 0 20%;
+}

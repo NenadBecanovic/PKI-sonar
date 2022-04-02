@@ -1,0 +1,18 @@
+mat-card{
+  background-color: #ffffff3b;
+  color: white
+}
+
+mat-card-actions{
+  display: grid;
+  grid-auto-columns: max-content;
+  gap: 5px;
+}
+
+.certificate-actions{
+  margin: 0 !important;
+}
+
+mat-card{
+  padding: 16px 40px;
+}

@@ -38,6 +38,7 @@ export class LoginComponent implements OnInit {
     if (this.form.valid) {
       console.log(this.form.value)
       localStorage.setItem('role', 'admin');
+      this.router.navigate(['/overview']).then();
     } else {
       console.log("Not valid")
     }
