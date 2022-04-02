@@ -1,0 +1,10 @@
+<mat-toolbar>
+  <mat-toolbar-row class="toolbar">
+    <img  class="logo" src="assets/logo-white.png"  alt="Welcome image" routerLink="/" (click)="hideLogIn()">
+    <span class="separator"></span>
+    <button mat-raised-button class="mat-accent"  routerLink="/login" *ngIf="isButtonVisible" (click)="onLogIn()">Log In</button>
+    <button mat-raised-button class="mat-accent" *ngIf="loggedInUser"
+            (click)="onLogOut()"><mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar-row>
+</mat-toolbar>
