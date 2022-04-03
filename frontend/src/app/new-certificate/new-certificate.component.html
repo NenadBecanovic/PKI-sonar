@@ -1,0 +1,136 @@
+<br/>
+<mat-stepper linear
+             [orientation]="(stepperOrientation | async)!">
+  <mat-step [stepControl]="certTypeFormGroup" label="Choose certificate type">
+    <form [formGroup]="certTypeFormGroup">
+      <mat-grid-list cols="3">
+        <mat-grid-tile>
+          <mat-card (click)="certTypeCtrl.setValue('ROOT')">
+            <img  src="assets/certificate-root-96.png" alt="Root certificate"/>
+            <mat-card-title>Root <br/> certificate</mat-card-title>
+            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'ROOT'? 'hidden': 'visible'">check_circle_outline</mat-icon>
+          </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-card (click)="certTypeCtrl.setValue('CA')">
+            <img  src="assets/certificate-ca-96.png" alt="CA certificate"/>
+            <mat-card-title>Intermediate certificate</mat-card-title>
+            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'CA'? 'hidden': 'visible'">check_circle_outline</mat-icon>
+          </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-card (click)="certTypeCtrl.setValue('END')">
+            <img src="assets/certificate-96.png" alt="End entity certificate"/>
+            <mat-card-title>End-entity certificate</mat-card-title>
+            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'END'? 'hidden': 'visible'">check_circle_outline</mat-icon>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+      <select formControlName="certTypeCtrl" required hidden (ngModelChange)="onTypeChange()">
+        <option selected value=""></option>
+        <option value="ROOT">ROOT</option>
+        <option value="CA">CA</option>
+        <option value="END">END</option>
+      </select>
+      <div style="text-align: center">
+        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="certDataFormGroup" label="Enter certificate data">
+    <form [formGroup]="certDataFormGroup" >
+      <br/>
+      <h1>Certificate data</h1>
+
+      <div class="field-container">
+        <mat-form-field appearance="fill" *ngIf="this.certTypeCtrl.value != 'ROOT'">
+          <mat-label>Issuer</mat-label>
+          <input type="text" matInput formControlName="issuer" [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredOptionsIssuer | async" [value]="option">
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Subject</mat-label>
+          <input type="text" matInput formControlName="subject" [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredOptionsSubject | async" [value]="option">
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Choose a date</mat-label>
+          <input matInput [matDatepicker]="datepicker" required formControlName="endValidityDate">
+          <mat-datepicker-toggle matSuffix [for]="datepicker" ></mat-datepicker-toggle>
+          <mat-datepicker #datepicker>
+            <mat-datepicker-actions>
+              <button mat-button matDatepickerCancel>Cancel</button>
+              <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+            </mat-datepicker-actions>
+          </mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="action-buttons">
+        <button mat-stroked-button class="mat-accent next-btn" matStepperPrevious type="button">Back</button>
+        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="certKeyUsageFormGroup" label="Choose key usages">
+    <form [formGroup]="certKeyUsageFormGroup">
+      <br/>
+      <h1>Key usages</h1>
+      <mat-grid-list cols="2" rowHeight="40vh">
+        <mat-grid-tile>
+          <div class="checkbox-container" >
+            <mat-checkbox *ngFor="let usage of keyUsages | slice:0:5">{{usage}}</mat-checkbox>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile >
+          <div class="checkbox-container" >
+            <mat-checkbox *ngFor="let usage of keyUsages | slice:5:9">{{usage}}</mat-checkbox>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+      <div class="action-buttons">
+        <button mat-stroked-button class="mat-accent next-btn" matStepperPrevious type="button">Back</button>
+        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="certExtFormGroup" label="Choose extensions">
+    <form [formGroup]="certExtFormGroup">
+      <br/>
+      <h1>Key usages</h1>
+      <mat-grid-list cols="2" rowHeight="40vh">
+        <mat-grid-tile>
+          <div class="checkbox-container">
+            <mat-checkbox *ngFor="let ext of extensions | slice:0:7">{{ext}}</mat-checkbox>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="checkbox-container">
+            <mat-checkbox *ngFor="let ext of extensions | slice:7:14">{{ext}}</mat-checkbox>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+      <div class="action-buttons">
+        <button mat-stroked-button class="mat-accent next-btn" matStepperPrevious type="button">Back</button>
+        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
+    <h1>Certificate complete.</h1>
+    <br/>
+    <div class="action-buttons">
+      <button mat-stroked-button class="mat-accent next-btn" matStepperPrevious type="button">Go Back</button>
+      <button mat-raised-button class="mat-primary next-btn" type="button" (click)="onCreate()">Create Certificate</button>
+    </div>
+  </mat-step>
+</mat-stepper>
+

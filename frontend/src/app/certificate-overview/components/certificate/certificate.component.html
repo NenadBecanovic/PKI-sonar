@@ -1,0 +1,32 @@
+<mat-card >
+  <img *ngIf="certificate.type == 'ROOT'" src="../../../../assets/certificate-root-96.png" alt="Root certificate"/>
+  <img *ngIf="certificate.type == 'CA'" src="../../../../assets/certificate-ca-96.png" alt="CA certificate"/>
+  <img *ngIf="certificate.type == 'END'" src="../../../../assets/certificate-96.png" alt="End entity  certificate"/>
+  <div class="info-div">
+    <mat-card-title>{{certificate.subject}}</mat-card-title>
+    <mat-card-subtitle>{{certificate.issuer}}</mat-card-subtitle>
+    <mat-card-content>
+      <div>
+        Validity start date:
+        <br/>
+        Validity end date:
+      </div>
+      <div class="date-div">
+        {{certificate.validityPeriod.start | date: 'mediumDate'}}
+        <br/>
+        {{certificate.validityPeriod.end | date: 'mediumDate'}}
+      </div>
+    </mat-card-content>
+  </div>
+  <mat-card-actions>
+    <button mat-raised-button class="mat-warn certificate-actions">
+      <mat-icon>undo</mat-icon>
+      Revoke
+    </button>
+    <button mat-raised-button class="mat-accent certificate-actions">
+      <mat-icon>check</mat-icon>
+      Check validity
+    </button>
+    <button mat-raised-button class="mat-accent certificate-actions"><mat-icon>download</mat-icon> DOWNLOAD</button>
+  </mat-card-actions>
+</mat-card>
