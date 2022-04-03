@@ -1,9 +1,11 @@
 package bsep.pkiapp.model;
 
+import org.springframework.security.core.GrantedAuthority;
+
 import javax.persistence.*;
 
 @Entity
-public class Role {
+public class Role implements GrantedAuthority {
 
     @Id
     @Column(name="id")
@@ -12,4 +14,9 @@ public class Role {
 
     @Column(name="name")
     String name;
+
+    @Override
+    public String getAuthority() {
+        return name;
+    }
 }

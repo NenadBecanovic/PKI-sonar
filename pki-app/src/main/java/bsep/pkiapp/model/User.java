@@ -1,10 +1,16 @@
 package bsep.pkiapp.model;
 
+import bsep.pkiapp.dto.UserDto;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Entity
 @Table(name="users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +40,13 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public User(UserDto userDto) {
+        this.name = userDto.getName();
+        this.surname = userDto.getSurname();
+        this.email = userDto.getEmail();
+        this.password = userDto.getPassword();
     }
 
     public Integer getId() {
@@ -68,8 +81,40 @@ public class User {
         this.email = email;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        ArrayList<Role> roles = new ArrayList<>();
+        roles.add(role);
+        return roles;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     public void setPassword(String password) {

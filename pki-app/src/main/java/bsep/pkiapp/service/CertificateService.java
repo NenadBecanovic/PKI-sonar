@@ -39,9 +39,6 @@ public class CertificateService {
             X500Name issuer = null;
             generateCertificate(dto, issuer, subject);
         }
-
-
-
     }
 
     public void generateCertificate(NewCertificateDto dto, X500Name issuer, X500Name subject) {
