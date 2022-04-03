@@ -10,6 +10,15 @@ mat-chip{
   padding: 1.5em!important;
 }
 
+mat-chip-list{
+  grid-column: 2
+}
 .mat-form-field{
+  width: 100%;
   padding: 0 .75em 0 .75em!important;
+}
+
+mat-grid-list{
+  height: min-content;
+  margin: 0 100px;
 }

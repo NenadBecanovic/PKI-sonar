@@ -1,32 +1,32 @@
 <br/>
 <mat-stepper linear
              [orientation]="(stepperOrientation | async)!">
-  <mat-step [stepControl]="firstFormGroup" label="Choose certificate type">
-    <form [formGroup]="firstFormGroup" (ngSubmit)="onSubmitFirst()">
+  <mat-step [stepControl]="certTypeFormGroup" label="Choose certificate type">
+    <form [formGroup]="certTypeFormGroup">
       <mat-grid-list cols="3">
         <mat-grid-tile>
-          <mat-card (click)="firstCtrl.setValue('ROOT')">
-            <img  src="assets/certificate-root-96.png" alt=""/>
+          <mat-card (click)="certTypeCtrl.setValue('ROOT')">
+            <img  src="assets/certificate-root-96.png" alt="Root certificate"/>
             <mat-card-title>Root <br/> certificate</mat-card-title>
-            <mat-icon class="check-icon" [style.visibility]="firstCtrl.value != 'ROOT'? 'hidden': 'visible'">check_circle_outline</mat-icon>
+            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'ROOT'? 'hidden': 'visible'">check_circle_outline</mat-icon>
           </mat-card>
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-card (click)="firstCtrl.setValue('CA')">
-            <img  src="assets/certificate-ca-96.png" alt=""/>
+          <mat-card (click)="certTypeCtrl.setValue('CA')">
+            <img  src="assets/certificate-ca-96.png" alt="CA certificate"/>
             <mat-card-title>Intermediate certificate</mat-card-title>
-            <mat-icon class="check-icon" [style.visibility]="firstCtrl.value != 'CA'? 'hidden': 'visible'">check_circle_outline</mat-icon>
+            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'CA'? 'hidden': 'visible'">check_circle_outline</mat-icon>
           </mat-card>
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-card (click)="firstCtrl.setValue('END')">
-            <img src="assets/certificate-96.png" alt=""/>
+          <mat-card (click)="certTypeCtrl.setValue('END')">
+            <img src="assets/certificate-96.png" alt="End entity certificate"/>
             <mat-card-title>End-entity certificate</mat-card-title>
-            <mat-icon class="check-icon" [style.visibility]="firstCtrl.value != 'END'? 'hidden': 'visible'">check_circle_outline</mat-icon>
+            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'END'? 'hidden': 'visible'">check_circle_outline</mat-icon>
           </mat-card>
         </mat-grid-tile>
       </mat-grid-list>
-      <select formControlName="firstCtrl" required hidden (ngModelChange)="onTypeChange()">
+      <select formControlName="certTypeCtrl" required hidden (ngModelChange)="onTypeChange()">
         <option selected value=""></option>
         <option value="ROOT">ROOT</option>
         <option value="CA">CA</option>
@@ -37,13 +37,13 @@
       </div>
     </form>
   </mat-step>
-  <mat-step [stepControl]="secondFormGroup" label="Enter certificate data">
-    <form [formGroup]="secondFormGroup" (submit)="onSecondSubmit()">
+  <mat-step [stepControl]="certDataFormGroup" label="Enter certificate data">
+    <form [formGroup]="certDataFormGroup" >
       <br/>
       <h1>Certificate data</h1>
 
-      <div class="field-container" (submit)="onSubmitFirst()">
-        <mat-form-field appearance="fill" *ngIf="this.firstCtrl.value != 'ROOT'">
+      <div class="field-container">
+        <mat-form-field appearance="fill" *ngIf="this.certTypeCtrl.value != 'ROOT'">
           <mat-label>Issuer</mat-label>
           <input type="text" matInput formControlName="issuer" [matAutocomplete]="auto">
           <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
@@ -79,8 +79,8 @@
       </div>
     </form>
   </mat-step>
-  <mat-step [stepControl]="thirdFormGroup" label="Choose key usages">
-    <form [formGroup]="thirdFormGroup">
+  <mat-step [stepControl]="certKeyUsageFormGroup" label="Choose key usages">
+    <form [formGroup]="certKeyUsageFormGroup">
       <br/>
       <h1>Key usages</h1>
       <mat-grid-list cols="2" rowHeight="40vh">
@@ -101,8 +101,8 @@
       </div>
     </form>
   </mat-step>
-  <mat-step [stepControl]="fourthFormGroup" label="Choose extensions">
-    <form [formGroup]="fourthFormGroup">
+  <mat-step [stepControl]="certExtFormGroup" label="Choose extensions">
+    <form [formGroup]="certExtFormGroup">
       <br/>
       <h1>Key usages</h1>
       <mat-grid-list cols="2" rowHeight="40vh">

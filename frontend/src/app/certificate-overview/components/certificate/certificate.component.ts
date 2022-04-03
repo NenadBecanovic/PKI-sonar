@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Certificate} from "../model/certificate.model";
-import {DateRange} from "../model/dateRange.model";
+import {Certificate} from "../../model/certificate.model";
+import {DateRange} from "../../model/dateRange.model";
 
 
 @Component({

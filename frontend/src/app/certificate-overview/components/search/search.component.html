@@ -1,28 +1,28 @@
-<mat-grid-list cols="2" rowHeight="3em" style="height: min-content;    margin: 0 100px;" >
+<mat-grid-list cols="2" rowHeight="3em"  >
 <mat-grid-tile>
-  <mat-form-field style="width: 100%">
+  <mat-form-field >
     <input type="text" matInput placeholder="Search.."/>
   </mat-form-field>
 </mat-grid-tile>
   <mat-grid-tile>
-    <mat-chip-list aria-label="Certificate type selection" style="grid-column: 2">
+    <mat-chip-list aria-label="Certificate type selection" >
       <mat-chip (click)="onChipClick('ROOT')" [selected]="selectedFilter == 'ROOT'">
         <mat-chip-avatar>
-          <img src="assets/lock-24.png" alt="Root certificate"/>
+          <img src="../../../../assets/lock-24.png" alt="Root certificate"/>
         </mat-chip-avatar>
         Root certificate
       </mat-chip>
       <mat-chip (click)="onChipClick('CA')" [selected]="selectedFilter == 'CA'">
         <mat-chip-avatar>
-          <img src="assets/pencil-24.png" alt="CA certificate"/>
+          <img src="../../../../assets/pencil-24.png" alt="CA certificate"/>
         </mat-chip-avatar>
         CA certificate
       </mat-chip>
       <mat-chip (click)="onChipClick('END')" [selected]="selectedFilter == 'END'">
         <mat-chip-avatar>
-          <img src="assets/certificate-24.png" alt="End certificate"/>
+          <img src="../../../../assets/certificate-24.png" alt="End certificate"/>
         </mat-chip-avatar>
-        End certificate
+        End entity certificate
       </mat-chip>
     </mat-chip-list>
   </mat-grid-tile>

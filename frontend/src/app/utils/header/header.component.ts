@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import { Router} from "@angular/router";
 
 @Component({
   selector: 'app-header',
@@ -9,7 +9,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 export class HeaderComponent implements OnInit {
   public loggedInUser: string | null = null;
   public isButtonVisible: boolean = true;
-  constructor(private router: Router, private route: ActivatedRoute) {
+  constructor(private router: Router) {
   }
 
   ngOnInit(): void {
@@ -19,15 +19,7 @@ export class HeaderComponent implements OnInit {
 
   hideLogIn(){
     this.loggedInUser = localStorage.getItem('role');
-    console.log(this.loggedInUser)
-    if(!this.loggedInUser){
-      this.isButtonVisible = true;
-      // this.router.navigate(['/']).then();
-    }else{
-      console.log(this.route)
-      this.isButtonVisible = false;
-      // this.router.navigate(['/overview']).then();
-    }
+    this.isButtonVisible = !this.loggedInUser;
   }
 
 

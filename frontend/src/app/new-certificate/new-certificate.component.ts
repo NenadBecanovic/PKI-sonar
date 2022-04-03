@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {map, Observable, startWith} from "rxjs";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {StepperOrientation} from "@angular/cdk/stepper";
-import {CertificateDateService} from "./certificate-date.service";
+import {CertificateDataService} from "./certificate-data.service";
 import {Router} from "@angular/router";
 
 export interface User{
@@ -17,42 +17,49 @@ export interface User{
 export class NewCertificateComponent implements OnInit {
   public keyUsages: string[] = [];
   public extensions: string[] = [];
+
   public issuerOptions: User[] = [{name:'Neko 1'}, {name: 'Neko 2'}, {name: 'Neko 3'}];
   public subjectOptions: User[] = [{name: 'Neko 1'}, {name: 'Neko 2'}, {name: 'Neko 3'}];
-  public firstCtrl: FormControl;
-  public issuer: FormControl;
-  public subject: FormControl;
-  public validity: FormControl;
-  public firstFormGroup: FormGroup;
-  public secondFormGroup: FormGroup;
-  public thirdFormGroup: FormGroup;
-  public fourthFormGroup: FormGroup;
+
   public filteredOptionsIssuer: Observable<User[]>;
   public filteredOptionsSubject: Observable<User[]>;
 
+  public certTypeCtrl: FormControl;
+  public certTypeFormGroup: FormGroup;
+  public certDataFormGroup: FormGroup;
+  public certKeyUsageFormGroup: FormGroup;
+  public certExtFormGroup: FormGroup;
+
+  public issuer: FormControl;
+  public subject: FormControl;
+  public validity: FormControl;
+
   stepperOrientation: Observable<StepperOrientation>;
 
-  constructor(private _formBuilder: FormBuilder, breakpointObserver: BreakpointObserver, private certificateDataService: CertificateDateService, private router: Router) {
+  constructor(private _formBuilder: FormBuilder, breakpointObserver: BreakpointObserver, private certificateDataService: CertificateDataService, private router: Router) {
+    this.extensions = this.certificateDataService.getCertExtensions();
+    this.keyUsages = this.certificateDataService.getCertKeyUsages();
 
     this.stepperOrientation = breakpointObserver
       .observe('(min-width: 800px)')
       .pipe(map(({matches}) => (matches ? 'horizontal' : 'vertical')));
 
-    this.firstCtrl = new FormControl('', Validators.required);
-    this.firstFormGroup = new FormGroup({
-      'firstCtrl': this.firstCtrl,
+    this.certTypeCtrl = new FormControl('', Validators.required);
+    this.certTypeFormGroup = new FormGroup({
+      'certTypeCtrl': this.certTypeCtrl,
     });
 
     this.issuer = new FormControl('', Validators.required);
     this.subject = new FormControl('', Validators.required);
     this.validity = new FormControl('', Validators.required);
-    this.secondFormGroup = new FormGroup({
+    this.certDataFormGroup = new FormGroup({
       'issuer': this.issuer,
       'subject': this.subject,
       'endValidityDate': this.validity,
     });
-    this.thirdFormGroup = new FormGroup({});
-    this.fourthFormGroup = new FormGroup({});
+
+    this.certKeyUsageFormGroup = new FormGroup({});
+    this.certExtFormGroup = new FormGroup({});
 
 
     this.filteredOptionsIssuer = this.issuer.valueChanges.pipe(
@@ -67,8 +74,6 @@ export class NewCertificateComponent implements OnInit {
       map(name => (name ? this._filterSubject(name) : this.issuerOptions.slice())),
     );
 
-    this.extensions = this.certificateDataService.getCertExtenstions();
-    this.keyUsages = this.certificateDataService.getCertKeyUsages();
   }
 
   ngOnInit(): void {
@@ -77,17 +82,6 @@ export class NewCertificateComponent implements OnInit {
 
   displayFn(user: User): string {
     return user && user.name ? user.name : '';
-  }
-
-  onNext() {
-    console.log(this.firstFormGroup.value)
-  }
-
-  onSubmitFirst() {
-    console.log('First' + this.firstFormGroup.valid.toString())
-    console.log('First' + this.firstFormGroup.value.toString())
-    console.log('Second' + this.secondFormGroup.valid.toString())
-    console.log('Second' + this.secondFormGroup.value.toString())
   }
 
   private _filterIssuer(name: string): User[] {
@@ -102,21 +96,13 @@ export class NewCertificateComponent implements OnInit {
     return this.subjectOptions.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
-  onSecondSubmit() {
-    console.log(this.secondFormGroup.value)
-    console.log(this.secondFormGroup.valid)
-    console.log(this.secondFormGroup)
-  }
-
   onTypeChange() {
-    console.log("ON")
-    if(this.firstCtrl.value == 'ROOT'){
-      console.log("CHANGE")
+    if(this.certTypeCtrl.value == 'ROOT'){
       this.issuer.clearValidators();
-      this.secondFormGroup.setControl('issuer', this.issuer);
+      this.certDataFormGroup.setControl('issuer', this.issuer);
     }else{
       this.issuer = new FormControl('',Validators.required);
-      this.secondFormGroup.setControl('issuer', this.issuer);
+      this.certDataFormGroup.setControl('issuer', this.issuer);
     }
   }
 

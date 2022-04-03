@@ -1,7 +1,9 @@
 .content{
   background-image: linear-gradient(141deg, #304156 1%, #282a3a 21%, #060914 52%);
 }
-
+mat-grid-list{
+  height: 90vh
+}
 .main-container{
   display: grid;
 

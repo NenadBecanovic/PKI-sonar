@@ -1,17 +1,17 @@
-<mat-card style="display: flex;justify-content: space-between;    align-items: center;">
-  <img *ngIf="certificate.type == 'ROOT'" src="../../../assets/certificate-root-96.png"/>
-  <img *ngIf="certificate.type == 'CA'" src="assets/certificate-ca-96.png"/>
-  <img *ngIf="certificate.type == 'END'" src="assets/certificate-96.png"/>
-  <div style="width: -webkit-fill-available; padding: 0 2em">
+<mat-card >
+  <img *ngIf="certificate.type == 'ROOT'" src="../../../../assets/certificate-root-96.png" alt="Root certificate"/>
+  <img *ngIf="certificate.type == 'CA'" src="../../../../assets/certificate-ca-96.png" alt="CA certificate"/>
+  <img *ngIf="certificate.type == 'END'" src="../../../../assets/certificate-96.png" alt="End entity  certificate"/>
+  <div class="info-div">
     <mat-card-title>{{certificate.subject}}</mat-card-title>
     <mat-card-subtitle>{{certificate.issuer}}</mat-card-subtitle>
-    <mat-card-content style="display: flex">
+    <mat-card-content>
       <div>
         Validity start date:
         <br/>
         Validity end date:
       </div>
-      <div style="margin-left: 5px">
+      <div class="date-div">
         {{certificate.validityPeriod.start | date: 'mediumDate'}}
         <br/>
         {{certificate.validityPeriod.end | date: 'mediumDate'}}

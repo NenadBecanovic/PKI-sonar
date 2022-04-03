@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 
 @Injectable({providedIn: "root"})
-export class CertificateDateService{
+export class CertificateDataService {
   private keyUsages: string[] = [
     'Digital Signature',
     'Non-repudiation',
@@ -35,7 +35,7 @@ export class CertificateDateService{
     return this.keyUsages;
   }
 
-  getCertExtenstions(){
+  getCertExtensions(){
     return this.extensions.slice();
   }
 

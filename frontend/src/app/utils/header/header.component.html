@@ -2,7 +2,7 @@
   <mat-toolbar-row class="toolbar">
     <img  class="logo" src="assets/logo-white.png"  alt="Welcome image" (click)="hideLogIn()">
     <span class="separator"></span>
-    <div style="display: grid; gap: 1em; grid-auto-flow: column;">
+    <div class="button-container">
       <button mat-raised-button class="mat-accent" routerLink="/login" *ngIf="isButtonVisible" (click)="onLogIn()">Log
         In
       </button>
