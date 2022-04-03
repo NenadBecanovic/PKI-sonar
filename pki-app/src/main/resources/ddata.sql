@@ -1,7 +1,9 @@
 INSERT INTO role
 VALUES (1, 'ROLE_USER');
 INSERT INTO role
-VALUES (2, 'ROLE_ADMIN');
+VALUES (2, 'ROLE_CA');
+INSERT INTO role
+VALUES (3, 'ROLE_ADMIN');
 
 INSERT INTO users
 VALUES (101, 'admin1@gmail.com', 'Tim', '123', 'Smith', 2);
