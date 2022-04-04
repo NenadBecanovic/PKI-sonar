@@ -17,6 +17,7 @@ import {MatOptionModule} from "@angular/material/core";
 import {MatSelectModule} from "@angular/material/select";
 import {MatInputModule} from "@angular/material/input";
 import {MatTableModule} from "@angular/material/table";
+import {MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule} from "@angular/material/snack-bar";
 
 const MaterialComponents = [
   MatRadioModule,
@@ -35,16 +36,18 @@ const MaterialComponents = [
   MatStepperModule,
   MatCheckboxModule,
   MatAutocompleteModule,
-  MatDatepickerModule
+  MatDatepickerModule,
 ]
 
 @NgModule({
   imports: [
-    MaterialComponents
+    MaterialComponents,
+    MatSnackBarModule
   ],
   exports:[MaterialComponents],
   providers:[
-    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 3000, appearance: 'fill'}}
   ]
 })
 export class MaterialModule { }

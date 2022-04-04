@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router} from "@angular/router";
+import {ActivatedRoute, Data, Router} from "@angular/router";
+import {Subscription} from "rxjs";
+import {AuthService} from "../auth/services/auth.service";
+import {UserTokenStateDto} from "../auth/dtos/UserTokenState.dto";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-header',
@@ -7,30 +11,37 @@ import { Router} from "@angular/router";
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  public loggedInUser: string | null = null;
+  public loggedInUser: string | undefined = undefined;
   public isButtonVisible: boolean = true;
-  constructor(private router: Router) {
+  public loggedInUserChanged: Subscription;
+
+  constructor(private router: Router, private _authService: AuthService) {
+    this.loggedInUserChanged = this._authService.logInUserChanged.subscribe((response: UserTokenStateDto)=>{
+      this.loggedInUser = response.roles.pop();
+    })
+
+    this.router.events.subscribe((val) => {
+      console.log(this.router.url)
+      if (this.router.url.includes('login') && !this.loggedInUser) {
+        this.isButtonVisible = false;
+      } else if (this.router.url.includes('register') && !this.loggedInUser) {
+        this.isButtonVisible = true;
+      }
+    })
   }
 
   ngOnInit(): void {
-    this.loggedInUser = localStorage.getItem('role');
-    this.hideLogIn();
-  }
-
-  hideLogIn(){
-    this.loggedInUser = localStorage.getItem('role');
-    this.isButtonVisible = !this.loggedInUser;
+    this._authService.getRole().subscribe((response: string) =>{
+      this.loggedInUser = response;
+      this.isButtonVisible = false;
+    });
   }
 
 
   onLogOut() {
     this.isButtonVisible = true
-    this.loggedInUser = null;
+    this.loggedInUser = undefined;
     localStorage.clear();
     this.router.navigate(['/']).then();
-  }
-
-  onLogIn() {
-    this.isButtonVisible = false
   }
 }

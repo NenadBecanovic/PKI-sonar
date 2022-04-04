@@ -1,0 +1,44 @@
+.register-form {
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.mat-stepper-horizontal, .mat-stepper-vertical {
+  background-color: #30415638;
+}
+
+h1 {
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+
+mat-form-field {
+  width: 30vw;
+  max-width: 30em;
+  min-width: 20em;
+}
+
+.button-container {
+  text-align: center
+}
+
+
+.register-question {
+  color: white;
+  text-align: center;
+}
+
+.register-question a {
+  color: white
+}
+
+
+.action-buttons {
+  display: flex;
+  margin: auto;
+  gap: 20px;
+  justify-content: center;
+}

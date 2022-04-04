@@ -43,10 +43,11 @@ public class TokenUtils {
      * @param username Korisničko ime korisnika kojem se token izdaje
      * @return JWT token
      */
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(username)
+                .claim("role", role)
                 .setAudience(generateAudience())
                 .setIssuedAt(new Date())
                 .signWith(SIGNATURE_ALGORITHM, SECRET).compact();

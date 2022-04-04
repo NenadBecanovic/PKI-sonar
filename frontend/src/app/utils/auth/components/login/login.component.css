@@ -5,6 +5,12 @@ form{
   left: 50%;
 }
 
+h1{
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+
 mat-form-field{
   width: 30vw;
   max-width: 30em;
@@ -13,4 +19,15 @@ mat-form-field{
 
 .button-container{
   text-align: center
+}
+
+
+
+.register-question{
+  color: white;
+  text-align: center;
+}
+
+.register-question a{
+  color: white
 }

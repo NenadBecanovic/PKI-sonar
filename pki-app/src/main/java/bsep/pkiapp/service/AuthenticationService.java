@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +38,7 @@ public class AuthenticationService {
     @Autowired
     private RoleService roleService;
 
-    public UserTokenState login(JwtAuthenticationRequest authenticationRequest) {
+    public UserTokenState login(JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getEmail(), authenticationRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -46,7 +47,7 @@ public class AuthenticationService {
     }
 
     public UserTokenState getAuthentication(User user) {
-        return new UserTokenState(tokenUtils.generateToken(user.getEmail()), tokenUtils.getExpiredIn(), getRoles(user));
+        return new UserTokenState(tokenUtils.generateToken(user.getEmail(), user.getRole().getAuthority()), tokenUtils.getExpiredIn(), getRoles(user));
     }
 
     public List<String> getRoles(User user) {
@@ -55,9 +56,10 @@ public class AuthenticationService {
                 .collect(Collectors.toList());
     }
 
-    public void signUp(UserDto userDto) {
+    public void signUp(UserDto userDto) throws ResourceConflictException {
         User user = new User(userDto);
         user.setRole(roleService.getById(1));
+        System.out.println(user.getPassword());
         if (userService.isEmailRegistered(user.getEmail()).equals(true)) {
             throw new ResourceConflictException("Email already exists");
         } else {
@@ -65,5 +67,9 @@ public class AuthenticationService {
             userService.saveUser(user);
             // TODO: sendRegistrationEmail(client);
         }
+    }
+
+    public String getRoleFromToken(String token) {
+        return tokenUtils.getRoleFromToken(token);
     }
 }

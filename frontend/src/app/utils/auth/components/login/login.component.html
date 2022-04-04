@@ -1,15 +1,12 @@
 <form [formGroup]="form">
-  <div class="row">
-    <div class="col-xs-12">
+  <h1>LOGIN</h1>
+    <div style="text-align: center">
       <mat-form-field appearance="fill">
         <mat-label>Enter your email</mat-label>
         <input matInput placeholder="example@example.com" formControlName="email" required>
-        <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
       </mat-form-field>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12">
+    <div style="text-align: center">
       <mat-form-field appearance="fill">
         <mat-label>Enter your password</mat-label>
         <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required>
@@ -19,10 +16,20 @@
         </button>
       </mat-form-field>
     </div>
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{errorMessage}}
   </div>
-  <div class="row">
+  <div>
     <div class="col-xs-12 button-container">
-      <button mat-raised-button class="mat-primary" (click)="onLogin()">Log in</button>
+      <button mat-raised-button class="mat-primary" (click)="onLogin()" [disabled]="!form.valid">Log in</button>
+    </div>
+    <br>
+    <br>
+    <mat-divider></mat-divider>
+    <br>
+    <div class="register-question">
+      <h2>Don't have account yet? </h2>
+      <a routerLink="/register">Create one here</a>
     </div>
   </div>
 </form>
