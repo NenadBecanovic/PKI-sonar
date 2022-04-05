@@ -3,6 +3,7 @@ package bsep.pkiapp.service;
 import bsep.pkiapp.dto.NewCertificateDto;
 import bsep.pkiapp.utils.X500NameGenerator;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -13,20 +14,21 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static java.lang.Math.abs;
 
 @Service
 public class CertificateService {
 
     @Autowired
     private X500NameGenerator x500NameGenerator;
+
+    @Autowired
+    private ExtensionService extensionService;
 
 
     public void createCertificate(NewCertificateDto dto) {
@@ -57,13 +59,17 @@ public class CertificateService {
                 contentSigner = null; //TODO: private key of issuer
             }
 
-
             X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuer,
-                    new BigInteger(String.valueOf(abs(ThreadLocalRandom.current().nextInt()))),
+                    generateSerialNumber(),
                     new Date(),
                     dto.getValidityEndDate(),
                     subject,
                     keyPair.getPublic());
+
+            dto.extensionSettingsDto.setPublicKey(keyPair.getPublic());
+            dto.extensionSettingsDto.setSubjectName(subject);
+
+            extensionService.addExtensions(certGen, dto.getExtensionSettingsDto(), dto.getCertificateType());
 
             X509CertificateHolder certHolder = certGen.build(contentSigner);
 
@@ -72,10 +78,23 @@ public class CertificateService {
 
             X509Certificate certificate = certConverter.getCertificate(certHolder);
 
-        } catch (IllegalArgumentException | IllegalStateException
-                | OperatorCreationException | CertificateException e) {
+        } catch (IllegalArgumentException | IllegalStateException | OperatorCreationException
+                | CertificateException | NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public BigInteger generateSerialNumber() {
+        byte[] bytes = new byte[8];
+        SecureRandom random;
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA1PRNG was not a known algorithm", e);
+        }
+        random.setSeed(new Date().getTime());
+        random.nextBytes(bytes);
+        return new BigInteger(bytes).abs();
     }
 
     private KeyPair generateKeyPair() {

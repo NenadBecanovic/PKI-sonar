@@ -1,0 +1,13 @@
+package bsep.pkiapp.model;
+
+public enum KeyUsageType {
+    DIGITAL_SIGNATURE,
+    NON_REPUDIATION,
+    KEY_ENCIPHERMENT,
+    DATE_ENCIPHERMENT,
+    KEY_AGREEMENT,
+    CERTIFICATE_SIGNING,
+    CRL_SIGNING,
+    ENCIPHER_ONLY,
+    DECIPHER_ONLY,
+}

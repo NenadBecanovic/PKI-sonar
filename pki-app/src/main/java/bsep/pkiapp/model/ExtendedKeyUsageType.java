@@ -1,6 +1,6 @@
 package bsep.pkiapp.model;
 
-public enum CertificatePurposeType {
+public enum ExtendedKeyUsageType {
     SERVER_AUTH,
     CLIENT_AUTH,
     EMAIL_PROTECTION,

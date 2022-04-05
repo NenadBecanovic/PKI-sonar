@@ -18,6 +18,8 @@ public class NewCertificateDto {
 
     public String certificateType;
 
+    public ExtensionSettingsDto extensionSettingsDto;
+
     public NewCertificateDto() {}
 
     public NewCertificateDto(Integer idSubject, Date validityEndDate, String organizationName,
@@ -85,5 +87,13 @@ public class NewCertificateDto {
 
     public void setCertificateType(String certificateType) {
         this.certificateType = certificateType;
+    }
+
+    public ExtensionSettingsDto getExtensionSettingsDto() {
+        return extensionSettingsDto;
+    }
+
+    public void setExtensionSettingsDto(ExtensionSettingsDto extensionSettingsDto) {
+        this.extensionSettingsDto = extensionSettingsDto;
     }
 }
