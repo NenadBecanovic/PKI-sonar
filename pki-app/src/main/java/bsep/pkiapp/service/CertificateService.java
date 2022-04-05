@@ -1,7 +1,11 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.NewCertificateDto;
+import bsep.pkiapp.keystores.KeyStoreWriter;
+import bsep.pkiapp.model.CertificateChain;
+import bsep.pkiapp.model.CertificateType;
 import bsep.pkiapp.utils.X500NameGenerator;
+
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -17,9 +21,14 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static java.lang.Math.abs;
 
 @Service
 public class CertificateService {
@@ -75,9 +84,17 @@ public class CertificateService {
 
             JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
             certConverter = certConverter.setProvider("BC");
-
             X509Certificate certificate = certConverter.getCertificate(certHolder);
-
+            if(dto.certificateType.equals("ROOT")) {
+            	Date startDate = new Date();
+                CertificateChain chain = new CertificateChain(0L, dto.organizationName, CertificateType.ROOT,null,startDate,dto.validityEndDate, true);
+                writeRootCertificateToKeyStore(chain.getSerialNumber().toString(), keyPair.getPrivate(), certificate, chain.getSerialNumber().toString());
+            }else {
+            	Date startDate = new Date();
+                CertificateChain chain = new CertificateChain(0L, dto.organizationName, CertificateType.ROOT,null,startDate,dto.validityEndDate, true);
+                String rootSerialNumber = findRootSerialNumber();
+                writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(), rootSerialNumber, keyPair.getPrivate(), certificate, chain.getSerialNumber().toString());
+            }
         } catch (IllegalArgumentException | IllegalStateException | OperatorCreationException
                 | CertificateException | NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
@@ -108,5 +125,31 @@ public class CertificateService {
         }
         return null;
     }
-
+    
+    private void writeRootCertificateToKeyStore(String serialNumber, PrivateKey privateKey, Certificate certificate, String password) {
+		KeyStoreWriter ksw = new KeyStoreWriter();
+		ksw.loadKeyStore(null, password.toCharArray());
+		ksw.write(serialNumber, privateKey, password.toCharArray(), certificate);
+		ksw.saveKeyStore(".\\files\\root" + serialNumber + ".jks", password.toCharArray());
+		
+		KeyStoreWriter kswHierarchy = new KeyStoreWriter();
+		kswHierarchy.loadKeyStore(null, password.toCharArray());
+		kswHierarchy.saveKeyStore(".\\files\\hierarchy" + serialNumber + ".jks", password.toCharArray());
+	}
+    
+    private void writeCertificateToHierarchyKeyStore(String serialNumber, String rootSerialNumber, PrivateKey privateKey, Certificate certificate, String password) {
+		KeyStoreWriter ksw = new KeyStoreWriter();
+		ksw.loadKeyStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", password.toCharArray());
+		ksw.write(serialNumber, privateKey, password.toCharArray(), certificate);
+		ksw.saveKeyStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", password.toCharArray());
+	}
+    
+    private String findRootSerialNumber() {
+    	List<CertificateChain> certificateChain = certificateChainRepository.findAll();
+    	CertificateChain certificate = new CertificateChain();
+    	while(!certificate.getCertificateType().equals(CertificateType.ROOT)) {
+    		certificate = certificateChainRepository.getCertificateChainBySignerSerialNumber(certificate.getSignerSerialNumber());
+    	}
+    	return certificate.getSerialNumber().toString();
+	}
 }
