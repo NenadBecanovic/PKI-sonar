@@ -4,6 +4,7 @@ import bsep.pkiapp.dto.NewCertificateDto;
 import bsep.pkiapp.keystores.KeyStoreWriter;
 import bsep.pkiapp.model.CertificateChain;
 import bsep.pkiapp.model.CertificateType;
+import bsep.pkiapp.repository.CertificateChainRepository;
 import bsep.pkiapp.utils.X500NameGenerator;
 
 import org.bouncycastle.asn1.x500.X500Name;
@@ -38,7 +39,7 @@ public class CertificateService {
 
     @Autowired
     private ExtensionService extensionService;
-
+	private CertificateChainRepository certificateChainRepository;
 
     public void createCertificate(NewCertificateDto dto) {
         X500Name subject = x500NameGenerator.generateX500Name(dto);
