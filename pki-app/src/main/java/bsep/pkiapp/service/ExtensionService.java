@@ -39,7 +39,7 @@ public class ExtensionService {
             } else if (extension.getExtensionType().equals(ExtensionType.SUBJECT_KEY_ID)) {
                 certGen.addExtension(Extension.subjectKeyIdentifier, true, new JcaX509ExtensionUtils().createSubjectKeyIdentifier(dto.getPublicKey()));
             } else if (extension.getExtensionType().equals(ExtensionType.AUTHORITY_KEY_ID)) {
-                certGen.addExtension(Extension.subjectKeyIdentifier, true, new JcaX509ExtensionUtils().createAuthorityKeyIdentifier(dto.getPublicKey()));
+                certGen.addExtension(Extension.authorityKeyIdentifier, true, new JcaX509ExtensionUtils().createAuthorityKeyIdentifier(dto.getPublicKey()));
             } else if (extension.getExtensionType().equals(ExtensionType.KEY_USAGE)) {
                 certGen = setKeyUsage(certGen, dto.getKeyUsageIds(), certificateType);
             } else if (extension.getExtensionType().equals(ExtensionType.EXTENDED_KEY_USAGE)) {

@@ -69,7 +69,7 @@ public class CertificateService {
             dto.extensionSettingsDto.setPublicKey(keyPair.getPublic());
             dto.extensionSettingsDto.setSubjectName(subject);
 
-            extensionService.addExtensions(certGen, dto.getExtensionSettingsDto(), dto.getCertificateType());
+            certGen = extensionService.addExtensions(certGen, dto.getExtensionSettingsDto(), dto.getCertificateType());
 
             X509CertificateHolder certHolder = certGen.build(contentSigner);
 
