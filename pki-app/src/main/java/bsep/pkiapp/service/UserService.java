@@ -18,7 +18,7 @@ public class UserService implements UserDetailsService {
 
     public List<User> getAll() { return userRepository.findAll(); }
 
-    public User getById(Integer id) { return userRepository.getById(id); }
+    public User getById(Integer id) { return userRepository.findById(id).orElseThrow(); }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -37,4 +37,5 @@ public class UserService implements UserDetailsService {
     public void saveUser(User user) {
         userRepository.save(user);
     }
+
 }

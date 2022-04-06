@@ -73,6 +73,34 @@ public class KeyStoreReader {
 		return null;
 	}*/
 	
+	public X500Name readIssuerNameFromStore(String keyStoreFile, String alias, char[] password, char[] keyPass) {
+		try {
+			//Datoteka se ucitava
+			BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+			keyStore.load(in, password);
+			//Iscitava se sertifikat koji ima dati alias
+			Certificate cert = keyStore.getCertificate(alias);
+			//Iscitava se privatni kljuc vezan za javni kljuc koji se nalazi na sertifikatu sa datim aliasom
+			PrivateKey privKey = (PrivateKey) keyStore.getKey(alias, keyPass);
+	
+			X500Name issuerName = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
+			return issuerName;
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (UnrecoverableKeyException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public PrivateKey readIssuerFromStore(String keyStoreFile, String alias, char[] password, char[] keyPass) {
 		try {
 			//Datoteka se ucitava
