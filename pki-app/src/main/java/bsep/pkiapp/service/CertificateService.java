@@ -1,6 +1,7 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.NewCertificateDto;
+import bsep.pkiapp.keystores.KeyStoreReader;
 import bsep.pkiapp.keystores.KeyStoreWriter;
 import bsep.pkiapp.model.CertificateChain;
 import bsep.pkiapp.model.CertificateType;
@@ -58,7 +59,7 @@ public class CertificateService {
             //TODO: validation checks, keyStorage, DataBase storage, extensions and purposes
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
             builder = builder.setProvider("BC");
-
+            KeyStoreReader ksr = new KeyStoreReader();
             KeyPair keyPair = generateKeyPair();
 
             ContentSigner contentSigner;
@@ -66,7 +67,14 @@ public class CertificateService {
                 contentSigner = builder.build(keyPair.getPrivate());
             }
             else {
-                contentSigner = null; //TODO: private key of issuer
+            	if(certificateChainRepository.findById(Long.parseLong(dto.issuerSerialNumber)).equals(CertificateType.ROOT)) {
+            		PrivateKey privateKey = ksr.readIssuerFromStore(".\\files\\root" + dto.issuerSerialNumber + ".jks", dto.issuerSerialNumber, dto.issuerSerialNumber.toCharArray(), dto.issuerSerialNumber.toCharArray());		
+        			contentSigner = builder.build(privateKey);
+            	} else {
+            		PrivateKey privateKey = ksr.readIssuerFromStore(".\\files\\hierarchy" + dto.issuerSerialNumber + ".jks", dto.issuerSerialNumber, dto.issuerSerialNumber.toCharArray(), dto.issuerSerialNumber.toCharArray());		
+        			contentSigner = builder.build(privateKey);
+            	}
+                //contentSigner = null; //TODO: private key of issuer
             }
 
             X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuer,

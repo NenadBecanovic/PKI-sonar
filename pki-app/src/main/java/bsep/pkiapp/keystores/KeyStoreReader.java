@@ -73,6 +73,31 @@ public class KeyStoreReader {
 		return null;
 	}*/
 	
+	public PrivateKey readIssuerFromStore(String keyStoreFile, String alias, char[] password, char[] keyPass) {
+		try {
+			//Datoteka se ucitava
+			BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
+			keyStore.load(in, password);
+			//Iscitava se privatni kljuc vezan za javni kljuc koji se nalazi na sertifikatu sa datim aliasom
+			PrivateKey privKey = (PrivateKey) keyStore.getKey(alias, keyPass);
+
+			return privKey;
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (UnrecoverableKeyException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
 	 * Ucitava sertifikat is KS fajla
 	 */
