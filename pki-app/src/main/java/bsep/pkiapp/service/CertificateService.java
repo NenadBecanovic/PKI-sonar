@@ -40,6 +40,8 @@ public class CertificateService {
 
     @Autowired
     private ExtensionService extensionService;
+    
+    @Autowired
 	private CertificateChainRepository certificateChainRepository;
 
     public void createCertificate(NewCertificateDto dto) {
