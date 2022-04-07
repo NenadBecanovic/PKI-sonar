@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {map, Observable, startWith} from "rxjs";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {StepperOrientation} from "@angular/cdk/stepper";
 import {CertificateDataService} from "./certificate-data.service";
 import {Router} from "@angular/router";
+import {MatCheckboxChange} from "@angular/material/checkbox";
 
 export interface User{
   name: string
@@ -15,8 +16,8 @@ export interface User{
   styleUrls: ['./new-certificate.component.css']
 })
 export class NewCertificateComponent implements OnInit {
-  public keyUsages: string[] = [];
-  public extensions: string[] = [];
+  public keyUsages: Array<any> = [];
+  public extensions: Array<any> = [];
 
   public issuerOptions: User[] = [{name:'Neko 1'}, {name: 'Neko 2'}, {name: 'Neko 3'}];
   public subjectOptions: User[] = [{name: 'Neko 1'}, {name: 'Neko 2'}, {name: 'Neko 3'}];
@@ -58,7 +59,10 @@ export class NewCertificateComponent implements OnInit {
       'endValidityDate': this.validity,
     });
 
-    this.certKeyUsageFormGroup = new FormGroup({});
+    this.certKeyUsageFormGroup = new FormGroup({
+      'keyUsage': new FormArray([])
+    });
+
     this.certExtFormGroup = new FormGroup({});
 
 
@@ -100,7 +104,16 @@ export class NewCertificateComponent implements OnInit {
     if(this.certTypeCtrl.value == 'ROOT'){
       this.issuer.clearValidators();
       this.certDataFormGroup.setControl('issuer', this.issuer);
-    }else{
+      const keyUsageArray: FormArray = this.certKeyUsageFormGroup.get('keyUsage') as FormArray;
+      let newFormControl = new FormControl("CERTIFICATE_SIGNING");
+      newFormControl.disable();
+      keyUsageArray.push(newFormControl);
+    }else if(this.certTypeCtrl.value == 'CA'){
+      const keyUsageArray: FormArray = this.certKeyUsageFormGroup.get('keyUsage') as FormArray;
+      let newFormControl = new FormControl("CERTIFICATE_SIGNING");
+      newFormControl.disable();
+      keyUsageArray.push(newFormControl);
+    }else {
       this.issuer = new FormControl('',Validators.required);
       this.certDataFormGroup.setControl('issuer', this.issuer);
     }
@@ -108,5 +121,41 @@ export class NewCertificateComponent implements OnInit {
 
   onCreate() {
     this.router.navigate(['overview']).then();
+  }
+
+  onKeyUsageChange(event: MatCheckboxChange) {
+    const keyUsageArray: FormArray = this.certKeyUsageFormGroup.get('keyUsage') as FormArray;
+    if (event.checked) {
+      keyUsageArray.push(new FormControl(event.source.value));
+    } else {
+      let i: number = 0;
+      keyUsageArray.controls.forEach((item: any) => {
+        if (item.value == event.source.value) {
+          keyUsageArray.removeAt(i);
+          return;
+        }
+        i++;
+      });
+    }
+  }
+
+  isChecked(keyUsage: string) {
+    let isChecked = false;
+    (this.certKeyUsageFormGroup.get('keyUsage') as FormArray).controls.forEach((item: any) => {
+      if (item.value == keyUsage) {
+        isChecked = true;
+      }
+    })
+    return isChecked;
+  }
+
+  isDisabled(keyUsage: string) {
+    let isDisabled = false;
+    (this.certKeyUsageFormGroup.get('keyUsage') as FormArray).controls.forEach((item: any) => {
+      if (item.value == keyUsage && item.disabled) {
+        isDisabled = true;
+      }
+    })
+    return isDisabled;
   }
 }

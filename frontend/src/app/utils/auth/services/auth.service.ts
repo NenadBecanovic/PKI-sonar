@@ -31,7 +31,6 @@ export class AuthService{
   }
 
   register(user: RegisterUsetDto) {
-    // TODO: register user for USER and CA type?
     return this._http.post(environment.apiUrl + "/auth/register", {
       name: user.name,
       surname: user.surname,

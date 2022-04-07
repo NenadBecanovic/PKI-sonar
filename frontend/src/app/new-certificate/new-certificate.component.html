@@ -79,28 +79,6 @@
       </div>
     </form>
   </mat-step>
-  <mat-step [stepControl]="certKeyUsageFormGroup" label="Choose key usages">
-    <form [formGroup]="certKeyUsageFormGroup">
-      <br/>
-      <h1>Key usages</h1>
-      <mat-grid-list cols="2" rowHeight="40vh">
-        <mat-grid-tile>
-          <div class="checkbox-container" >
-            <mat-checkbox *ngFor="let usage of keyUsages | slice:0:5">{{usage}}</mat-checkbox>
-          </div>
-        </mat-grid-tile>
-        <mat-grid-tile >
-          <div class="checkbox-container" >
-            <mat-checkbox *ngFor="let usage of keyUsages | slice:5:9">{{usage}}</mat-checkbox>
-          </div>
-        </mat-grid-tile>
-      </mat-grid-list>
-      <div class="action-buttons">
-        <button mat-stroked-button class="mat-accent next-btn" matStepperPrevious type="button">Back</button>
-        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit">Next</button>
-      </div>
-    </form>
-  </mat-step>
   <mat-step [stepControl]="certExtFormGroup" label="Choose extensions">
     <form [formGroup]="certExtFormGroup">
       <br/>
@@ -114,6 +92,37 @@
         <mat-grid-tile>
           <div class="checkbox-container">
             <mat-checkbox *ngFor="let ext of extensions | slice:7:14">{{ext}}</mat-checkbox>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+      <div class="action-buttons">
+        <button mat-stroked-button class="mat-accent next-btn" matStepperPrevious type="button">Back</button>
+        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="certKeyUsageFormGroup" label="Choose key usages">
+    <form [formGroup]="certKeyUsageFormGroup">
+      <br/>
+      <h1>Key usages</h1>
+      <mat-grid-list cols="2" rowHeight="40vh">
+        <mat-grid-tile>
+          <div class="checkbox-container">
+            <mat-checkbox *ngFor="let usage of keyUsages | slice:0:5"
+                          [value]="usage.toString().toUpperCase().replace(' ', '_')"
+                          (change)="onKeyUsageChange($event)"
+                          [checked]="isChecked(usage.toString().toUpperCase().replace(' ', '_'))" [disabled]="isDisabled(usage.toString().toUpperCase().replace(' ', '_'))"
+            >{{usage}}</mat-checkbox>
+          </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <div class="checkbox-container">
+            <mat-checkbox *ngFor="let usage of keyUsages | slice:5:9"
+                          [value]="usage.toString().toUpperCase().replace(' ', '_')"
+                          (change)="onKeyUsageChange($event)"
+                          [checked]="isChecked(usage.toString().toUpperCase().replace(' ', '_'))"
+                          [disabled]="isDisabled(usage.toString().toUpperCase().replace(' ', '_'))"
+            >{{usage}}</mat-checkbox>
           </div>
         </mat-grid-tile>
       </mat-grid-list>

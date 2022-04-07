@@ -1,157 +1,51 @@
 <div class="register-form">
   <h1>REGISTER</h1>
-  <mat-stepper orientation="vertical" [linear]="true">
-    <mat-step [stepControl]="typeForm">
-      <ng-template matStepLabel>Choose your role</ng-template>
-      <form [formGroup]="typeForm">
-        <div style="text-align: center">
-          <mat-form-field appearance="fill">
-            <mat-label>Select role</mat-label>
-            <mat-select formControlName="entityTypeCtrl" (ngModelChange)="onTypeChange()">
-              <mat-option value="USER">User</mat-option>
-              <mat-option value="CA">Subsystem</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="action-buttons">
-          <button mat-raised-button class="mat-primary next-btn" matStepperNext>Next</button>
-        </div>
-      </form>
-    </mat-step>
-    <mat-step [stepControl]="userDataForm">
-      <ng-template matStepLabel>Enter role data</ng-template>
-      <form [formGroup]="userDataForm">
-        <div style="text-align: center" *ngIf="entityTypeCtrl.value == 'USER'">
-              <mat-form-field appearance="fill">
-                <mat-label>Enter your name</mat-label>
-                <input matInput placeholder="John" formControlName="nameCtrl" required>
-              </mat-form-field>
-        </div>
-        <div style="text-align: center" *ngIf="entityTypeCtrl.value == 'USER'">
-          <mat-form-field appearance="fill">
-            <mat-label>Enter your surname</mat-label>
-            <input matInput placeholder="Doe" formControlName="surnameCtrl" required>
-          </mat-form-field>
-        </div>
-        <div style="text-align: center" *ngIf="entityTypeCtrl.value == 'CA'">
-          <mat-form-field appearance="fill">
-            <mat-label>Enter organization unit name</mat-label>
-            <input matInput placeholder="John" formControlName="organizationUnitCtrl" required>
-          </mat-form-field>
-        </div>
-        <div class="action-buttons">
-          <button mat-stroked-button class="mat-accent " matStepperPrevious type="button">Back</button>
-          <button mat-raised-button matStepperNext class="mat-primary" type="submit">Next</button>
-        </div>
-      </form>
-    </mat-step>
-    <mat-step [stepControl]="authDataForm">
-      <ng-template matStepLabel>Enter login data</ng-template>
-      <form [formGroup]="authDataForm">
-        <div style="text-align: center" >
-          <mat-form-field appearance="fill">
-            <mat-label>Enter your email</mat-label>
-            <input matInput placeholder="John" formControlName="emailCtrl" required>
-          </mat-form-field>
-        </div>
-        <div style="text-align: center">
-          <mat-form-field appearance="fill">
-            <mat-label>Enter your password</mat-label>
-            <input matInput [type]="hide ? 'password' : 'text'" formControlName="passwordCtrl" required>
-            <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-                    [attr.aria-pressed]="hide">
-              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-            </button>
-          </mat-form-field>
-        </div>
-        <div class="action-buttons">
-          <button mat-stroked-button class="mat-accent " matStepperPrevious type="button">Back</button>
-          <button mat-raised-button matStepperNext class="mat-primary" type="submit" (click)="onRegister()">Register</button>
-        </div>
-      </form>
-    </mat-step>
-  </mat-stepper>
+  <form [formGroup]="form">
+    <div style="text-align: center">
+      <mat-form-field appearance="fill">
+        <mat-label>Enter your name</mat-label>
+        <input matInput placeholder="John" formControlName="nameCtrl" required>
+      </mat-form-field>
+    </div>
+    <div style="text-align: center">
+      <mat-form-field appearance="fill">
+        <mat-label>Enter your surname</mat-label>
+        <input matInput placeholder="Doe" formControlName="surnameCtrl" required>
+      </mat-form-field>
+    </div>
+    <div style="text-align: center">
+      <mat-form-field appearance="fill">
+        <mat-label>Enter your email</mat-label>
+        <input matInput placeholder="example@example.com" formControlName="emailCtrl" required>
+      </mat-form-field>
+    </div>
+    <div style="text-align: center">
+      <mat-form-field appearance="fill">
+        <mat-label>Enter your password</mat-label>
+        <input matInput [type]="hide ? 'password' : 'text'" formControlName="passwordCtrl" required>
+        <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide">
+          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="passwordCtrl.hasError('pattern')">Password must have lowercase, uppercase and
+          number!</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="action-buttons">
+      <button mat-raised-button class="mat-primary" type="submit" (click)="onRegister()">Register</button>
+    </div>
+  </form>
   <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
     {{errorMessage}}
   </div>
+  <div>
+    <br>
+    <br>
+    <mat-divider></mat-divider>
+    <br>
+    <div class="register-question">
+      <h2>Already have account? </h2>
+      <a routerLink="/login">Log in here</a>
+    </div>
+  </div>
 </div>
-
-<!--  <mat-step [stepControl]="secondFormGroup">-->
-<!--    <form [formGroup]="secondFormGroup">-->
-<!--      <ng-template matStepLabel>Fill out your address</ng-template>-->
-<!--      <mat-form-field appearance="fill">-->
-<!--        <mat-label>Address</mat-label>-->
-<!--        <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"-->
-<!--               required>-->
-<!--      </mat-form-field>-->
-<!--      <div>-->
-<!--        <button mat-button matStepperPrevious>Back</button>-->
-<!--        <button mat-button matStepperNext>Next</button>-->
-<!--      </div>-->
-<!--    </form>-->
-<!--  </mat-step>-->
-<!--  <mat-step>-->
-<!--    <ng-template matStepLabel>Done</ng-template>-->
-<!--    <p>You are now done.</p>-->
-<!--    <div>-->
-<!--      <button mat-button matStepperPrevious>Back</button>-->
-<!--      <button mat-button (click)="stepper.reset()">Reset</button>-->
-<!--    </div>-->
-<!--  </mat-step>-->
-
-<!--<form [formGroup]="form">-->
-<!--  <div style="text-align: center">-->
-<!--    <mat-form-field appearance="fill">-->
-<!--      <mat-label>Select me</mat-label>-->
-<!--      <mat-select formControlName="entityTypeCntl">-->
-<!--        <mat-option value="USER">User</mat-option>-->
-<!--        <mat-option value="CA">Subsystem</mat-option>-->
-<!--      </mat-select>-->
-<!--    </mat-form-field>-->
-<!--  </div>-->
-<!--  <div style="text-align: center" *ngIf="entityTypeCntl.value == 'USER'">-->
-<!--    <mat-form-field appearance="fill">-->
-<!--      <mat-label>Enter your name</mat-label>-->
-<!--      <input matInput placeholder="John" formControlName="name" required>-->
-<!--    </mat-form-field>-->
-<!--  </div>-->
-<!--  <div style="text-align: center" *ngIf="entityTypeCntl.value == 'USER'">-->
-<!--    <mat-form-field appearance="fill">-->
-<!--      <mat-label>Enter your surname</mat-label>-->
-<!--      <input matInput placeholder="Doe" formControlName="surname" required>-->
-<!--    </mat-form-field>-->
-<!--  </div>-->
-<!--  <div style="text-align: center">-->
-<!--    <mat-form-field appearance="fill">-->
-<!--      <mat-label>Enter your email</mat-label>-->
-<!--      <input matInput placeholder="example@example.com" formControlName="email" required>-->
-<!--    </mat-form-field>-->
-<!--  </div>-->
-<!--  <div style="text-align: center">-->
-<!--    <mat-form-field appearance="fill">-->
-<!--      <mat-label>Enter your password</mat-label>-->
-<!--      <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required>-->
-<!--      <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"-->
-<!--              [attr.aria-pressed]="hide">-->
-<!--        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>-->
-<!--      </button>-->
-<!--    </mat-form-field>-->
-<!--  </div>-->
-<!--  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">-->
-<!--    {{errorMessage}}-->
-<!--  </div>-->
-<!--  <div>-->
-<!--    <div class="col-xs-12 button-container">-->
-<!--      <button mat-raised-button class="mat-primary" (click)="onLogin()" [disabled]="!form.valid">Log in</button>-->
-<!--    </div>-->
-<!--    <br>-->
-<!--    <br>-->
-<!--    <mat-divider></mat-divider>-->
-<!--    <br>-->
-<!--    <div class="register-question">-->
-<!--      <h2>Don't have account yet? </h2>-->
-<!--      <a routerLink="/register">Create one here</a>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</form>-->
-
