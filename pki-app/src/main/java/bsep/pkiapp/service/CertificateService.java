@@ -1,8 +1,18 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.NewCertificateDto;
+import bsep.pkiapp.keystores.KeyStoreReader;
+import bsep.pkiapp.keystores.KeyStoreWriter;
+import bsep.pkiapp.model.CertificateChain;
+import bsep.pkiapp.model.CertificateType;
+import bsep.pkiapp.repository.CertificateChainRepository;
 import bsep.pkiapp.utils.X500NameGenerator;
+
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -17,9 +27,14 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static java.lang.Math.abs;
 
 @Service
 public class CertificateService {
@@ -29,7 +44,12 @@ public class CertificateService {
 
     @Autowired
     private ExtensionService extensionService;
-
+    
+    @Autowired
+    private KeyStoreService keyStoreService;
+    
+    @Autowired
+	private CertificateChainRepository certificateChainRepository;
 
     public void createCertificate(NewCertificateDto dto) {
         X500Name subject = x500NameGenerator.generateX500Name(dto);
@@ -38,17 +58,39 @@ public class CertificateService {
         }
         else {
             //TODO: get issuer from KeyStorage, check if issuer is of role: ROLE_CA
-            X500Name issuer = null;
-            generateCertificate(dto, issuer, subject);
+        	if(isIssuerRootCertificate(dto.issuerSerialNumber)) {
+        		KeyStoreReader keyStore = new KeyStoreReader();
+                X500Name x500NameIssuer = keyStore.readIssuerNameFromStore(".\\files\\root" + dto.issuerSerialNumber + ".jks", dto.issuerSerialNumber, dto.issuerSerialNumber.toCharArray(), dto.issuerSerialNumber.toCharArray());
+                generateCertificate(dto, x500NameIssuer, subject);
+        	} else {
+        		KeyStoreReader keyStore = new KeyStoreReader();
+        		String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(dto.issuerSerialNumber);
+                X500Name x500NameIssuer = keyStore.readIssuerNameFromStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", dto.issuerSerialNumber, rootSerialNumber.toCharArray(), dto.issuerSerialNumber.toCharArray());
+                generateCertificate(dto, x500NameIssuer, subject);
+        	}
         }
     }
 
-    public void generateCertificate(NewCertificateDto dto, X500Name issuer, X500Name subject) {
+    private String findRootSerialNumberByIssuerSerialNumber(String issuerSerialNumber) {
+    	CertificateChain certificate = certificateChainRepository.getById(Long.decode(issuerSerialNumber));
+    	while(!(CertificateType.ROOT).equals(certificate.getCertificateType())) {
+    		certificate = certificateChainRepository.getCertificateChainBySignerSerialNumber(certificate.getSignerSerialNumber());
+    	}
+    	return certificate.getSerialNumber().toString();
+	}
+
+	private boolean isIssuerRootCertificate(String issuerSerialNumber) {
+		// TODO Auto-generated method stub
+    	CertificateChain certificate = certificateChainRepository.getById(Long.decode(issuerSerialNumber));
+		return (CertificateType.ROOT).equals(certificate.getCertificateType());
+	}
+
+	public void generateCertificate(NewCertificateDto dto, X500Name issuer, X500Name subject) {
         try {
             //TODO: validation checks, keyStorage, DataBase storage, extensions and purposes
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
             builder = builder.setProvider("BC");
-
+            KeyStoreReader ksr = new KeyStoreReader();
             KeyPair keyPair = generateKeyPair();
 
             ContentSigner contentSigner;
@@ -56,7 +98,20 @@ public class CertificateService {
                 contentSigner = builder.build(keyPair.getPrivate());
             }
             else {
-                contentSigner = null; //TODO: private key of issuer
+           /* 	if(certificateChainRepository.findById(Long.parseLong(dto.issuerSerialNumber)).equals("ROOT")) {
+            		PrivateKey privateKey = ksr.readIssuerFromStore(".\\files\\root" + dto.issuerSerialNumber + ".jks", dto.issuerSerialNumber, dto.issuerSerialNumber.toCharArray(), dto.issuerSerialNumber.toCharArray());		
+        			contentSigner = builder.build(privateKey);
+            	} else {*/
+            	PrivateKey privateKey = null;
+            		if(isIssuerRootCertificate(dto.issuerSerialNumber)) {
+            			privateKey = ksr.readIssuerFromStore(".\\files\\root" + dto.issuerSerialNumber + ".jks", dto.issuerSerialNumber, dto.issuerSerialNumber.toCharArray(), dto.issuerSerialNumber.toCharArray());		               		
+                	} else {
+                		String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(dto.issuerSerialNumber);
+                		privateKey = ksr.readIssuerFromStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", dto.issuerSerialNumber, rootSerialNumber.toCharArray(), dto.issuerSerialNumber.toCharArray());		
+                	}
+            		contentSigner = builder.build(privateKey);
+           // 	}
+                //contentSigner = null; //TODO: private key of issuer
             }
 
             X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuer,
@@ -65,19 +120,27 @@ public class CertificateService {
                     dto.getValidityEndDate(),
                     subject,
                     keyPair.getPublic());
-
             dto.extensionSettingsDto.setPublicKey(keyPair.getPublic());
             dto.extensionSettingsDto.setSubjectName(subject);
 
             certGen = extensionService.addExtensions(certGen, dto.getExtensionSettingsDto(), dto.getCertificateType());
-
             X509CertificateHolder certHolder = certGen.build(contentSigner);
 
             JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
             certConverter = certConverter.setProvider("BC");
-
             X509Certificate certificate = certConverter.getCertificate(certHolder);
-
+            if(dto.certificateType.equals("ROOT")) {
+            	Date startDate = new Date();
+                CertificateChain chain = new CertificateChain(0L, dto.organizationName, CertificateType.ROOT,null,startDate,dto.validityEndDate, true);
+                certificateChainRepository.save(chain);
+                keyStoreService.writeRootCertificateToKeyStore(chain.getSerialNumber().toString(), keyPair.getPrivate(), certificate, chain.getSerialNumber().toString());
+            }else {
+            	Date startDate = new Date();
+                CertificateChain chain = new CertificateChain(0L, dto.organizationName, CertificateType.ROOT,null,startDate,dto.validityEndDate, true);
+                String rootSerialNumber = findRootSerialNumber(chain);
+                certificateChainRepository.save(chain);
+                keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(), rootSerialNumber, keyPair.getPrivate(), certificate, chain.getSerialNumber().toString());
+            }
         } catch (IllegalArgumentException | IllegalStateException | OperatorCreationException
                 | CertificateException | NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
@@ -108,5 +171,11 @@ public class CertificateService {
         }
         return null;
     }
-
+    
+    private String findRootSerialNumber(CertificateChain certificate) {
+    	while(!(CertificateType.ROOT).equals(certificate.getCertificateType())) {
+    		certificate = certificateChainRepository.getCertificateChainBySignerSerialNumber(certificate.getSignerSerialNumber());
+    	}
+    	return certificate.getSerialNumber().toString();
+	}
 }
