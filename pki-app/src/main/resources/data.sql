@@ -6,13 +6,19 @@ INSERT INTO role
 VALUES (3, 'ROLE_ADMIN');
 
 INSERT INTO users
-VALUES (101, 'admin1@gmail.com', 'Tim', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Smith', 2);
+VALUES (101, 'admin1@gmail.com', 'Tim', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Smith', 3);
 INSERT INTO users
 VALUES (102, 'user1@gmail.com', 'Annie', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Robinson', 1);
 INSERT INTO users
 VALUES (103, 'user2@gmail.com', 'Cameron', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Topaz', 1);
 INSERT INTO users
 VALUES (104, 'user3@gmail.com', 'Mark', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Anderson', 1);
+INSERT INTO users
+VALUES (105, 'ca1@gmail.com', 'Brian', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Milner', 2);
+INSERT INTO users
+VALUES (106, 'ca2@gmail.com', 'Glenn', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Potter', 2);
+INSERT INTO users
+VALUES (107, 'ca3@gmail.com', 'Tommie', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Findlay', 2);
 
 INSERT INTO key_usage (name, key_usage_type)
 VALUES ('Digital Signature', 'DIGITAL_SIGNATURE');

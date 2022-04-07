@@ -5,7 +5,7 @@ import {Router} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {HttpErrorResponse} from "@angular/common/http";
-import {RegisterUsetDto} from "../../dtos/RegisterUset.dto";
+import {RegisterUsetDto} from "../../../../shared/dto/RegisterUset.dto";
 
 @Component({
   selector: 'app-register',

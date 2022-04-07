@@ -1,11 +1,13 @@
 import {Component, ElementRef, OnInit} from '@angular/core';
-import {Form, FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {map, Observable, startWith} from "rxjs";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {StepperOrientation} from "@angular/cdk/stepper";
 import {CertificateService} from "../services/certificate.service";
 import {Router} from "@angular/router";
-import {MatCheckbox, MatCheckboxChange} from "@angular/material/checkbox";
+import {MatCheckboxChange} from "@angular/material/checkbox";
+import {UserService} from "../services/user.service";
+import {MatOptionSelectionChange} from "@angular/material/core";
 
 export interface User{
   name: string
@@ -20,11 +22,8 @@ export class NewCertificateComponent implements OnInit {
   public extensions: Array<any> = [];
   public extendedKeyUsages: Array<any> = [];
 
-  public issuerOptions: User[] = [{name:'Neko 1'}, {name: 'Neko 2'}, {name: 'Neko 3'}];
-  public subjectOptions: User[] = [{name: 'Neko 1'}, {name: 'Neko 2'}, {name: 'Neko 3'}];
-
-  public filteredOptionsIssuer: Observable<User[]>;
-  public filteredOptionsSubject: Observable<User[]>;
+  public issuerOptions: Array<any> = [];
+  public subjectOptions: Array<any> = [];
 
   public certTypeCtrl: FormControl;
   public certTypeFormGroup: FormGroup;
@@ -43,7 +42,7 @@ export class NewCertificateComponent implements OnInit {
 
   stepperOrientation: Observable<StepperOrientation>;
 
-  constructor(private _elementRef: ElementRef, private _formBuilder: FormBuilder, breakpointObserver: BreakpointObserver, private certificateService: CertificateService, private router: Router) {
+  constructor(private userService: UserService,private _elementRef: ElementRef, private _formBuilder: FormBuilder, breakpointObserver: BreakpointObserver, private certificateService: CertificateService, private router: Router) {
     this.certificateService.getCertExtensions().subscribe((response: Array<any>) =>{
       this.extensions = response;
       console.log(response)
@@ -93,18 +92,6 @@ export class NewCertificateComponent implements OnInit {
       'extKeyUsage': new FormArray([])
     });
 
-    this.filteredOptionsIssuer = this.issuer.valueChanges.pipe(
-      startWith(''),
-      map(value => (typeof value === 'string' ? value : value.name)),
-      map(name => (name ? this._filterIssuer(name) : this.issuerOptions.slice())),
-    );
-
-    this.filteredOptionsSubject = this.issuer.valueChanges.pipe(
-      startWith(''),
-      map(value => (typeof value === 'string' ? value : value.name)),
-      map(name => (name ? this._filterSubject(name) : this.issuerOptions.slice())),
-    );
-
   }
 
   ngOnInit(): void {
@@ -114,23 +101,17 @@ export class NewCertificateComponent implements OnInit {
     return user && user.name ? user.name : '';
   }
 
-  private _filterIssuer(name: string): User[] {
-    const filterValue = name.toLowerCase();
-
-    return this.issuerOptions.filter(option => option.name.toLowerCase().includes(filterValue));
-  }
-
-  private _filterSubject(name: string): User[] {
-    const filterValue = name.toLowerCase();
-
-    return this.subjectOptions.filter(option => option.name.toLowerCase().includes(filterValue));
-  }
-
   onTypeChange() {
+    this.userService.getIssuers(this.certTypeCtrl.value).subscribe((response) =>{
+      this.issuerOptions = response;
+    })
+    this.userService.getSubjects().subscribe((response) => {
+      this.subjectOptions = response;
+    })
     if(this.certTypeCtrl.value == 'ROOT'){
-      this.issuer.clearValidators();
+      this.subject.clearValidators();
       this.organizationUnitName.clearValidators();
-      this.certDataFormGroup.setControl('issuer', this.issuer);
+      this.certDataFormGroup.setControl('subject', this.subject);
       this.certDataFormGroup.setControl('organizationUnitName', this.organizationUnitName);
       const keyUsageArray: FormArray = this.certKeyUsageFormGroup.get('keyUsage') as FormArray;
       let newFormControl = new FormControl(6);
@@ -284,4 +265,5 @@ export class NewCertificateComponent implements OnInit {
     });
     return retVal;
   }
+
 }

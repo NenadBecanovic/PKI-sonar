@@ -3,7 +3,7 @@ import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from "@angular
 import {LoginUserDto} from "../dtos/LoginUser.dto";
 import {environment} from "../../../../environments/environment";
 import {map, Subject} from "rxjs";
-import {RegisterUsetDto} from "../dtos/RegisterUset.dto";
+import {RegisterUsetDto} from "../../../shared/dto/RegisterUset.dto";
 import {UserTokenStateDto} from "../dtos/UserTokenState.dto";
 
 @Injectable({providedIn: 'root'})

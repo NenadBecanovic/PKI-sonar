@@ -1,12 +1,35 @@
 package bsep.pkiapp.dto;
 
 
+import bsep.pkiapp.model.User;
+
 public class UserDto {
 
     private String name;
     private String surname;
     private String email;
     private String password;
+
+    public UserDto(String name, String surname, String email, String password) {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.password = password;
+    }
+
+    public UserDto(String name, String surname, String email) {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.password = "";
+    }
+
+    public UserDto(User user) {
+        this.name = user.getName();
+        this.surname = user.getSurname();
+        this.email = user.getEmail();
+        this.password = "";
+    }
 
     public String getName() {
         return name;
@@ -40,13 +63,4 @@ public class UserDto {
         this.password = password;
     }
 
-    public UserDto(String name, String surname, String email, String password) {
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-        this.password = password;
-    }
-
-    public UserDto() {
-    }
 }
