@@ -5,6 +5,8 @@ import bsep.pkiapp.repository.KeyUsageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class KeyUsageService {
 
@@ -13,4 +15,7 @@ public class KeyUsageService {
 
     public KeyUsage getById(Integer id) { return keyUsageRepository.getById(id); }
 
+    public List<KeyUsage> getAll() {
+        return keyUsageRepository.findAll();
+    }
 }

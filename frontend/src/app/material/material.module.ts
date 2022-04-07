@@ -7,7 +7,7 @@ import {MatGridListModule} from "@angular/material/grid-list";
 import {MatButtonModule} from "@angular/material/button";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatStepperModule} from "@angular/material/stepper";
-import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MAT_CHECKBOX_DEFAULT_OPTIONS, MatCheckboxDefaultOptions, MatCheckboxModule} from "@angular/material/checkbox";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatNativeDateModule} from '@angular/material/core';
@@ -47,7 +47,8 @@ const MaterialComponents = [
   exports:[MaterialComponents],
   providers:[
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
-    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 3000, appearance: 'fill'}}
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 3000, appearance: 'fill'}},
+    {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'check-indeterminate'} as MatCheckboxDefaultOptions}
   ]
 })
 export class MaterialModule { }

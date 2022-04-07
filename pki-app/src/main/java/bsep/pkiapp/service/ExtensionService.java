@@ -112,4 +112,7 @@ public class ExtensionService {
         return certGen;
     }
 
+    public List<CertificateExtension> getAll() {
+        return extensionRepository.findAll();
+    }
 }

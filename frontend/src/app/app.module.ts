@@ -12,7 +12,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { CertificateOverviewComponent } from './certificate-overview/certificate-overview.component';
 import { CertificateComponent } from './certificate-overview/components/certificate/certificate.component';
 import { SearchComponent } from './certificate-overview/components/search/search.component';
-import { NewCertificateComponent } from './new-certificate/new-certificate.component';
+import { NewCertificateComponent } from './new-certificate/components/new-certificate.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {MatDividerModule} from "@angular/material/divider";
 import {RegisterComponent} from "./utils/auth/components/register/register.component";
