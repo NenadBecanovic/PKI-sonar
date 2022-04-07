@@ -28,8 +28,10 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -73,10 +75,7 @@ public class CertificateService {
 
     private String findRootSerialNumberByIssuerSerialNumber(String issuerSerialNumber) {
     	CertificateChain certificate = certificateChainRepository.getById(Long.decode(issuerSerialNumber));
-    	while(!(CertificateType.ROOT).equals(certificate.getCertificateType())) {
-    		certificate = certificateChainRepository.getCertificateChainBySignerSerialNumber(certificate.getSignerSerialNumber());
-    	}
-    	return certificate.getSerialNumber().toString();
+    	return findRootSerialNumber(certificate);
 	}
 
 	private boolean isIssuerRootCertificate(String issuerSerialNumber) {
@@ -178,4 +177,85 @@ public class CertificateService {
     	}
     	return certificate.getSerialNumber().toString();
 	}
+
+	public byte[] getCertificate(Long serialNumber) throws CertificateEncodingException {
+		byte[] crt = getX509Certificate(serialNumber).getEncoded();
+		return crt;
+	}
+	
+	private X509Certificate getX509Certificate(Long serialNumber) {
+		KeyStoreReader ksr = new KeyStoreReader();
+		X509Certificate certificate = null;
+		CertificateChain certificateChain  = certificateChainRepository.findById(serialNumber).orElseThrow();
+		if((CertificateType.ROOT).equals(certificateChain.getCertificateType())) {			
+			certificate = (X509Certificate) ksr.readCertificate(".\\files\\root" + serialNumber.toString() + ".jks", serialNumber.toString(), serialNumber.toString());
+		} else { 
+			String rootSerialNumber = findRootSerialNumber(certificateChain);
+			certificate = (X509Certificate) ksr.readCertificate(".\\files\\" + rootSerialNumber + ".jks", serialNumber.toString(), serialNumber.toString());
+		}
+		
+		return certificate;
+	}
+
+	public List<ArrayList<CertificateChain>> findAllForUser(int id) {
+		List<CertificateChain> certificateChain = certificateChainRepository.findAll();
+		List<CertificateChain> userCertificates = new ArrayList<CertificateChain>();
+		List<CertificateChain> certificateChainForUser = new ArrayList<CertificateChain>();
+		List<ArrayList<CertificateChain>> hierarchy = new ArrayList<ArrayList<CertificateChain>>();
+		
+		Long var = (long) 0;
+
+		for (CertificateChain sc : certificateChain) {
+			if(sc.getUser().getId().equals(id)) {
+				userCertificates.add(sc);
+			}
+		}
+		
+		for (CertificateChain sc : userCertificates) {
+
+			var = sc.getSignerSerialNumber();
+			certificateChainForUser.add(sc);
+			while(var != 0) {
+				for(CertificateChain sc2 : certificateChain) {
+					if(sc2.getSerialNumber() == var) {
+						certificateChainForUser.add(sc2);
+						var = sc2.getSignerSerialNumber();
+						break;
+					}
+				}
+			}
+			hierarchy.add((ArrayList<CertificateChain>) certificateChainForUser);
+			certificateChainForUser = new ArrayList<CertificateChain>();
+		}
+		
+		return hierarchy;
+	}
+
+	public List<ArrayList<CertificateChain>> findAllForAdmin() {
+		List<CertificateChain> certificateChain = certificateChainRepository.findAll();
+		List<CertificateChain> certificateChainForUser = new ArrayList<CertificateChain>();
+		List<ArrayList<CertificateChain>> hierarchy = new ArrayList<ArrayList<CertificateChain>>();
+		
+		Long var = (long) 0;
+
+		for (CertificateChain sc : certificateChain) {
+
+			var = sc.getSignerSerialNumber();
+			certificateChainForUser.add(sc);
+			while(var != 0) {
+				for(CertificateChain sc2 : certificateChain) {
+					if(sc2.getSerialNumber() == var) {
+						certificateChainForUser.add(sc2);
+						var = sc2.getSignerSerialNumber();
+						break;
+					}
+				}
+			}
+			hierarchy.add((ArrayList<CertificateChain>) certificateChainForUser);
+			certificateChainForUser = new ArrayList<CertificateChain>();
+		}
+		
+		return hierarchy;
+	}
+
 }
