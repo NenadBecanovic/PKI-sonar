@@ -17,12 +17,13 @@ public class UserController {
     public UserService userService;
 
     @GetMapping(value = "getIssuersByCertificateType/{certType}")
-    public ResponseEntity<List<UserDto>> getIssuersByCertificateType(@PathVariable String certType) {
-        return ResponseEntity.ok(userService.getByRole(certType));
+    public ResponseEntity<?> getIssuersByCertificateType(@RequestHeader("Authorization") String token,
+                                                                     @PathVariable String certType) {
+        return ResponseEntity.ok(userService.getByRole(token.split(" ")[1], certType));
     }
 
     @GetMapping(value = "getSubjects")
-    public ResponseEntity<List<UserDto>> getSubjects() {
+    public ResponseEntity<?> getSubjects() {
         return ResponseEntity.ok(userService.getAllSubjects());
     }
 

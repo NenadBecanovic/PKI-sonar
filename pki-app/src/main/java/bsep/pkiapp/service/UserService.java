@@ -1,9 +1,13 @@
 package bsep.pkiapp.service;
 
+import bsep.pkiapp.dto.IssuerDto;
 import bsep.pkiapp.dto.UserDto;
+import bsep.pkiapp.model.CertificateChain;
+import bsep.pkiapp.model.CertificateType;
 import bsep.pkiapp.model.Role;
 import bsep.pkiapp.model.User;
 import bsep.pkiapp.repository.UserRepository;
+import bsep.pkiapp.security.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,6 +22,12 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TokenUtils tokenUtils;
+
+    @Autowired
+    private CertificateChainService certificateChainService;
 
     public List<User> getAll() { return userRepository.findAll(); }
 
@@ -46,42 +56,89 @@ public class UserService implements UserDetailsService {
         return userRepository.getByEmail(email);
     }
 
-    public List<UserDto> getByRole(String type) {
-        List<UserDto> users = getAllAdmins();
+    public List<IssuerDto> getByRole(String token, String type) {
+        String email = tokenUtils.getEmailFromToken(token);
+        User user = getByEmail(email);
 
-        if(type.equals("CA")){
-            users.addAll(getAllCAs());
+        List<IssuerDto> issuers;
+
+        if(user.getRole().getAuthority().equals("ROLE_ADMIN")){
+            issuers = getIssuersForAdmin(type);
         }else{
-            users.addAll(getAllEndEntities());
+            issuers = getIssuersForCA(user);
         }
-        return users;
+//        List<User> users = new ArrayList<>();
+//        List<CertificateChain> certificates = new ArrayList<>();
+//        if(user.getRole().getAuthority().equals("ROLE_ADMIN")){
+//            users = getAllAdmins();
+//            if (!type.equals("ROOT")) {
+//                users.addAll(getAllCAs());
+//            }
+//        }else if(user.getRole().getAuthority().equals("ROLE_CA")){
+//            certificates = certificateChainService.getCAByUser(user);
+//        }
+//        return users.size() > 0 ? convertUsertToIssuerDto(users) : convertCerificateToIssuerDto(certificates);
+        return issuers;
     }
 
-    private List<UserDto> getAllEndEntities() {
-        List<UserDto> endEntities = new ArrayList<>();
+    private List<IssuerDto> getIssuersForCA(User user) {
+        List<CertificateChain> certificates = certificateChainService.getCAByUser(user);
+        return convertCerificateToIssuerDto(certificates);
+    }
+
+    private List<IssuerDto> getIssuersForAdmin(String type) {
+        List<User> users = new ArrayList<>();
+        List<CertificateChain> certificates = new ArrayList<>();
+        if(type.equals("ROOT")){
+            users = getAllAdmins();
+        }else{
+            certificates = certificateChainService.getByCertificateType(CertificateType.ROOT);
+            certificates.addAll(certificateChainService.getByCertificateType(CertificateType.INTERMEDIATE));
+        }
+        return users.size() > 0 ? convertUsertToIssuerDto(users) : convertCerificateToIssuerDto(certificates);
+    }
+
+    private List<IssuerDto> convertCerificateToIssuerDto(List<CertificateChain> certificates) {
+        List<IssuerDto> dtos = new ArrayList<>();
+        for(CertificateChain cert: certificates){
+            dtos.add(new IssuerDto(cert));
+        }
+        return  dtos;
+    }
+
+    private List<IssuerDto> convertUsertToIssuerDto(List<User> users) {
+        List<IssuerDto> dtos = new ArrayList<>();
+        for (User user : users) {
+            dtos.add(new IssuerDto(user));
+        }
+        return dtos;
+    }
+
+    private List<User> getAllEndEntities() {
+        List<User> endEntities = new ArrayList<>();
         for (User user : userRepository.findAll()) {
             if (user.getRole().getAuthority().equals("ROLE_USER")) {
-                endEntities.add(new UserDto(user));
+                endEntities.add(user);
             }
         }
         return endEntities;
     }
 
-    private List<UserDto> getAllCAs() {
-        List<UserDto> CAs = new ArrayList<>();
+    private List<User> getAllCAs() {
+        List<User> CAs = new ArrayList<>();
         for (User user : userRepository.findAll()) {
             if (user.getRole().getAuthority().equals("ROLE_CA")) {
-                CAs.add(new UserDto(user));
+                CAs.add(user);
             }
         }
         return CAs;
     }
 
-    private List<UserDto> getAllAdmins() {
-        List<UserDto> admins = new ArrayList<>();
+    private List<User> getAllAdmins() {
+        List<User> admins = new ArrayList<>();
         for(User user: userRepository.findAll()){
             if(user.getRole().getAuthority().equals("ROLE_ADMIN")){
-                admins.add(new UserDto(user));
+                admins.add(user);
             }
         }
         return admins;

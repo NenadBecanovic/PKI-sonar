@@ -1,10 +1,12 @@
 package bsep.pkiapp.service;
 
+import bsep.pkiapp.dto.CertificateDto;
 import bsep.pkiapp.dto.NewCertificateDto;
 import bsep.pkiapp.keystores.KeyStoreReader;
 import bsep.pkiapp.keystores.KeyStoreWriter;
 import bsep.pkiapp.model.CertificateChain;
 import bsep.pkiapp.model.CertificateType;
+import bsep.pkiapp.model.User;
 import bsep.pkiapp.repository.CertificateChainRepository;
 import bsep.pkiapp.utils.X500NameGenerator;
 
@@ -24,12 +26,14 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -51,6 +55,10 @@ public class CertificateService {
     @Autowired
 	private CertificateChainRepository certificateChainRepository;
 
+    @Autowired
+    private UserService userService;
+
+    @Transactional
     public void createCertificate(NewCertificateDto dto) {
         X500Name subject = x500NameGenerator.generateX500Name(dto);
         if (dto.certificateType.equals("ROOT")) {
@@ -92,6 +100,7 @@ public class CertificateService {
             builder = builder.setProvider("BC");
             KeyStoreReader ksr = new KeyStoreReader();
             KeyPair keyPair = generateKeyPair();
+            User user = userService.getByEmail(dto.subjectEmail);
 
             ContentSigner contentSigner;
             if (dto.certificateType.equals("ROOT")) {
@@ -131,12 +140,14 @@ public class CertificateService {
             X509Certificate certificate = certConverter.getCertificate(certHolder);
             if(dto.certificateType.equals("ROOT")) {
             	Date startDate = new Date();
-                CertificateChain chain = new CertificateChain(0L, dto.organizationName, CertificateType.ROOT,null,startDate,dto.validityEndDate, true);
+                CertificateChain chain = new CertificateChain(0L, dto.organizationName, CertificateType.ROOT,user,
+                        startDate,dto.validityEndDate, true);
                 certificateChainRepository.save(chain);
                 keyStoreService.writeRootCertificateToKeyStore(chain.getSerialNumber().toString(), keyPair.getPrivate(), certificate, chain.getSerialNumber().toString());
             }else {
             	Date startDate = new Date();
-                CertificateChain chain = new CertificateChain(0L, dto.organizationName, CertificateType.ROOT,null,startDate,dto.validityEndDate, true);
+                CertificateChain chain = new CertificateChain(0L, dto.organizationName, CertificateType.ROOT,user,
+                        startDate,dto.validityEndDate, true);
                 String rootSerialNumber = findRootSerialNumber(chain);
                 certificateChainRepository.save(chain);
                 keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(), rootSerialNumber, keyPair.getPrivate(), certificate, chain.getSerialNumber().toString());
@@ -178,4 +189,12 @@ public class CertificateService {
     	}
     	return certificate.getSerialNumber().toString();
 	}
+
+    public List<CertificateDto> getRootCertificates() {
+        List<CertificateDto> certificates = new ArrayList<>();
+        for(CertificateChain cert: certificateChainRepository.getByCertificateType(CertificateType.ROOT)){
+            certificates.add(new CertificateDto(cert));
+        }
+        return certificates;
+    }
 }

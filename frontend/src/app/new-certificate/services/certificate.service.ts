@@ -31,7 +31,7 @@ export class CertificateService {
     console.log(extKeyUsage)
 
     let extensionDto = new ExtensionSettingsDto(extensions, keyUsage, extKeyUsage);
-    let newCertDto = new NewCertificateDto(certData.subject.name, certData.endValidityDate, certData.organizationName, certData.organizationUnitName, certData.country, "", certType, extensionDto);
+    let newCertDto = new NewCertificateDto(certData.issuer.email, certData.endValidityDate, certData.organizationName, certData.organizationUnitName, certData.country, null, certType, extensionDto);
 
     console.log(newCertDto);
 

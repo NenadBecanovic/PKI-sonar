@@ -1,6 +1,6 @@
 import {Component, ElementRef, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {map, Observable, startWith} from "rxjs";
+import {map, Observable, startWith, Subscription} from "rxjs";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {StepperOrientation} from "@angular/cdk/stepper";
 import {CertificateService} from "../services/certificate.service";
@@ -8,6 +8,8 @@ import {Router} from "@angular/router";
 import {MatCheckboxChange} from "@angular/material/checkbox";
 import {UserService} from "../services/user.service";
 import {MatOptionSelectionChange} from "@angular/material/core";
+import {UserTokenStateDto} from "../../utils/auth/dtos/UserTokenState.dto";
+import {AuthService} from "../../utils/auth/services/auth.service";
 
 export interface User{
   name: string
@@ -18,6 +20,8 @@ export interface User{
   styleUrls: ['./new-certificate.component.css']
 })
 export class NewCertificateComponent implements OnInit {
+  public loggedInUser: string | undefined = undefined;
+
   public keyUsages: Array<any> = [];
   public extensions: Array<any> = [];
   public extendedKeyUsages: Array<any> = [];
@@ -42,7 +46,10 @@ export class NewCertificateComponent implements OnInit {
 
   stepperOrientation: Observable<StepperOrientation>;
 
-  constructor(private userService: UserService,private _elementRef: ElementRef, private _formBuilder: FormBuilder, breakpointObserver: BreakpointObserver, private certificateService: CertificateService, private router: Router) {
+  constructor(private _authService: AuthService, private userService: UserService,private _elementRef: ElementRef, private _formBuilder: FormBuilder, breakpointObserver: BreakpointObserver, private certificateService: CertificateService, private router: Router) {
+    this._authService.getRole().subscribe((response: string) => {
+      this.loggedInUser = response;
+    })
     this.certificateService.getCertExtensions().subscribe((response: Array<any>) =>{
       this.extensions = response;
       console.log(response)
@@ -266,4 +273,8 @@ export class NewCertificateComponent implements OnInit {
     return retVal;
   }
 
+  console(event: any) {
+    console.log(event)
+    console.log(this.issuer.value)
+  }
 }

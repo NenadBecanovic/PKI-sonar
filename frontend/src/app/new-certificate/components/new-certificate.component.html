@@ -3,9 +3,9 @@
              [orientation]="(stepperOrientation | async)!">
   <mat-step [stepControl]="certTypeFormGroup" label="Choose certificate type">
     <form [formGroup]="certTypeFormGroup">
-      <mat-grid-list cols="3">
-        <mat-grid-tile>
-          <mat-card (click)="certTypeCtrl.setValue('ROOT')">
+      <mat-grid-list [cols]="this.loggedInUser == 'ROLE_ADMIN' ? 3 : 2" rowHeight="60vh">
+        <mat-grid-tile *ngIf="this.loggedInUser == 'ROLE_ADMIN'">
+          <mat-card (click)="certTypeCtrl.setValue('ROOT')" >
             <img src="../../../assets/certificate-root-96.png" alt="Root certificate"/>
             <mat-card-title>Root <br/> certificate</mat-card-title>
             <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'ROOT'? 'hidden': 'visible'">check_circle_outline</mat-icon>
@@ -58,15 +58,19 @@
         <mat-form-field appearance="fill" >
           <mat-label>Issuer</mat-label>
           <mat-select [formControl]="issuer">
-            <mat-option *ngFor="let option of issuerOptions"
-                        [value]="option">{{option.name + " " + option.surname + " (" + option.email + ")"}}</mat-option>
+            <span *ngFor="let option of issuerOptions">
+            <mat-option *ngIf="this.subject.value.email != option.email"
+                        [value]="option">{{option.displayName + " (" + option.email + ")"}}</mat-option>
+            </span>
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="fill" *ngIf="this.certTypeCtrl.value != 'ROOT'">
           <mat-label>Subject</mat-label>
           <mat-select [formControl]="subject">
-            <mat-option *ngFor="let option of subjectOptions"
-                        [value]="option">{{option.name + " " + option.surname + " (" + option.email + ")"}}</mat-option>
+            <span *ngFor="let option of subjectOptions">
+            <mat-option  *ngIf="this.issuer.value.email != option.email"
+                        [value]="option">{{option.displayName + " (" + option.email + ")"}}</mat-option>
+            </span>
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="fill">

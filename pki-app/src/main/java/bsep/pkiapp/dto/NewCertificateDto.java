@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class NewCertificateDto {
 
-    public Integer idSubject;
+    public String subjectEmail;
 
     public Date validityEndDate;
 
@@ -22,9 +22,9 @@ public class NewCertificateDto {
 
     public NewCertificateDto() {}
 
-    public NewCertificateDto(Integer idSubject, Date validityEndDate, String organizationName,
+    public NewCertificateDto(String subjectEmail, Date validityEndDate, String organizationName,
                              String organizationUnit, String country, String serialNumber, String certificateType) {
-        this.idSubject = idSubject;
+        this.subjectEmail = subjectEmail;
         this.validityEndDate = validityEndDate;
         this.organizationName = organizationName;
         this.organizationUnit = organizationUnit;
@@ -33,12 +33,12 @@ public class NewCertificateDto {
         this.certificateType = certificateType;
     }
 
-    public Integer getIdSubject() {
-        return idSubject;
+    public String getIdSubject() {
+        return subjectEmail;
     }
 
-    public void setIdSubject(Integer idSubject) {
-        this.idSubject = idSubject;
+    public void setIdSubject(String subjectEmail) {
+        this.subjectEmail = subjectEmail;
     }
 
     public Date getValidityEndDate() {
