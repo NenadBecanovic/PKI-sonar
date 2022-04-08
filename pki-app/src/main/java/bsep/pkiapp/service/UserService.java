@@ -1,6 +1,7 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.IssuerDto;
+import bsep.pkiapp.dto.SubjectDto;
 import bsep.pkiapp.dto.UserDto;
 import bsep.pkiapp.model.CertificateChain;
 import bsep.pkiapp.model.CertificateType;
@@ -67,17 +68,6 @@ public class UserService implements UserDetailsService {
         }else{
             issuers = getIssuersForCA(user);
         }
-//        List<User> users = new ArrayList<>();
-//        List<CertificateChain> certificates = new ArrayList<>();
-//        if(user.getRole().getAuthority().equals("ROLE_ADMIN")){
-//            users = getAllAdmins();
-//            if (!type.equals("ROOT")) {
-//                users.addAll(getAllCAs());
-//            }
-//        }else if(user.getRole().getAuthority().equals("ROLE_CA")){
-//            certificates = certificateChainService.getCAByUser(user);
-//        }
-//        return users.size() > 0 ? convertUsertToIssuerDto(users) : convertCerificateToIssuerDto(certificates);
         return issuers;
     }
 
@@ -144,11 +134,11 @@ public class UserService implements UserDetailsService {
         return admins;
     }
 
-    public List<UserDto> getAllSubjects() {
-        List<UserDto> users = new ArrayList<>();
+    public List<SubjectDto> getAllSubjects() {
+        List<SubjectDto> users = new ArrayList<>();
         for (User user : userRepository.findAll()) {
             if (!user.getRole().getAuthority().equals("ROLE_ADMIN")) {
-                users.add(new UserDto(user));
+                users.add(new SubjectDto(user));
             }
         }
         return users;

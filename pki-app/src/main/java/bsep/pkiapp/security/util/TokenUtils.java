@@ -1,5 +1,6 @@
 package bsep.pkiapp.security.util;
 
+import bsep.pkiapp.model.RoleType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

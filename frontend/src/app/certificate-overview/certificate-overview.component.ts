@@ -9,10 +9,10 @@ import {DateRange} from "./model/dateRange.model";
 })
 export class CertificateOverviewComponent implements OnInit {
   public certificates: Certificate[] = [
-    new Certificate('Subject 1', 'Issuer 1', new DateRange(new Date, new Date), 'CA'),
+    new Certificate('Subject 1', 'Issuer 1', new DateRange(new Date, new Date), 'INTERMEDIATE'),
     new Certificate('Subject 2', 'Issuer 2', new DateRange(new Date, new Date), 'ROOT'),
     new Certificate('Subject 3', 'Issuer 3', new DateRange(new Date, new Date), 'END'),
-    new Certificate('Subject 1', 'Issuer 1', new DateRange(new Date, new Date), 'CA'),
+    new Certificate('Subject 1', 'Issuer 1', new DateRange(new Date, new Date), 'INTERMEDIATE'),
     new Certificate('Subject 2', 'Issuer 2', new DateRange(new Date, new Date), 'ROOT'),
     new Certificate('Subject 3', 'Issuer 3', new DateRange(new Date, new Date), 'END'),
   ];

@@ -124,7 +124,7 @@ export class NewCertificateComponent implements OnInit {
       let newFormControl = new FormControl(6);
       newFormControl.disable();
       keyUsageArray.push(newFormControl);
-    }else if(this.certTypeCtrl.value == 'CA'){
+    }else if(this.certTypeCtrl.value == 'INTERMEDIATE'){
       this.organizationName.clearValidators();
       this.country.clearValidators();
       this.certDataFormGroup.setControl('organizationName', this.organizationName);

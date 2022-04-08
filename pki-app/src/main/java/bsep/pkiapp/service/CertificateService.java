@@ -24,6 +24,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
 
@@ -57,6 +59,9 @@ public class CertificateService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RoleService roleService;
 
     @Transactional
     public void createCertificate(NewCertificateDto dto) {
@@ -145,12 +150,17 @@ public class CertificateService {
                 certificateChainRepository.save(chain);
                 keyStoreService.writeRootCertificateToKeyStore(chain.getSerialNumber().toString(), keyPair.getPrivate(), certificate, chain.getSerialNumber().toString());
             }else {
+                // TODO: update to create intermediate and end entity certificate
             	Date startDate = new Date();
                 CertificateChain chain = new CertificateChain(0L, dto.organizationName, CertificateType.ROOT,user,
                         startDate,dto.validityEndDate, true);
                 String rootSerialNumber = findRootSerialNumber(chain);
                 certificateChainRepository.save(chain);
                 keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(), rootSerialNumber, keyPair.getPrivate(), certificate, chain.getSerialNumber().toString());
+            }
+
+            if(dto.certificateType.equals("CA") && user.getRole().getId() == 1){
+                user.setRole(roleService.getById(2));
             }
         } catch (IllegalArgumentException | IllegalStateException | OperatorCreationException
                 | CertificateException | NoSuchAlgorithmException | IOException e) {

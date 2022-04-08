@@ -33,12 +33,13 @@ export class CertificateService {
     let extensionDto = new ExtensionSettingsDto(extensions, keyUsage, extKeyUsage);
     let newCertDto = new NewCertificateDto(certData.issuer.email, certData.endValidityDate, certData.organizationName, certData.organizationUnitName, certData.country, null, certType, extensionDto);
 
-    console.log(newCertDto);
-
     if(certType == "ROOT"){
       return this._http.post(environment.apiUrl + "/certificates/createRootCertificate", newCertDto);
-    }else if(certType == "CA"){
-      return this._http.get(environment.apiUrl + "/certificates/createIntermediateCertificate");
+    }else if(certType == "INTERMEDIATE"){
+      newCertDto.subjectEmail = certData.subject.email;
+      newCertDto.issuerSerialNumber = certData.issuer.issuerSerialNumber;
+      console.log(newCertDto)
+      return this._http.post(environment.apiUrl + "/certificates/createIntermediateCertificate", newCertDto);
     }else{
       return this._http.get(environment.apiUrl + "/certificates/createEndEntityCertificate");
     }

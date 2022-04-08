@@ -1,5 +1,4 @@
 import {ExtensionSettingsDto} from "./extension-settings.dto";
-import {FormControl} from "@angular/forms";
 
 export class NewCertificateDto{
   public subjectEmail: string;

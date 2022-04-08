@@ -12,10 +12,10 @@
           </mat-card>
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-card (click)="certTypeCtrl.setValue('CA')">
-            <img src="../../../assets/certificate-ca-96.png" alt="CA certificate"/>
+          <mat-card (click)="certTypeCtrl.setValue('INTERMEDIATE')">
+            <img src="../../../assets/certificate-ca-96.png" alt="INTERMEDIATE certificate"/>
             <mat-card-title>Intermediate certificate</mat-card-title>
-            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'CA'? 'hidden': 'visible'">check_circle_outline</mat-icon>
+            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'INTERMEDIATE'? 'hidden': 'visible'">check_circle_outline</mat-icon>
           </mat-card>
         </mat-grid-tile>
         <mat-grid-tile>
@@ -29,7 +29,7 @@
       <select formControlName="certTypeCtrl" required hidden (ngModelChange)="onTypeChange()">
         <option selected value=""></option>
         <option value="ROOT">ROOT</option>
-        <option value="CA">CA</option>
+        <option value="INTERMEDIATE">INTERMEDIATE</option>
         <option value="END">END</option>
       </select>
       <div style="text-align: center">
@@ -51,7 +51,7 @@
           <mat-label>Enter organization name</mat-label>
           <input matInput type="text" formControlName="organizationName" required>
         </mat-form-field>
-        <mat-form-field appearance="fill" *ngIf="this.certTypeCtrl.value == 'CA'">
+        <mat-form-field appearance="fill" *ngIf="this.certTypeCtrl.value == 'INTERMEDIATE'">
           <mat-label>Enter organization unit name</mat-label>
           <input matInput type="text" formControlName="organizationUnitName" required>
         </mat-form-field>

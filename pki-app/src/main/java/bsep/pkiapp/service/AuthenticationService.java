@@ -1,6 +1,7 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.UserDto;
+import bsep.pkiapp.model.RoleType;
 import bsep.pkiapp.model.User;
 import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;

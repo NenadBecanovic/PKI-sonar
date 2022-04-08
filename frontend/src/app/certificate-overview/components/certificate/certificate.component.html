@@ -1,6 +1,6 @@
 <mat-card >
   <img *ngIf="certificate.type == 'ROOT'" src="../../../../assets/certificate-root-96.png" alt="Root certificate"/>
-  <img *ngIf="certificate.type == 'CA'" src="../../../../assets/certificate-ca-96.png" alt="CA certificate"/>
+  <img *ngIf="certificate.type == 'INTERMEDIATE'" src="../../../../assets/certificate-ca-96.png" alt="INTERMEDIATE certificate"/>
   <img *ngIf="certificate.type == 'END'" src="../../../../assets/certificate-96.png" alt="End entity  certificate"/>
   <div class="info-div">
     <mat-card-title>{{certificate.subject}}</mat-card-title>
