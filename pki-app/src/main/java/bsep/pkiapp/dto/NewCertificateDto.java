@@ -1,5 +1,6 @@
 package bsep.pkiapp.dto;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 public class NewCertificateDto {

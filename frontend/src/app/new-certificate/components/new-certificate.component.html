@@ -19,10 +19,11 @@
           </mat-card>
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-card (click)="certTypeCtrl.setValue('END')">
+          <mat-card (click)="certTypeCtrl.setValue('END_ENTITY')">
             <img src="../../../assets/certificate-96.png" alt="End entity certificate"/>
             <mat-card-title>End-entity certificate</mat-card-title>
-            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'END'? 'hidden': 'visible'">check_circle_outline</mat-icon>
+            <mat-icon class="check-icon" [style.visibility]="certTypeCtrl.value != 'END_ENTITY'? 'hidden': 'visible'">
+              check_circle_outline</mat-icon>
           </mat-card>
         </mat-grid-tile>
       </mat-grid-list>
@@ -30,7 +31,7 @@
         <option selected value=""></option>
         <option value="ROOT">ROOT</option>
         <option value="INTERMEDIATE">INTERMEDIATE</option>
-        <option value="END">END</option>
+        <option value="_ENTITY">END_ENTITY</option>
       </select>
       <div style="text-align: center">
         <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit">Next</button>
@@ -57,7 +58,7 @@
         </mat-form-field>
         <mat-form-field appearance="fill" >
           <mat-label>Issuer</mat-label>
-          <mat-select [formControl]="issuer">
+          <mat-select [formControl]="issuer" (change)="console($event)">
             <span *ngFor="let option of issuerOptions">
             <mat-option *ngIf="this.subject.value.email != option.email"
                         [value]="option">{{option.displayName + " (" + option.email + ")"}}</mat-option>
@@ -87,7 +88,7 @@
       </div>
       <div class="action-buttons">
         <button mat-stroked-button class="mat-accent next-btn" matStepperPrevious type="button">Back</button>
-        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit"
+        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit" (click)="console($event)"
                 >Next</button>
       </div>
     </form>
@@ -95,20 +96,20 @@
   <mat-step [stepControl]="certExtFormGroup" label="Choose extensions">
     <form [formGroup]="certExtFormGroup">
       <br/>
-      <h1>Key usages</h1>
+      <h1>Extensions</h1>
       <mat-grid-list cols="1" rowHeight="40vh">
         <mat-grid-tile>
           <div class="checkbox-container">
             <span *ngFor="let ext of extensions">
-              <mat-checkbox *ngIf="ext.id != 3"
+              <mat-checkbox *ngIf="ext.id != 2"
                             [value]="ext.id"
                             (change)="onExtensionChange($event)">{{ext.name}}</mat-checkbox>
-              <mat-checkbox *ngIf="ext.id == 3"
+              <mat-checkbox *ngIf="ext.id == 2"
                             [indeterminate]="someChecked()"
                             [value]="ext.id"
                             [checked]="allChecked"
                             (change)="onExtensionChange($event)" >{{ext.name}}</mat-checkbox>
-              <span *ngIf="ext.id == 3">
+              <span *ngIf="ext.id == 2">
                 <ul>
                   <li *ngFor="let extKey of extendedKeyUsages">
                     <form [formGroup]="certExtKeyUsageFormGroup">

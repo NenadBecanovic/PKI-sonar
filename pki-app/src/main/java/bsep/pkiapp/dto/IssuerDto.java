@@ -3,12 +3,14 @@ package bsep.pkiapp.dto;
 import bsep.pkiapp.model.CertificateChain;
 import bsep.pkiapp.model.User;
 
+import java.math.BigInteger;
+
 public class IssuerDto {
     public String displayName;
     public String email;
-    public Long issuerSerialNumber;
+    public String issuerSerialNumber;
 
-    public IssuerDto(String displayName, String email, Long issuerSerialNumber) {
+    public IssuerDto(String displayName, String email, String issuerSerialNumber) {
         this.displayName = displayName;
         this.email = email;
         this.issuerSerialNumber = issuerSerialNumber;
@@ -17,7 +19,7 @@ public class IssuerDto {
     public IssuerDto(CertificateChain cert) {
         this.displayName = cert.getCommonName();
         this.email = cert.getUser().getEmail();
-        this.issuerSerialNumber = cert.getSerialNumber();
+        this.issuerSerialNumber = cert.getSerialNumber().toString();
     }
 
     public IssuerDto(User user) {

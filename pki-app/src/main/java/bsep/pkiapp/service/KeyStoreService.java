@@ -23,8 +23,8 @@ public class KeyStoreService {
     
     public void writeCertificateToHierarchyKeyStore(String serialNumber, String rootSerialNumber, PrivateKey privateKey, Certificate certificate, String password) {
 		KeyStoreWriter ksw = new KeyStoreWriter();
-		ksw.loadKeyStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", password.toCharArray());
-		ksw.write(serialNumber, privateKey, password.toCharArray(), certificate);
-		ksw.saveKeyStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", password.toCharArray());
+		ksw.loadKeyStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", rootSerialNumber.toString().toCharArray());
+		ksw.write(serialNumber, privateKey, rootSerialNumber.toString().toCharArray(), certificate);
+		ksw.saveKeyStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", rootSerialNumber.toString().toCharArray());
 	}
 }

@@ -21,9 +21,11 @@ public class CertificateChain {
 	@SequenceGenerator(name = "mySeqGen", sequenceName = "mySeq", initialValue = 1)
     @GeneratedValue(generator = "mySeqGen")
 	private Long id;
-	
+
+	@Column(precision = 25, scale = 0)
 	private BigInteger serialNumber;
-	
+
+	@Column(precision = 25, scale = 0)
 	private BigInteger signerSerialNumber;
 	
 	private boolean revoked;
@@ -46,8 +48,11 @@ public class CertificateChain {
 	public CertificateChain() {}
 	
 	
-	public CertificateChain(BigInteger signerSerialNumber, String commonName, CertificateType certificateType, User user, Date dateFrom, Date dateTo, boolean hasSigningPermission) {
+	public CertificateChain(BigInteger serialNumber, BigInteger signerSerialNumber, String commonName,
+							CertificateType certificateType,
+							User user, Date dateFrom, Date dateTo, boolean hasSigningPermission) {
 		super();
+		this.serialNumber = serialNumber;
 		this.signerSerialNumber = signerSerialNumber;
 		this.revoked = false;
 		this.commonName = commonName;
@@ -55,16 +60,6 @@ public class CertificateChain {
 		this.user=user;
 		this.dateFrom=dateFrom;
 		this.dateTo=dateTo;
-		this.hasSigningPermission = hasSigningPermission;
-	}	
-
-	public CertificateChain(BigInteger serialNumber, BigInteger signerSerialNumber, boolean revoked, String commonName, CertificateType certificateType, boolean hasSigningPermission) {
-		super();
-		this.serialNumber = serialNumber;
-		this.signerSerialNumber = signerSerialNumber;
-		this.revoked = revoked;
-		this.commonName = commonName;
-		this.certificateType = certificateType;
 		this.hasSigningPermission = hasSigningPermission;
 	}
 

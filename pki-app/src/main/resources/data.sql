@@ -1,3 +1,5 @@
+
+
 INSERT INTO role
 VALUES (1, 'ROLE_USER');
 INSERT INTO role
@@ -59,6 +61,7 @@ VALUES ('Subject key identifier', 'SUBJECT_KEY_ID');
 INSERT INTO certificate_extension (name, extension_type)
 VALUES ('Authority key identifier', 'AUTHORITY_KEY_ID');
 
-INSERT INTO certificate_chain (serial_number, signer_serial_number, revoked, common_name, user_id, date_from, date_to,
-                               certificate_type, has_signing_permission)
-VALUES (1, 0, FALSE, 'Security Solutions', 101, '2022-04-08 11:59:29.674', '2022-07-31 00:00:00', 'ROOT', TRUE);
+-- INSERT INTO certificate_chain (id, serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
+-- date_to,
+--                                certificate_type, has_signing_permission)
+-- VALUES (1, 1, 0, FALSE, 'Security Solutions', 101, '2022-04-08 11:59:29.674', '2022-07-31 00:00:00', 'ROOT', TRUE);

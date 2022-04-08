@@ -2,6 +2,7 @@ package bsep.pkiapp.dto;
 
 import bsep.pkiapp.model.CertificateChain;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 public class CertificateDto {
@@ -10,7 +11,7 @@ public class CertificateDto {
     public Date startDate;
     public Date endDate;
     public String type;
-    public Long serialNumber;
+    public String serialNumber;
 
     public CertificateDto(String subject, String issuer, Date startDate, Date endDate) {
         this.subject = subject;
@@ -26,6 +27,6 @@ public class CertificateDto {
         this.startDate = cert.getDateFrom();
         this.endDate = cert.getDateTo();
         this.type = cert.getCertificateType().name();
-        this.serialNumber = cert.getSerialNumber();
+        this.serialNumber = cert.getSerialNumber().toString();
     }
 }

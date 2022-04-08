@@ -48,7 +48,10 @@ export class CertificateService {
       console.log(newCertDto)
       return this._http.post(environment.apiUrl + "/certificates/createIntermediateCertificate", newCertDto);
     }else{
-      return this._http.get(environment.apiUrl + "/certificates/createEndEntityCertificate");
+      newCertDto.subjectEmail = certData.subject.email;
+      newCertDto.issuerSerialNumber = certData.issuer.issuerSerialNumber;
+      console.log(newCertDto)
+      return this._http.post(environment.apiUrl + "/certificates/createEndEntityCertificate", newCertDto);
     }
   }
 

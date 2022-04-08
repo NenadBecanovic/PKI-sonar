@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {RegisterUsetDto} from "../../shared/dto/RegisterUset.dto";
+import {IssuerDto} from "../dtos/issuer.dto";
 
 @Injectable({providedIn: "root"})
 export class UserService {
@@ -11,7 +12,7 @@ export class UserService {
 
 
   getIssuers(certType: String) {
-    return this._http.get<Array<RegisterUsetDto>>(environment.apiUrl + "/users/getIssuersByCertificateType/" + certType);
+    return this._http.get<Array<IssuerDto>>(environment.apiUrl + "/users/getIssuersByCertificateType/" + certType);
   }
 
   getSubjects() {

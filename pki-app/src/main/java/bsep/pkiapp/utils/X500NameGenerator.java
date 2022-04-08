@@ -15,6 +15,8 @@ import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+
 @Service
 public class X500NameGenerator {
 
@@ -31,13 +33,19 @@ public class X500NameGenerator {
         X500Name x500NameIssuer = null;
         if (newCertificateDto.issuerSerialNumber != null) {
             //TODO: get certificate from KeyStorage
-        	if(isIssuerRootCertificate(newCertificateDto.issuerSerialNumber)) {
+        	if(isIssuerRootCertificate(newCertificateDto.issuerSerialNumber.toString())) {
         		KeyStoreReader keyStore = new KeyStoreReader();
-                x500NameIssuer = keyStore.readIssuerNameFromStore(".\\files\\root" + newCertificateDto.issuerSerialNumber + ".jks", newCertificateDto.issuerSerialNumber, newCertificateDto.issuerSerialNumber.toCharArray(), newCertificateDto.issuerSerialNumber.toCharArray());
+                x500NameIssuer =
+                        keyStore.readIssuerNameFromStore(".\\files\\root" + newCertificateDto.issuerSerialNumber.toString() +
+                                ".jks", newCertificateDto.issuerSerialNumber.toString(),
+                                newCertificateDto.issuerSerialNumber.toString().toCharArray(),
+                                newCertificateDto.issuerSerialNumber.toString().toCharArray());
         	} else {
+                System.out.println("OVDEEE");
+                System.out.println(newCertificateDto.issuerSerialNumber.toString());
         		KeyStoreReader keyStore = new KeyStoreReader();
-        		String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(newCertificateDto.issuerSerialNumber);
-                x500NameIssuer = keyStore.readIssuerNameFromStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", newCertificateDto.issuerSerialNumber, rootSerialNumber.toCharArray(), newCertificateDto.issuerSerialNumber.toCharArray());
+        		String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(newCertificateDto.issuerSerialNumber.toString());
+                x500NameIssuer = keyStore.readIssuerNameFromStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", newCertificateDto.issuerSerialNumber.toString(), rootSerialNumber.toCharArray(), rootSerialNumber.toCharArray());
         	}
         }
         X500Name x500Name;
@@ -52,16 +60,21 @@ public class X500NameGenerator {
     }
     
     private String findRootSerialNumberByIssuerSerialNumber(String issuerSerialNumber) {
-    	CertificateChain certificate = certificateChainRepository.getById(Long.decode(issuerSerialNumber));
+    	CertificateChain certificate = certificateChainRepository.getBySerialNumber(new BigInteger(issuerSerialNumber));
     	while(!(CertificateType.ROOT).equals(certificate.getCertificateType())) {
-    		certificate = certificateChainRepository.getCertificateChainBySignerSerialNumber(certificate.getSignerSerialNumber());
+    		certificate = certificateChainRepository.getBySerialNumber(certificate.getSignerSerialNumber());
     	}
+        System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+        System.out.println(issuerSerialNumber);
+        System.out.println(certificate.getSerialNumber().toString());
     	return certificate.getSerialNumber().toString();
 	}
 
 	private boolean isIssuerRootCertificate(String issuerSerialNumber) {
 		// TODO Auto-generated method stub
-    	CertificateChain certificate = certificateChainRepository.getById(Long.decode(issuerSerialNumber));
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println(issuerSerialNumber);
+    	CertificateChain certificate = certificateChainRepository.getBySerialNumber(new BigInteger(issuerSerialNumber));
 		return (CertificateType.ROOT).equals(certificate.getCertificateType());
 	}
 
@@ -87,6 +100,7 @@ public class X500NameGenerator {
     }
 
     private X500Name generateX500NameForEndEntity(User subject, NewCertificateDto newCertificateDto, X500Name x500NameIssuer) {
+        System.out.println(x500NameIssuer.toString());
         nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
         nameBuilder.addRDN(BCStyle.CN, subject.getName() + " " + subject.getSurname());
         nameBuilder.addRDN(BCStyle.GIVENNAME, subject.getName());

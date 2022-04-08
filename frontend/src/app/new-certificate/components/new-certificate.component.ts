@@ -134,6 +134,14 @@ export class NewCertificateComponent implements OnInit {
       newFormControl.disable();
       keyUsageArray.push(newFormControl);
     }else {
+      this.organizationName.clearValidators();
+      this.country.clearValidators();
+      this.certDataFormGroup.setControl('organizationName', this.organizationName);
+      this.certDataFormGroup.setControl('country', this.country);
+      this.subject.clearValidators();
+      this.organizationUnitName.clearValidators();
+      this.certDataFormGroup.setControl('subject', this.subject);
+      this.certDataFormGroup.setControl('organizationUnitName', this.organizationUnitName);
       this.issuer = new FormControl('',Validators.required);
       this.certDataFormGroup.setControl('issuer', this.issuer);
     }
