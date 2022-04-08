@@ -64,14 +64,12 @@ public class CertificateService {
 		} else {
 			// TODO: get issuer from KeyStorage, check if issuer is of role: ROLE_CA
 			if (isIssuerRootCertificate(new BigInteger(dto.issuerSerialNumber))) {
-				System.out.println("IS_ISSUER_ROOT");
 				KeyStoreReader keyStore = new KeyStoreReader();
 				X500Name x500NameIssuer = keyStore.readIssuerNameFromStore(
 						".\\files\\root" + dto.issuerSerialNumber + ".jks", dto.issuerSerialNumber.toString(),
 						dto.issuerSerialNumber.toString().toCharArray(), dto.issuerSerialNumber.toString().toCharArray());
 				generateCertificate(dto, x500NameIssuer, subject);
 			} else {
-				System.out.println("NOT_IS_ISSUER_ROOT");
 				KeyStoreReader keyStore = new KeyStoreReader();
 				String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(dto.issuerSerialNumber.toString());
 				X500Name x500NameIssuer = keyStore.readIssuerNameFromStore(
@@ -136,8 +134,6 @@ public class CertificateService {
 			X509Certificate certificate = certConverter.getCertificate(certHolder);
 			if (dto.certificateType.equals("ROOT")) {
 				Date startDate = new Date();
-				System.out.println("////////////////////////////");
-				System.out.println(serialNumber);
 				CertificateChain chain = new CertificateChain(serialNumber, serialNumber, dto.organizationName,
 						CertificateType.ROOT, user,
 						startDate, dto.validityEndDate, true);
@@ -204,13 +200,9 @@ public class CertificateService {
 
 	private String findRootSerialNumber(CertificateChain certificate) {
 		while (!Objects.equals(certificate.getSerialNumber(), certificate.getSignerSerialNumber())) {
-			System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
-			System.out.println(certificate.getSignerSerialNumber());
 			certificate = certificateChainRepository
 					.getBySerialNumber(certificate.getSignerSerialNumber());
 		}
-		System.out.println("SSSSSSSSSSSSSSSSSSSSSSSS");
-		System.out.println(certificate.getSerialNumber().toString());
 		return certificate.getSerialNumber().toString();
 	}
 

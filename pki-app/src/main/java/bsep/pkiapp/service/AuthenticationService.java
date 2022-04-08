@@ -66,7 +66,6 @@ public class AuthenticationService {
     public void signUp(UserDto userDto) throws ResourceConflictException {
         User user = new User(userDto);
         user.setRole(roleService.getById(1));
-        System.out.println(user.getPassword());
         if (userService.isEmailRegistered(user.getEmail()).equals(true)) {
             throw new ResourceConflictException("Email already exists");
         } else {
