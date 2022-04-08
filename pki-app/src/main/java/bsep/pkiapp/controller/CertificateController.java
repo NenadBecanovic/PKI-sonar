@@ -80,25 +80,4 @@ public class CertificateController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}	
 	}
-    
-    @GetMapping("/user/{id}")
-    ResponseEntity<List<ArrayList<CertificateChain>>> getAllForUser(@PathVariable Integer id)
-    {
-		 List<ArrayList<CertificateChain>> certificateChain = certificateService.findAllForUser(id);
-        return certificateChain == null ?
-                new ResponseEntity<>(HttpStatus.NOT_FOUND) :
-                ResponseEntity.ok(certificateChain);
-    }
-    
-	@GetMapping("/all")
-	@CrossOrigin
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<ArrayList<CertificateChain>>> getAll()
-	{
-
-		List<ArrayList<CertificateChain>> certificateChain = certificateService.findAllForAdmin();
-		return certificateChain == null ?
-                new ResponseEntity<>(HttpStatus.NOT_FOUND) :
-                ResponseEntity.ok(certificateChain);
-	}
 }
