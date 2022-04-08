@@ -37,6 +37,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -206,5 +207,33 @@ public class CertificateService {
             certificates.add(new CertificateDto(cert));
         }
         return certificates;
+    }
+
+    public List<CertificateDto> getAllByUser(String token) {
+        User user = userService.getUserFromToken(token);
+        List<CertificateDto> dtos;
+        if(user.getRole().getAuthority().equals("ROLE_ADMIN")){
+            dtos = convertChainToDto(certificateChainRepository.findAll());
+        }else{
+            dtos = convertChainToDto(certificateChainRepository.getByUser(user));
+        }
+        return dtos;
+    }
+
+    private List<CertificateDto> convertChainToDto(List<CertificateChain> all) {
+        List<CertificateDto> dtos = new ArrayList<>();
+        for(CertificateChain chain: all){
+            dtos.add(new CertificateDto(chain));
+        }
+        return dtos;
+    }
+
+    public List<CertificateDto> searchCertificates(String token, String searchText) {
+        String finalSearchText = searchText.toLowerCase().trim();
+        return getAllByUser(token).stream().filter(cert -> cert.issuer.toLowerCase().trim().contains(finalSearchText) || cert.subject.toLowerCase().trim().contains(finalSearchText)).collect(Collectors.toList());
+    }
+
+    public List<CertificateDto> filterCertificates(String token, String filter) {
+        return getAllByUser(token).stream().filter(cert -> cert.type.equals(filter)).collect(Collectors.toList());
     }
 }

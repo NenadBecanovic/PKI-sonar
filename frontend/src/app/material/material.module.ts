@@ -47,7 +47,7 @@ const MaterialComponents = [
   exports:[MaterialComponents],
   providers:[
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
-    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 3000, appearance: 'fill'}},
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 5000, appearance: 'fill'}},
     {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'check-indeterminate'} as MatCheckboxDefaultOptions}
   ]
 })

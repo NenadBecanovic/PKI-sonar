@@ -17,4 +17,6 @@ public interface CertificateChainRepository extends JpaRepository<CertificateCha
     List<CertificateChain> getByCertificateType(CertificateType type);
 
     List<CertificateChain> getByUserAndCertificateType(User user, CertificateType type);
+
+    List<CertificateChain> getByUser(User user);
 }

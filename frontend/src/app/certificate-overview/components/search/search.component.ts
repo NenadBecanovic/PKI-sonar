@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {CertificateService} from "../../../shared/services/certificate.service";
 
 @Component({
   selector: 'app-search',
@@ -7,7 +8,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SearchComponent implements OnInit {
   public selectedFilter: string = '';
-  constructor() { }
+  public searchText: string = '';
+  constructor(private _certificateService: CertificateService) { }
 
   ngOnInit(): void {
   }
@@ -17,7 +19,11 @@ export class SearchComponent implements OnInit {
       this.selectedFilter = ''
     }else{
       this.selectedFilter = event;
+      this._certificateService.filterByType(this.selectedFilter);
     }
   }
 
+  searchCertificate() {
+    this._certificateService.search(this.searchText);
+  }
 }

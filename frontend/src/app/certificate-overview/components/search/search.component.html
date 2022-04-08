@@ -1,7 +1,7 @@
 <mat-grid-list cols="2" rowHeight="3em"  >
 <mat-grid-tile>
   <mat-form-field >
-    <input type="text" matInput placeholder="Search.."/>
+    <input type="text" matInput placeholder="Search.." [(ngModel)]="searchText" (keyup)="searchCertificate()"/>
   </mat-form-field>
 </mat-grid-tile>
   <mat-grid-tile>
@@ -10,19 +10,19 @@
         <mat-chip-avatar>
           <img src="../../../../assets/lock-24.png" alt="Root certificate"/>
         </mat-chip-avatar>
-        Root certificate
+        Root
       </mat-chip>
-      <mat-chip (click)="onChipClick('CA')" [selected]="selectedFilter == 'CA'">
+      <mat-chip (click)="onChipClick('INTERMEDIATE')" [selected]="selectedFilter == 'INTERMEDIATE'">
         <mat-chip-avatar>
           <img src="../../../../assets/pencil-24.png" alt="CA certificate"/>
         </mat-chip-avatar>
-        CA certificate
+        Intermediate
       </mat-chip>
-      <mat-chip (click)="onChipClick('END')" [selected]="selectedFilter == 'END'">
+      <mat-chip (click)="onChipClick('END_ENTITY')" [selected]="selectedFilter == 'END_ENTITY'">
         <mat-chip-avatar>
           <img src="../../../../assets/certificate-24.png" alt="End certificate"/>
         </mat-chip-avatar>
-        End entity certificate
+        End entity
       </mat-chip>
     </mat-chip-list>
   </mat-grid-tile>

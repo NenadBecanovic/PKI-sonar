@@ -9,6 +9,8 @@ public class CertificateDto {
     public String issuer;
     public Date startDate;
     public Date endDate;
+    public String type;
+    public Long serialNumber;
 
     public CertificateDto(String subject, String issuer, Date startDate, Date endDate) {
         this.subject = subject;
@@ -23,5 +25,7 @@ public class CertificateDto {
                 cert.getUser().getName() + " " + cert.getUser().getSurname() + " (" + cert.getUser().getEmail() + ")";
         this.startDate = cert.getDateFrom();
         this.endDate = cert.getDateTo();
+        this.type = cert.getCertificateType().name();
+        this.serialNumber = cert.getSerialNumber();
     }
 }

@@ -143,4 +143,9 @@ public class UserService implements UserDetailsService {
         }
         return users;
     }
+
+    public User getUserFromToken(String token) {
+        String email = tokenUtils.getEmailFromToken(token);
+        return userRepository.getByEmail(email);
+    }
 }

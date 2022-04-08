@@ -9,10 +9,16 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "certificates")
+@CrossOrigin
 public class CertificateController {
 
     @Autowired
     private CertificateService certificateService;
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllByUser(@RequestHeader("Authorization") String token) {
+        return new ResponseEntity<>(certificateService.getAllByUser(token.split(" ")[1]), HttpStatus.OK);
+    }
 
     @PostMapping("/createRootCertificate")
     public ResponseEntity<?> createRootCertificate(@RequestBody NewCertificateDto certificateDto) {
@@ -55,5 +61,23 @@ public class CertificateController {
         return new ResponseEntity<>(certificateService.getRootCertificates(),HttpStatus.OK);
     }
 
+    @PutMapping("/revoke")
+    public ResponseEntity<?> revokeCertificate(@RequestBody String certSerialNumber) {
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
 
+    @GetMapping("/validityCheck/{certSerialNumber}")
+    public ResponseEntity<?> validityCheck(@PathVariable String certSerialNumber) {
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @GetMapping("/search/{searchText}")
+    public ResponseEntity<?> search(@RequestHeader("Authorization") String token, @PathVariable String searchText) {
+        return new ResponseEntity<>(certificateService.searchCertificates(token.split(" ")[1], searchText), HttpStatus.OK);
+    }
+
+    @GetMapping("/filterByType/{filter}")
+    public ResponseEntity<?> filterByType(@RequestHeader("Authorization") String token, @PathVariable String filter) {
+        return new ResponseEntity<>(certificateService.filterCertificates(token.split(" ")[1], filter), HttpStatus.OK);
+    }
 }

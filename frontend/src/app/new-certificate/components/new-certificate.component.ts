@@ -3,7 +3,7 @@ import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angul
 import {map, Observable, startWith, Subscription} from "rxjs";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {StepperOrientation} from "@angular/cdk/stepper";
-import {CertificateService} from "../services/certificate.service";
+import {CertificateService} from "../../shared/services/certificate.service";
 import {Router} from "@angular/router";
 import {MatCheckboxChange} from "@angular/material/checkbox";
 import {UserService} from "../services/user.service";
