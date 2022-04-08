@@ -1,5 +1,6 @@
 package bsep.pkiapp.model;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -19,9 +20,11 @@ public class CertificateChain {
 	@Id
 	@SequenceGenerator(name = "mySeqGen", sequenceName = "mySeq", initialValue = 1)
     @GeneratedValue(generator = "mySeqGen")
-	private Long serialNumber;
+	private Long id;
 	
-	private Long signerSerialNumber;
+	private BigInteger serialNumber;
+	
+	private BigInteger signerSerialNumber;
 	
 	private boolean revoked;
 	
@@ -43,7 +46,7 @@ public class CertificateChain {
 	public CertificateChain() {}
 	
 	
-	public CertificateChain(Long signerSerialNumber, String commonName, CertificateType certificateType, User user, Date dateFrom, Date dateTo, boolean hasSigningPermission) {
+	public CertificateChain(BigInteger signerSerialNumber, String commonName, CertificateType certificateType, User user, Date dateFrom, Date dateTo, boolean hasSigningPermission) {
 		super();
 		this.signerSerialNumber = signerSerialNumber;
 		this.revoked = false;
@@ -55,7 +58,7 @@ public class CertificateChain {
 		this.hasSigningPermission = hasSigningPermission;
 	}	
 
-	public CertificateChain(Long serialNumber, Long signerSerialNumber, boolean revoked, String commonName, CertificateType certificateType, boolean hasSigningPermission) {
+	public CertificateChain(BigInteger serialNumber, BigInteger signerSerialNumber, boolean revoked, String commonName, CertificateType certificateType, boolean hasSigningPermission) {
 		super();
 		this.serialNumber = serialNumber;
 		this.signerSerialNumber = signerSerialNumber;
@@ -65,19 +68,19 @@ public class CertificateChain {
 		this.hasSigningPermission = hasSigningPermission;
 	}
 
-	public Long getSerialNumber() {
+	public BigInteger getSerialNumber() {
 		return serialNumber;
 	}
 
-	public void setSerialNumber(Long serialNumber) {
+	public void setSerialNumber(BigInteger serialNumber) {
 		this.serialNumber = serialNumber;
 	}
 
-	public Long getSignerSerialNumber() {
+	public BigInteger getSignerSerialNumber() {
 		return signerSerialNumber;
 	}
 
-	public void setSignerSerialNumber(Long signerSerialNumber) {
+	public void setSignerSerialNumber(BigInteger signerSerialNumber) {
 		this.signerSerialNumber = signerSerialNumber;
 	}
 
