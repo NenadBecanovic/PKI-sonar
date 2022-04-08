@@ -82,7 +82,6 @@ public class CertificateService {
 	}
 
 	private boolean isIssuerRootCertificate(String issuerSerialNumber) {
-		// TODO Auto-generated method stub
 		CertificateChain certificate = certificateChainRepository.getById(Long.decode(issuerSerialNumber));
 		return (CertificateType.ROOT).equals(certificate.getCertificateType());
 	}
