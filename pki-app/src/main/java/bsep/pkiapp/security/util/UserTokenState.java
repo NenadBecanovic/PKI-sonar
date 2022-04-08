@@ -1,5 +1,7 @@
 package bsep.pkiapp.security.util;
 
+import bsep.pkiapp.model.RoleType;
+
 import java.util.List;
 
 public class UserTokenState {

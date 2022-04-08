@@ -1,6 +1,7 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.UserDto;
+import bsep.pkiapp.model.RoleType;
 import bsep.pkiapp.model.User;
 import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;
@@ -56,6 +57,12 @@ public class AuthenticationService {
                 .collect(Collectors.toList());
     }
 
+    public UserDto getUser(String token) {
+        String email = tokenUtils.getEmailFromToken(token);
+        User user = userService.getByEmail(email);
+        return new UserDto(user.getName(), user.getSurname(), email);
+    }
+
     public void signUp(UserDto userDto) throws ResourceConflictException {
         User user = new User(userDto);
         user.setRole(roleService.getById(1));
@@ -72,4 +79,5 @@ public class AuthenticationService {
     public String getRoleFromToken(String token) {
         return tokenUtils.getRoleFromToken(token);
     }
+
 }

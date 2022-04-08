@@ -6,7 +6,7 @@
           Lorem Ipsum is simply dummy text of the printing and typesetting industry.
         </h1>
         <div>
-          <button mat-raised-button class="mat-accent" routerLink="/register">Register</button>
+          <button mat-raised-button class="mat-accent" routerLink="/register" *ngIf="!this.loggedInUser">Register</button>
         </div>
       </div>
     </mat-grid-tile>

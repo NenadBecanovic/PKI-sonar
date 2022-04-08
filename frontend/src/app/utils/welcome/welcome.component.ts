@@ -6,8 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./welcome.component.css']
 })
 export class WelcomeComponent implements OnInit {
+  public loggedInUser: string | null = "";
 
-  constructor() { }
+  constructor() {
+    this.loggedInUser = localStorage.getItem('token');
+  }
 
   ngOnInit(): void {
   }

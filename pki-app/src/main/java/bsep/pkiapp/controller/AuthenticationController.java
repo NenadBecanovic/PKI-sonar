@@ -25,6 +25,11 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.getRoleFromToken(token.split(" ")[1]));
     }
 
+    @GetMapping(value = "getUser")
+    public ResponseEntity<UserDto> getUser(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(authenticationService.getUser(token.split(" ")[1]));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<UserTokenState> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest) {

@@ -1,17 +1,14 @@
-import {DateRange} from "./dateRange.model";
 
 export class Certificate {
-  private _subject: string;
-  private _issuer: string;
-  private _validityPeriod: DateRange;
-  private _type: string;
+  private _subject: string = "";
+  private _issuer: string = "";
+  private _startDate: Date = new Date();
+  private _endDate: Date = new Date();
+  private _type: string = "";
+  private _serialNumber: number = 0;
 
 
-  constructor(subject: string, issuer: string, validityPeriod: DateRange, type: string) {
-    this._subject = subject;
-    this._issuer = issuer;
-    this._validityPeriod = validityPeriod;
-    this._type = type;
+  constructor() {
   }
 
   get subject(): string {
@@ -30,14 +27,21 @@ export class Certificate {
     this._issuer = value;
   }
 
-  get validityPeriod(): DateRange {
-    return this._validityPeriod;
+  get startDate(): Date {
+    return this._startDate;
   }
 
-  set validityPeriod(value: DateRange) {
-    this._validityPeriod = value;
+  set startDate(value: Date) {
+    this._startDate = value;
   }
 
+  get endDate(): Date {
+    return this._endDate;
+  }
+
+  set endDate(value: Date) {
+    this._endDate = value;
+  }
 
   get type(): string {
     return this._type;
@@ -45,5 +49,13 @@ export class Certificate {
 
   set type(value: string) {
     this._type = value;
+  }
+
+  get serialNumber(): number {
+    return this._serialNumber;
+  }
+
+  set serialNumber(value: number) {
+    this._serialNumber = value;
   }
 }

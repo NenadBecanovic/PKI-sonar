@@ -27,7 +27,7 @@ public class X500NameGenerator {
    	private CertificateChainRepository certificateChainRepository;
 
     public X500Name generateX500Name(NewCertificateDto newCertificateDto) {
-        User subject = userService.getById(newCertificateDto.idSubject);
+        User subject = userService.getByEmail(newCertificateDto.subjectEmail);
         X500Name x500NameIssuer = null;
         if (newCertificateDto.issuerSerialNumber != null) {
             //TODO: get certificate from KeyStorage

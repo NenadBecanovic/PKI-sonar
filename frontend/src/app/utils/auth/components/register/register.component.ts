@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {Subscription} from "rxjs";
 import {Router} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {HttpErrorResponse} from "@angular/common/http";
-import {LoginUserDto} from "../../dtos/LoginUser.dto";
-import {RegisterUsetDto} from "../../dtos/RegisterUset.dto";
+import {RegisterUsetDto} from "../../../../shared/dto/RegisterUset.dto";
 
 @Component({
   selector: 'app-register',
@@ -16,16 +15,15 @@ import {RegisterUsetDto} from "../../dtos/RegisterUset.dto";
 export class RegisterComponent implements OnInit {
   public errorMessage: string;
   public hide = true;
-  public typeForm: FormGroup;
-  public userDataForm: FormGroup;
-  public authDataForm: FormGroup;
+  public loginUserChanged: Subscription;
+  public form: FormGroup;
   public emailCtrl: FormControl;
   public passwordCtrl: FormControl;
-  public loginUserChanged: Subscription;
-  public entityTypeCtrl: FormControl;
   public nameCtrl: FormControl;
   public surnameCtrl: FormControl;
-  public organizationUnitCtrl: FormControl;
+
+  public PASSWORD_PATTERN: string = "[a-zA-Z0-9]*[a-z]+[a-zA-Z0-9]*[A-Z]+[a-zA-Z0-9]*|[a-zA-Z0-9]*[A-Z]+[a-zA-Z0-9]*[a-z]+[a-zA-Z0-9]*";
+  public PASSWORD_NUMBER_PATTERN: string = "[a-zA-Z0-9]*[0-9]+[a-zA-Z0-9]*|[a-zA-Z0-9]*[0-9]+[a-zA-Z0-9]*";
 
   constructor(private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
     this.errorMessage = "";
@@ -38,28 +36,18 @@ export class RegisterComponent implements OnInit {
       }
     })
 
-    this.entityTypeCtrl = new FormControl("", Validators.required);
     this.nameCtrl = new FormControl("", Validators.required);
     this.surnameCtrl = new FormControl("", Validators.required);
-    this.organizationUnitCtrl = new FormControl("", Validators.required);
     this.emailCtrl = new FormControl('', [Validators.required, Validators.email]);
-    this.passwordCtrl = new FormControl();
+    this.passwordCtrl = new FormControl("", [Validators.required, Validators.pattern(this.PASSWORD_PATTERN), Validators.pattern(this.PASSWORD_NUMBER_PATTERN)]);
 
-    this.typeForm = new FormGroup({
-      'entityTypeCtrl': this.entityTypeCtrl,
-    })
 
-    this.userDataForm = new FormGroup({
+    this.form = new FormGroup({
       'nameCtrl': this.nameCtrl,
       'surnameCtrl': this.surnameCtrl,
-      'organizationUnitCtrl': this.organizationUnitCtrl,
-    })
-
-    this.authDataForm = new FormGroup({
       'emailCtrl': this.emailCtrl,
       'passwordCtrl': this.passwordCtrl
     })
-
   }
 
   private errorHandler(error: HttpErrorResponse) {
@@ -79,28 +67,11 @@ export class RegisterComponent implements OnInit {
 
   }
 
-  onTypeChange() {
-    if(this.entityTypeCtrl.value == "USER"){
-      this.nameCtrl = new FormControl("", Validators.required);
-      this.surnameCtrl = new FormControl("", Validators.required);
-      this.organizationUnitCtrl = new FormControl("");
-    }else{
-
-      this.nameCtrl = new FormControl("");
-      this.surnameCtrl = new FormControl("");
-      this.organizationUnitCtrl = new FormControl("", Validators.required);
-    }
-    this.userDataForm = new FormGroup({
-      'nameCtrl': this.nameCtrl,
-      'surnameCtrl': this.surnameCtrl,
-      'organizationUnitCtrl': this.organizationUnitCtrl,
-    })
-  }
-
   onRegister() {
-    if(this.authDataForm.valid){
-      let user = new RegisterUsetDto(this.entityTypeCtrl.value, this.nameCtrl.value, this.surnameCtrl.value,
-        this.organizationUnitCtrl.value, this.emailCtrl.value, this.passwordCtrl.value);
+    console.log(this.passwordCtrl)
+    if(this.form.valid){
+      let user = new RegisterUsetDto(this.nameCtrl.value, this.surnameCtrl.value,
+        this.emailCtrl.value, this.passwordCtrl.value);
 
       console.log(user)
       this.authService.register(user).subscribe({
@@ -112,4 +83,8 @@ export class RegisterComponent implements OnInit {
       }});
     }
   }
+
+
 }
+
+

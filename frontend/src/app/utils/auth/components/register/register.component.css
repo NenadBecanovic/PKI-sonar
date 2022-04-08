@@ -1,12 +1,8 @@
 .register-form {
   transform: translate(-50%, -50%);
   position: absolute;
-  top: 50%;
+  top: 55%;
   left: 50%;
-}
-
-.mat-stepper-horizontal, .mat-stepper-vertical {
-  background-color: #30415638;
 }
 
 h1 {

@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Data, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {Subscription} from "rxjs";
 import {AuthService} from "../auth/services/auth.service";
 import {UserTokenStateDto} from "../auth/dtos/UserTokenState.dto";
-import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-header',
@@ -21,10 +20,11 @@ export class HeaderComponent implements OnInit {
     })
 
     this.router.events.subscribe((val) => {
-      console.log(this.router.url)
       if (this.router.url.includes('login') && !this.loggedInUser) {
         this.isButtonVisible = false;
       } else if (this.router.url.includes('register') && !this.loggedInUser) {
+        this.isButtonVisible = true;
+      }else{
         this.isButtonVisible = true;
       }
     })
@@ -32,8 +32,10 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this._authService.getRole().subscribe((response: string) =>{
-      this.loggedInUser = response;
-      this.isButtonVisible = false;
+      if(response){
+        this.isButtonVisible = false;
+        this.loggedInUser = response;
+      }
     });
   }
 
@@ -43,5 +45,9 @@ export class HeaderComponent implements OnInit {
     this.loggedInUser = undefined;
     localStorage.clear();
     this.router.navigate(['/']).then();
+  }
+
+  changeButtonVisibility() {
+    this.isButtonVisible = true;
   }
 }

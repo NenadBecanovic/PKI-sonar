@@ -19,4 +19,8 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
+
+    public Integer getId() {
+        return id;
+    }
 }
