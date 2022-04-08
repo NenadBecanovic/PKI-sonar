@@ -5,6 +5,7 @@ import {Observable} from "rxjs";
 import {NewCertificateDto} from "../../new-certificate/dtos/new-certificate.dto";
 import {ExtensionSettingsDto} from "../../new-certificate/dtos/extension-settings.dto";
 import {Certificate} from "../../certificate-overview/model/certificate.model";
+import {saveAs as importedSaveAs} from "file-saver";
 
 @Injectable({providedIn: "root"})
 export class CertificateService {
@@ -60,9 +61,27 @@ export class CertificateService {
     return this._http.get<boolean>(environment.apiUrl + "/certificates/validityCheck/" + serialNumber.toString());
   }
 
-  download(serialNumber: number) {
-    return this._http.get(environment.apiUrl + "/certificates/download/" + serialNumber);
+  download(serialNumber: number): Observable<Blob> {
+    return this._http.get(environment.apiUrl + '/certificates/download/' + serialNumber, {responseType: 'blob'});
   }
+
+  // downladTry = (number) => {
+  //   const FileDownload = require("js-file-download");
+  //
+  //   Axios.get(BASE_URL + "/api/certificate/download/" + number, {
+  //     validateStatus: () => true,
+  //     headers: {Authorization: getAuthHeader()},
+  //     responseType: "blob",
+  //   })
+  //     .then((resp) => {
+  //       if (resp.status === 200) {
+  //         FileDownload(resp.data, "certificate.crt");
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
 
   search(searchText: string) {
     return this._http.get<Array<Certificate>>(environment.apiUrl + "/certificates/search/" + searchText).subscribe((response) =>{

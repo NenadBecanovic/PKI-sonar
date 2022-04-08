@@ -80,4 +80,5 @@ public class CertificateController {
     public ResponseEntity<?> filterByType(@RequestHeader("Authorization") String token, @PathVariable String filter) {
         return new ResponseEntity<>(certificateService.filterCertificates(token.split(" ")[1], filter), HttpStatus.OK);
     }
+
 }
