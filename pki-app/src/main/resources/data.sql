@@ -63,12 +63,12 @@ VALUES ('Subject key identifier', 'SUBJECT_KEY_ID');
 INSERT INTO certificate_extension (name, extension_type)
 VALUES ('Authority key identifier', 'AUTHORITY_KEY_ID');
 
-INSERT INTO certificate_chain (serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
+INSERT INTO certificate_chain (id, serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
 date_to, certificate_type, has_signing_permission)
-VALUES (5350930521431098546, 5350930521431098546, FALSE, 'aa', 101, '2022-04-09 18:27:25.949', '2022-04-30 00:00:00', 'ROOT', TRUE);
-INSERT INTO certificate_chain (serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
+VALUES (101, 5350930521431098546, 5350930521431098546, FALSE, 'aa', 101, '2022-04-09 18:27:25.949', '2022-04-30 00:00:00', 'ROOT', TRUE);
+INSERT INTO certificate_chain (id, serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
                                date_to, certificate_type, has_signing_permission)
-VALUES (5864156063556204784, 5350930521431098546, FALSE, 'bb', 103, '2022-04-09 18:27:55.747', '2022-05-01 00:00:00', 'INTERMEDIATE', TRUE);
-INSERT INTO certificate_chain (serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
+VALUES (102, 5864156063556204784, 5350930521431098546, FALSE, 'bb', 103, '2022-04-09 18:27:55.747', '2022-05-01 00:00:00', 'INTERMEDIATE', TRUE);
+INSERT INTO certificate_chain (id, serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
                                date_to, certificate_type, has_signing_permission)
-VALUES (6546362447523901530, 5864156063556204784, FALSE, 'ca2@gmail.com', 106, '2022-04-09 18:28:28.045', '2022-05-20 00:00:00', 'END_ENTITY', FALSE);
+VALUES (103, 6546362447523901530, 5864156063556204784, FALSE, 'ca2@gmail.com', 106, '2022-04-09 18:28:28.045', '2022-05-20 00:00:00', 'END_ENTITY', FALSE);
