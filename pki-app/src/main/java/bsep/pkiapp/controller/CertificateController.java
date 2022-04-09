@@ -1,29 +1,18 @@
 package bsep.pkiapp.controller;
 
 import bsep.pkiapp.dto.NewCertificateDto;
-import bsep.pkiapp.model.CertificateChain;
+import bsep.pkiapp.exception.BadRequestException;
 import bsep.pkiapp.service.CertificateService;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AuthorizationServiceException;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.math.BigInteger;
 
 @RestController
 @RequestMapping(value = "certificates")
@@ -40,10 +29,16 @@ public class CertificateController {
 
     @PostMapping("/createRootCertificate")
     public ResponseEntity<?> createRootCertificate(@RequestBody NewCertificateDto certificateDto) {
-        if (certificateDto.getCertificateType().equals("ROOT")) {
-            certificateService.createCertificate(certificateDto);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try {
+
+            if (certificateDto.getCertificateType().equals("ROOT")) {
+                certificateService.createCertificate(certificateDto);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (BadRequestException e) {
+            System.out.println(e);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -51,10 +46,16 @@ public class CertificateController {
 
     @PostMapping("/createIntermediateCertificate")
     public ResponseEntity<?> createIntermediateCertificate(@RequestBody NewCertificateDto certificateDto) {
-        if (certificateDto.getCertificateType().equals("INTERMEDIATE")) {
-            certificateService.createCertificate(certificateDto);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try {
+            if (certificateDto.getCertificateType().equals("INTERMEDIATE")) {
+                certificateService.createCertificate(certificateDto);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (
+                BadRequestException e) {
+            System.out.println(e);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -62,11 +63,18 @@ public class CertificateController {
 
     @PostMapping("/createEndEntityCertificate")
     public ResponseEntity<?> createEndEntityCertificate(@RequestBody NewCertificateDto certificateDto) {
-        if (certificateDto.getCertificateType().equals("END_ENTITY")) {
-            certificateService.createCertificate(certificateDto);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try {
+            if (certificateDto.getCertificateType().equals("END_ENTITY")) {
+                certificateService.createCertificate(certificateDto);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (
+                BadRequestException e) {
+            System.out.println(e);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
+
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

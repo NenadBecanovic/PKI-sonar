@@ -384,7 +384,7 @@ public class CertificateService {
 		certificateChain.setRevoked(true);
 		certificateChainRepository.save(certificateChain);
 		if (!certificateChain.getCertificateType().equals(CertificateType.END_ENTITY))
-			revokeCertificatesSignedBy(certificateChain.getSignerSerialNumber());
+			revokeCertificatesSignedBy(certificateChain.getSerialNumber());
 	}
 
 	private void revokeCertificatesSignedBy(BigInteger signerSerialNumber) {
@@ -392,8 +392,8 @@ public class CertificateService {
 		for(CertificateChain cert : certificateChainsSignedByRevoked){
 			cert.setRevoked(true);
 			certificateChainRepository.save(cert);
-			if (!cert.getCertificateType().equals(CertificateType.END_ENTITY))
-				revokeCertificatesSignedBy(cert.getSignerSerialNumber());
+			if (cert.getCertificateType().equals(CertificateType.INTERMEDIATE))
+				revokeCertificatesSignedBy(cert.getSerialNumber());
 		}
 	}
 
