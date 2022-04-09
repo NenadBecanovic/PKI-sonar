@@ -154,7 +154,8 @@ public class CertificateService {
 			} else {
 				CertificateChain chain;
 				if (dto.getCertificateType().equals("INTERMEDIATE")) {
-					if(user.getRole().getAuthority().equals("ROLE_USER")){
+					User issuerUser = userService.getByEmail(IETFUtils.valueToString((issuer.getRDNs(BCStyle.E)[0]).getFirst().getValue()));
+					if(issuerUser.getRole().getAuthority().equals("ROLE_USER")){
 						System.out.println("##############################");
 						throw new BadRequestException("User with EE certificate cannot issue an CA certificate.");
 					}
