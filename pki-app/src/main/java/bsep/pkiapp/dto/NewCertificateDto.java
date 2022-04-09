@@ -1,25 +1,24 @@
 package bsep.pkiapp.dto;
 
-import java.math.BigInteger;
 import java.util.Date;
 
 public class NewCertificateDto {
 
-    public String subjectEmail;
+    private String subjectEmail;
 
-    public Date validityEndDate;
+    private Date validityEndDate;
 
-    public String organizationName;
+    private String organizationName;
 
-    public String organizationUnit;
+    private String organizationUnit;
 
-    public String country;
+    private String country;
 
-    public String issuerSerialNumber;
+    private String issuerSerialNumber;
 
-    public String certificateType;
+    private String certificateType;
 
-    public ExtensionSettingsDto extensionSettingsDto;
+    private ExtensionSettingsDto extensionSettingsDto;
 
     public NewCertificateDto() {}
 
@@ -34,67 +33,35 @@ public class NewCertificateDto {
         this.certificateType = certificateType;
     }
 
-    public String getIdSubject() {
+    public String getSubjectEmail() {
         return subjectEmail;
-    }
-
-    public void setIdSubject(String subjectEmail) {
-        this.subjectEmail = subjectEmail;
     }
 
     public Date getValidityEndDate() {
         return validityEndDate;
     }
 
-    public void setValidityEndDate(Date validityEndDate) {
-        this.validityEndDate = validityEndDate;
-    }
-
     public String getOrganizationName() {
         return organizationName;
-    }
-
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
     }
 
     public String getOrganizationUnit() {
         return organizationUnit;
     }
 
-    public void setOrganizationUnit(String organizationUnit) {
-        this.organizationUnit = organizationUnit;
-    }
-
     public String getCountry() {
         return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
     }
 
     public String getIssuerSerialNumber() {
         return issuerSerialNumber;
     }
 
-    public void setIssuerSerialNumber(String issuerSerialNumber) {
-        this.issuerSerialNumber = issuerSerialNumber;
-    }
-
     public String getCertificateType() {
         return certificateType;
     }
 
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
-    }
-
     public ExtensionSettingsDto getExtensionSettingsDto() {
         return extensionSettingsDto;
-    }
-
-    public void setExtensionSettingsDto(ExtensionSettingsDto extensionSettingsDto) {
-        this.extensionSettingsDto = extensionSettingsDto;
     }
 }

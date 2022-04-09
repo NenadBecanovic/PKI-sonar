@@ -3,7 +3,6 @@ package bsep.pkiapp.service;
 import bsep.pkiapp.dto.CertificateDto;
 import bsep.pkiapp.dto.NewCertificateDto;
 import bsep.pkiapp.keystores.KeyStoreReader;
-import bsep.pkiapp.keystores.KeyStoreWriter;
 import bsep.pkiapp.model.CertificateChain;
 import bsep.pkiapp.model.CertificateType;
 import bsep.pkiapp.model.User;
@@ -59,21 +58,21 @@ public class CertificateService {
 	@Transactional
 	public void createCertificate(NewCertificateDto dto) {
 		X500Name subject = x500NameGenerator.generateX500Name(dto);
-		if (dto.certificateType.equals("ROOT")) {
+		if (dto.getCertificateType().equals("ROOT")) {
 			generateCertificate(dto, subject, subject);
 		} else {
 			// TODO: get issuer from KeyStorage, check if issuer is of role: ROLE_CA
-			if (isIssuerRootCertificate(new BigInteger(dto.issuerSerialNumber))) {
+			if (isIssuerRootCertificate(new BigInteger(dto.getIssuerSerialNumber()))) {
 				KeyStoreReader keyStore = new KeyStoreReader();
 				X500Name x500NameIssuer = keyStore.readIssuerNameFromStore(
-						".\\files\\root" + dto.issuerSerialNumber + ".jks", dto.issuerSerialNumber.toString(),
-						dto.issuerSerialNumber.toString().toCharArray(), dto.issuerSerialNumber.toString().toCharArray());
+						".\\files\\root" + dto.getIssuerSerialNumber() + ".jks", dto.getIssuerSerialNumber().toString(),
+						dto.getIssuerSerialNumber().toString().toCharArray(), dto.getIssuerSerialNumber().toString().toCharArray());
 				generateCertificate(dto, x500NameIssuer, subject);
 			} else {
 				KeyStoreReader keyStore = new KeyStoreReader();
-				String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(dto.issuerSerialNumber.toString());
+				String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(dto.getIssuerSerialNumber().toString());
 				X500Name x500NameIssuer = keyStore.readIssuerNameFromStore(
-						".\\files\\hierarchy" + rootSerialNumber + ".jks", dto.issuerSerialNumber.toString(),
+						".\\files\\hierarchy" + rootSerialNumber + ".jks", dto.getIssuerSerialNumber().toString(),
 						rootSerialNumber.toCharArray(), rootSerialNumber.toCharArray());
 				generateCertificate(dto, x500NameIssuer, subject);
 			}
@@ -83,7 +82,6 @@ public class CertificateService {
 	private String findRootSerialNumberByIssuerSerialNumber(String issuerSerialNumber) {
 		CertificateChain certificate = certificateChainRepository.getBySerialNumber(new BigInteger(issuerSerialNumber));
 		return findRootSerialNumber(certificate);
-//		return certificate.getSerialNumber().toString();
 	}
 
 	private boolean isIssuerRootCertificate(BigInteger issuerSerialNumber) {
@@ -99,21 +97,22 @@ public class CertificateService {
 			builder = builder.setProvider("BC");
 			KeyStoreReader ksr = new KeyStoreReader();
 			KeyPair keyPair = generateKeyPair();
-			User user = userService.getByEmail(dto.subjectEmail);
+			User user = userService.getByEmail(dto.getSubjectEmail());
 
 			ContentSigner contentSigner;
-			if (dto.certificateType.equals("ROOT")) {
+			String rootSerialNumber = null;
+			if (dto.getCertificateType().equals("ROOT")) {
 				contentSigner = builder.build(keyPair.getPrivate());
 			} else {
 				PrivateKey privateKey = null;
-				if (isIssuerRootCertificate(new BigInteger(dto.issuerSerialNumber))) {
-					privateKey = ksr.readPrivateKey(".\\files\\root" + dto.issuerSerialNumber + ".jks",
-							dto.issuerSerialNumber.toString(), dto.issuerSerialNumber.toString(),
-							dto.issuerSerialNumber.toString());
+				if (isIssuerRootCertificate(new BigInteger(dto.getIssuerSerialNumber()))) {
+					privateKey = ksr.readPrivateKey(".\\files\\root" + dto.getIssuerSerialNumber() + ".jks",
+							dto.getIssuerSerialNumber().toString(), dto.getIssuerSerialNumber().toString(),
+							dto.getIssuerSerialNumber().toString());
 				} else {
-					String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(dto.issuerSerialNumber.toString());
+					rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(dto.getIssuerSerialNumber().toString());
 					privateKey = ksr.readPrivateKey(".\\files\\hierarchy" + rootSerialNumber + ".jks",
-							rootSerialNumber, dto.issuerSerialNumber.toString(),
+							rootSerialNumber, dto.getIssuerSerialNumber().toString(),
 							rootSerialNumber);
 				}
 				contentSigner = builder.build(privateKey);
@@ -123,47 +122,50 @@ public class CertificateService {
 
 			X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuer, serialNumber,
 					new Date(), dto.getValidityEndDate(), subject, keyPair.getPublic());
-			dto.extensionSettingsDto.setPublicKey(keyPair.getPublic());
-			dto.extensionSettingsDto.setSubjectName(subject);
+			dto.getExtensionSettingsDto().setPublicKey(keyPair.getPublic());
+			dto.getExtensionSettingsDto().setSubjectName(subject);
 
-			certGen = extensionService.addExtensions(certGen, dto.getExtensionSettingsDto(), dto.getCertificateType());
+			PublicKey issuerPublicKey = getIssuerPublicKey(dto, ksr, rootSerialNumber);
+			certGen = extensionService.addExtensions(certGen, dto.getExtensionSettingsDto(), dto.getCertificateType()
+					, issuerPublicKey);
+
 			X509CertificateHolder certHolder = certGen.build(contentSigner);
 
 			JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
 			certConverter = certConverter.setProvider("BC");
 			X509Certificate certificate = certConverter.getCertificate(certHolder);
-			if (dto.certificateType.equals("ROOT")) {
+			if (dto.getCertificateType().equals("ROOT")) {
 				Date startDate = new Date();
-				CertificateChain chain = new CertificateChain(serialNumber, serialNumber, dto.organizationName,
+				CertificateChain chain = new CertificateChain(serialNumber, serialNumber, dto.getOrganizationName(),
 						CertificateType.ROOT, user,
-						startDate, dto.validityEndDate, true);
+						startDate, dto.getValidityEndDate(), true);
 				certificateChainRepository.save(chain);
 				keyStoreService.writeRootCertificateToKeyStore(chain.getSerialNumber().toString(), keyPair.getPrivate(),
 						certificate, chain.getSerialNumber().toString());
-			} else if (dto.certificateType.equals("INTERMEDIATE")) {
+			} else if (dto.getCertificateType().equals("INTERMEDIATE")) {
 				Date startDate = new Date();
 				CertificateChain chain = new CertificateChain(serialNumber, new BigInteger(dto.getIssuerSerialNumber()),
-						dto.organizationUnit,
+						dto.getOrganizationUnit(),
 						CertificateType.INTERMEDIATE, user,
-						startDate, dto.validityEndDate, true);
-				String rootSerialNumber = findRootSerialNumber(chain);
+						startDate, dto.getValidityEndDate(), true);
+				String rootSerialNumber2 = findRootSerialNumber(chain);
 				certificateChainRepository.save(chain);
 				keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(),
-						rootSerialNumber, keyPair.getPrivate(), certificate, rootSerialNumber);
+						rootSerialNumber2, keyPair.getPrivate(), certificate, rootSerialNumber2);
 			} else {
 				Date startDate = new Date();
 				// TO DO: Add user info to CertificateChain instead of organization unit
 				CertificateChain chain = new CertificateChain(serialNumber,
 						new BigInteger(dto.getIssuerSerialNumber()), user.getEmail(),
 						CertificateType.END_ENTITY, user,
-						startDate, dto.validityEndDate, false);
-				String rootSerialNumber = findRootSerialNumber(chain);
+						startDate, dto.getValidityEndDate(), false);
+				String rootSerialNumber2 = findRootSerialNumber(chain);
 				certificateChainRepository.save(chain);
 				keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(),
-						rootSerialNumber, keyPair.getPrivate(), certificate, rootSerialNumber);
+						rootSerialNumber2, keyPair.getPrivate(), certificate, rootSerialNumber2);
 			}
 
-			if (dto.certificateType.equals("CA") && user.getRole().getId() == 1) {
+			if (dto.getCertificateType().equals("CA") && user.getRole().getId() == 1) {
 				user.setRole(roleService.getById(2));
 			}
 
@@ -171,6 +173,24 @@ public class CertificateService {
 				| NoSuchAlgorithmException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private PublicKey getIssuerPublicKey(NewCertificateDto dto, KeyStoreReader ksr, String rootSerialNumber) {
+		PublicKey issuerPublicKey;
+		if(dto.getIssuerSerialNumber() == null){
+			issuerPublicKey = dto.getExtensionSettingsDto().getPublicKey();
+		}else{
+			if(rootSerialNumber == null){
+				issuerPublicKey = ksr.readCertificate(".\\files\\root" + dto.getIssuerSerialNumber() + ".jks",
+						dto.getIssuerSerialNumber(),
+						dto.getIssuerSerialNumber()).getPublicKey();
+			}else{
+				issuerPublicKey = ksr.readCertificate(".\\files\\hierarchy" + rootSerialNumber + ".jks",
+						rootSerialNumber,
+						dto.getIssuerSerialNumber()).getPublicKey();
+			}
+		}
+		return issuerPublicKey;
 	}
 
 	public BigInteger generateSerialNumber() {

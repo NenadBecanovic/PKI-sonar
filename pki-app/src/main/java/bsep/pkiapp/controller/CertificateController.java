@@ -40,7 +40,7 @@ public class CertificateController {
 
     @PostMapping("/createRootCertificate")
     public ResponseEntity<?> createRootCertificate(@RequestBody NewCertificateDto certificateDto) {
-        if (certificateDto.certificateType.equals("ROOT")) {
+        if (certificateDto.getCertificateType().equals("ROOT")) {
             certificateService.createCertificate(certificateDto);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -51,7 +51,7 @@ public class CertificateController {
 
     @PostMapping("/createIntermediateCertificate")
     public ResponseEntity<?> createIntermediateCertificate(@RequestBody NewCertificateDto certificateDto) {
-        if (certificateDto.certificateType.equals("INTERMEDIATE")) {
+        if (certificateDto.getCertificateType().equals("INTERMEDIATE")) {
             certificateService.createCertificate(certificateDto);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -62,7 +62,7 @@ public class CertificateController {
 
     @PostMapping("/createEndEntityCertificate")
     public ResponseEntity<?> createEndEntityCertificate(@RequestBody NewCertificateDto certificateDto) {
-        if (certificateDto.certificateType.equals("END_ENTITY")) {
+        if (certificateDto.getCertificateType().equals("END_ENTITY")) {
             certificateService.createCertificate(certificateDto);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -1,12 +1,11 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.ExtensionSettingsDto;
-import bsep.pkiapp.model.CertificateExtension;
-import bsep.pkiapp.model.ExtendedKeyUsageType;
-import bsep.pkiapp.model.ExtensionType;
-import bsep.pkiapp.model.KeyUsageType;
+import bsep.pkiapp.model.*;
 import bsep.pkiapp.repository.ExtensionRepository;
 import org.bouncycastle.asn1.x509.*;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
+import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class ExtensionService {
     @Autowired
     private ExtendedKeyUsageService extendedKeyUsageService;
 
-    public X509v3CertificateBuilder addExtensions(X509v3CertificateBuilder certGen, ExtensionSettingsDto dto, String certificateType) throws IOException, NoSuchAlgorithmException {
+    public X509v3CertificateBuilder addExtensions(X509v3CertificateBuilder certGen, ExtensionSettingsDto dto, String certificateType, PublicKey issuerPublicKey) throws IOException, NoSuchAlgorithmException {
         for (Integer id : dto.getExtensionsIds()) {
             CertificateExtension extension = extensionRepository.getById(id);
 
@@ -39,7 +39,7 @@ public class ExtensionService {
             } else if (extension.getExtensionType().equals(ExtensionType.SUBJECT_KEY_ID)) {
                 certGen.addExtension(Extension.subjectKeyIdentifier, true, new JcaX509ExtensionUtils().createSubjectKeyIdentifier(dto.getPublicKey()));
             } else if (extension.getExtensionType().equals(ExtensionType.AUTHORITY_KEY_ID)) {
-                certGen.addExtension(Extension.authorityKeyIdentifier, true, new JcaX509ExtensionUtils().createAuthorityKeyIdentifier(dto.getPublicKey()));
+                certGen.addExtension(Extension.authorityKeyIdentifier, true, new JcaX509ExtensionUtils().createAuthorityKeyIdentifier(issuerPublicKey));
             } else if (extension.getExtensionType().equals(ExtensionType.KEY_USAGE)) {
                 certGen = setKeyUsage(certGen, dto.getKeyUsageIds(), certificateType);
             } else if (extension.getExtensionType().equals(ExtensionType.EXTENDED_KEY_USAGE)) {
