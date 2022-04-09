@@ -60,8 +60,13 @@ public class CertificateService {
 		if (dto.getCertificateType().equals("ROOT")) {
 			generateCertificate(dto, subject, subject);
 		} else {
-			if(!isChosenEndDateAllowed(dto.getValidityEndDate(), new BigInteger(dto.getIssuerSerialNumber())))
+			if(!isChosenEndDateAllowed(dto.getValidityEndDate(), new BigInteger(dto.getIssuerSerialNumber()))){
+				System.out.println("date not valid");
 				throw new BadRequestException("Chosen validity date range exceeds CAs validity end date.");
+			}
+			else{
+				System.out.println("date valid");
+			}
 			// TODO: get issuer from KeyStorage, check if issuer is of role: ROLE_CA
 			checkIfIssuerHasSigningPermission(new BigInteger(dto.getIssuerSerialNumber())); //da li je dobro ovo pozvati ovako?
 			if (isIssuerRootCertificate(new BigInteger(dto.getIssuerSerialNumber()))) {
@@ -149,10 +154,14 @@ public class CertificateService {
 			} else {
 				CertificateChain chain;
 				if (dto.getCertificateType().equals("INTERMEDIATE")) {
-					if(user.getRole().getAuthority().equals("ROLE_USER"))
+					if(user.getRole().getAuthority().equals("ROLE_USER")){
+						System.out.println("##############################");
 						throw new BadRequestException("User with EE certificate cannot issue an CA certificate.");
-					if(user.getEmail().equals(IETFUtils.valueToString((issuer.getRDNs(BCStyle.E)[0]).getFirst().getValue())))
+					}
+					if(user.getEmail().equals(IETFUtils.valueToString((issuer.getRDNs(BCStyle.E)[0]).getFirst().getValue()))){
+						System.out.println("******************************");
 						throw new BadRequestException("Issuer and subject cannot be the same.");
+					}
 					chain = new CertificateChain(serialNumber, new BigInteger(dto.getIssuerSerialNumber()),
 							dto.getOrganizationUnit(),
 							CertificateType.INTERMEDIATE, user,
@@ -316,8 +325,7 @@ public class CertificateService {
 	}
 
 	//TODO: provera da li je datum unutar scopa datuma signer sertifikata
-	private Boolean isChosenEndDateAllowed(Date subjectNotAfter, BigInteger issuerSerialNumber){
-		X509Certificate issuerCertificate = getX509Certificate(issuerSerialNumber);
+	private Boolean isChosenEndDateAllowed(Date subjectNotAfter, BigInteger issuerSerialNumber){X509Certificate issuerCertificate = getX509Certificate(issuerSerialNumber);
 		if (subjectNotAfter.after(issuerCertificate.getNotAfter()))
 			return false;
 		return true;
