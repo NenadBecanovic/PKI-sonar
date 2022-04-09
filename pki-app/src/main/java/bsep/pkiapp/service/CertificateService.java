@@ -2,6 +2,7 @@ package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.CertificateDto;
 import bsep.pkiapp.dto.NewCertificateDto;
+import bsep.pkiapp.exception.BadRequestException;
 import bsep.pkiapp.keystores.KeyStoreReader;
 import bsep.pkiapp.model.CertificateChain;
 import bsep.pkiapp.model.CertificateType;
@@ -10,6 +11,8 @@ import bsep.pkiapp.repository.CertificateChainRepository;
 import bsep.pkiapp.utils.X500NameGenerator;
 
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -24,9 +27,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,10 +56,14 @@ public class CertificateService {
 	@Transactional
 	public void createCertificate(NewCertificateDto dto) {
 		X500Name subject = x500NameGenerator.generateX500Name(dto);
+
 		if (dto.getCertificateType().equals("ROOT")) {
 			generateCertificate(dto, subject, subject);
 		} else {
+			if(!isChosenEndDateAllowed(dto.getValidityEndDate(), new BigInteger(dto.getIssuerSerialNumber())))
+				throw new BadRequestException("Chosen validity date range exceeds CAs validity end date.");
 			// TODO: get issuer from KeyStorage, check if issuer is of role: ROLE_CA
+			checkIfIssuerHasSigningPermission(new BigInteger(dto.getIssuerSerialNumber())); //da li je dobro ovo pozvati ovako?
 			if (isIssuerRootCertificate(new BigInteger(dto.getIssuerSerialNumber()))) {
 				KeyStoreReader keyStore = new KeyStoreReader();
 				X500Name x500NameIssuer = keyStore.readIssuerNameFromStore(
@@ -132,6 +137,8 @@ public class CertificateService {
 			certConverter = certConverter.setProvider("BC");
 			X509Certificate certificate = certConverter.getCertificate(certHolder);
 			if (dto.getCertificateType().equals("ROOT")) {
+				if(!user.getRole().getAuthority().equals("ROLE_ADMIN"))
+					throw new BadRequestException("Only admin is authorized to issue a root cetificate.");
 				Date startDate = new Date();
 				CertificateChain chain = new CertificateChain(serialNumber, serialNumber, dto.getOrganizationName(),
 						CertificateType.ROOT, user,
@@ -142,6 +149,10 @@ public class CertificateService {
 			} else {
 				CertificateChain chain;
 				if (dto.getCertificateType().equals("INTERMEDIATE")) {
+					if(user.getRole().getAuthority().equals("ROLE_USER"))
+						throw new BadRequestException("User with EE certificate cannot issue an CA certificate.");
+					if(user.getEmail().equals(IETFUtils.valueToString((issuer.getRDNs(BCStyle.E)[0]).getFirst().getValue())))
+						throw new BadRequestException("Issuer and subject cannot be the same.");
 					chain = new CertificateChain(serialNumber, new BigInteger(dto.getIssuerSerialNumber()),
 							dto.getOrganizationUnit(),
 							CertificateType.INTERMEDIATE, user,
@@ -303,4 +314,156 @@ public class CertificateService {
 	public List<CertificateDto> filterCertificates(String token, String filter) {
 		return getAllByUser(token).stream().filter(cert -> cert.type.equals(filter)).collect(Collectors.toList());
 	}
+
+	//TODO: provera da li je datum unutar scopa datuma signer sertifikata
+	private Boolean isChosenEndDateAllowed(Date subjectNotAfter, BigInteger issuerSerialNumber){
+		X509Certificate issuerCertificate = getX509Certificate(issuerSerialNumber);
+		if (subjectNotAfter.after(issuerCertificate.getNotAfter()))
+			return false;
+		return true;
+	}
+
+	//TODO: subject i issuer nisu isti
+
+	//TODO: da issuer nije end entity
+	private Boolean checkIfIssuerHasSigningPermission(BigInteger issuerSerialNumber){
+		X509Certificate issuerCertificate = getX509Certificate(issuerSerialNumber);
+		//TODO: proveriti da li ima KeyUsage.keyCertSign
+
+		return true;
+	}
+
+	//TODO: VALIDACIJA - proveri datum i potpis za niz (i povucenost) - done? proveriti u primeru sa vezbi
+	public Boolean isCertificateValid(String serialNumberStr) {
+		BigInteger serialNumber = new BigInteger(serialNumberStr);
+		if(isCertRevoked(serialNumber))
+			return false;
+
+		//check date
+		X509Certificate certificate = getX509Certificate(serialNumber);
+		try {
+			certificate.checkValidity(new Date());
+		} catch (CertificateExpiredException | CertificateNotYetValidException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		//check signature
+		CertificateChain certificateChain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
+		PublicKey publicKey = null;
+		if (certificateChain.getCertificateType().equals(CertificateType.ROOT))
+			publicKey = certificate.getPublicKey();
+		else
+			publicKey = getX509Certificate(certificateChain.getSignerSerialNumber()).getPublicKey();
+
+		try {
+			certificate.verify(publicKey);
+		} catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException | SignatureException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		if (!certificateChain.getCertificateType().equals(CertificateType.ROOT))
+			 return isCertificateValid(certificateChain.getSignerSerialNumber().toString());
+		return true;
+	}
+
+	//TODO: POVLACENJE SERTIFIKATA - done?
+	public void revokeCertificate(String serialNumberStr) {
+		BigInteger serialNumber = new BigInteger(serialNumberStr);
+		CertificateChain certificateChain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
+		certificateChain.setRevoked(true);
+		certificateChainRepository.save(certificateChain);
+		if (!certificateChain.getCertificateType().equals(CertificateType.END_ENTITY))
+			revokeCertificatesSignedBy(certificateChain.getSignerSerialNumber());
+	}
+
+	private void revokeCertificatesSignedBy(BigInteger signerSerialNumber) {
+		List<CertificateChain> certificateChainsSignedByRevoked = certificateChainRepository.getCertificateChainsBySignerSerialNumber(signerSerialNumber);
+		for(CertificateChain cert : certificateChainsSignedByRevoked){
+			cert.setRevoked(true);
+			certificateChainRepository.save(cert);
+			if (!cert.getCertificateType().equals(CertificateType.END_ENTITY))
+				revokeCertificatesSignedBy(cert.getSignerSerialNumber());
+		}
+	}
+
+	private boolean isCertRevoked(BigInteger serialNumber) {
+		CertificateChain certificateChain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
+		return certificateChain.isRevoked();
+	}
+
+	/*
+	//TODO: provera povucenosti - OCSP :'(
+	public boolean isCertificateRevoked(BigInteger serialNumber){
+		OCSPReq request = createOCSPRequest(serialNumber);
+		BasicOCSPResp response = getOCSPResponse(request);
+
+		if(response.getResponses()[0].getCertStatus() == CertificateStatus.GOOD)
+			return false;
+		return true;
+	}
+
+	private OCSPReq createOCSPRequest(BigInteger serialNumber) {
+		X509Certificate cert = getX509Certificate(serialNumber.longValue());
+		CertificateChain chain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
+		X509Certificate issuerCert = getX509Certificate(chain.getSignerSerialNumber().longValue());
+
+		//(X509Certificate issuerCert, BigInteger serialNumber)
+		//Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+		//OCSPReqBuilder gen = new OCSPReqBuilder();
+		//gen.addRequest(new JcaCertificateID(new JcaDigestCalculatorProviderBuilder().setProvider("BC").build().get(CertificateID.HASH_SHA1), issuerCert, serialNumber));
+
+		CertificateID certId = null;
+		try {
+			DigestCalculator digestCalculator = new JcaDigestCalculatorProviderBuilder().setProvider("BC").build().get(CertificateID.HASH_SHA1);
+			certId = new CertificateID(digestCalculator, new X509CertificateHolder(cert.getEncoded()), cert.getSerialNumber()); //TODO: proveriti - cert ili issuerCert za drugi parametar?
+		} catch (OperatorCreationException | OCSPException | CertificateEncodingException | IOException e) {
+			e.printStackTrace();
+		}
+
+		OCSPReqBuilder reqBuilder = new OCSPReqBuilder();
+		reqBuilder.addRequest(certId);
+		OCSPReq request = null;
+		try {
+			request = reqBuilder.build();
+		} catch (OCSPException e) {
+			e.printStackTrace();
+		}
+		return request;
+	}
+
+	private BasicOCSPResp getOCSPResponse(OCSPReq request) {
+		BigInteger serialNumber = request.getRequestList()[0].getCertID().getSerialNumber();
+		//BigInteger serialNumber = request.getCerts()[0].getSerialNumber();
+
+		X509Certificate cert = getX509Certificate(serialNumber.longValue());
+		DigestCalculatorProvider digitalCalculatorProvider = null;
+
+		try {
+			digitalCalculatorProvider = new JcaDigestCalculatorProviderBuilder().setProvider("BC").build();
+		} catch (OperatorCreationException e) {
+			e.printStackTrace();
+		}
+
+		BasicOCSPRespBuilder responseBuilder = null;
+		try {
+			responseBuilder = new JcaBasicOCSPRespBuilder(cert.getPublicKey(), digitalCalculatorProvider.get(RespID.HASH_SHA1));
+		} catch (OCSPException | OperatorCreationException e) {
+			e.printStackTrace();
+		}
+
+		CertificateChain chain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
+		if(chain.isRevoked())
+			responseBuilder.addResponse(request.getRequestList()[0].getCertID(), new RevokedStatus(new Date(), 0));
+		else
+			responseBuilder.addResponse(request.getRequestList()[0].getCertID(), CertificateStatus.GOOD);
+
+		JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
+
+		builder = builder.setProvider("BC");
+
+
+		return null;
+	}*/
 }

@@ -98,12 +98,13 @@ public class CertificateController {
 
     @PutMapping("/revoke")
     public ResponseEntity<?> revokeCertificate(@RequestBody String certSerialNumber) {
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        certificateService.revokeCertificate(certSerialNumber);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/validityCheck/{certSerialNumber}")
     public ResponseEntity<?> validityCheck(@PathVariable String certSerialNumber) {
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        return new ResponseEntity<>(certificateService.isCertificateValid(certSerialNumber), HttpStatus.OK);
     }
 
     @GetMapping("/search/{searchText}")

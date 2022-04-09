@@ -23,4 +23,8 @@ public interface CertificateChainRepository extends JpaRepository<CertificateCha
     List<CertificateChain> getByUser(User user);
 
     CertificateChain getBySerialNumber(BigInteger serialNumber);
+
+    CertificateChain getCertificateChainBySerialNumber(BigInteger serialNumber);
+
+    List<CertificateChain> getCertificateChainsBySignerSerialNumber(BigInteger signerSerialNumber);
 }
