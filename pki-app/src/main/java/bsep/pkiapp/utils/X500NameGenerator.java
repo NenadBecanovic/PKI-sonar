@@ -41,9 +41,7 @@ public class X500NameGenerator {
                                 newCertificateDto.issuerSerialNumber.toString().toCharArray(),
                                 newCertificateDto.issuerSerialNumber.toString().toCharArray());
         	} else {
-                System.out.println("OVDEEE");
-                System.out.println(newCertificateDto.issuerSerialNumber.toString());
-        		KeyStoreReader keyStore = new KeyStoreReader();
+                KeyStoreReader keyStore = new KeyStoreReader();
         		String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(newCertificateDto.issuerSerialNumber.toString());
                 x500NameIssuer = keyStore.readIssuerNameFromStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", newCertificateDto.issuerSerialNumber.toString(), rootSerialNumber.toCharArray(), rootSerialNumber.toCharArray());
         	}
@@ -64,17 +62,12 @@ public class X500NameGenerator {
     	while(!(CertificateType.ROOT).equals(certificate.getCertificateType())) {
     		certificate = certificateChainRepository.getBySerialNumber(certificate.getSignerSerialNumber());
     	}
-        System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-        System.out.println(issuerSerialNumber);
-        System.out.println(certificate.getSerialNumber().toString());
-    	return certificate.getSerialNumber().toString();
+        return certificate.getSerialNumber().toString();
 	}
 
 	private boolean isIssuerRootCertificate(String issuerSerialNumber) {
 		// TODO Auto-generated method stub
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println(issuerSerialNumber);
-    	CertificateChain certificate = certificateChainRepository.getBySerialNumber(new BigInteger(issuerSerialNumber));
+        CertificateChain certificate = certificateChainRepository.getBySerialNumber(new BigInteger(issuerSerialNumber));
 		return (CertificateType.ROOT).equals(certificate.getCertificateType());
 	}
 
@@ -100,7 +93,6 @@ public class X500NameGenerator {
     }
 
     private X500Name generateX500NameForEndEntity(User subject, NewCertificateDto newCertificateDto, X500Name x500NameIssuer) {
-        System.out.println(x500NameIssuer.toString());
         nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
         nameBuilder.addRDN(BCStyle.CN, subject.getName() + " " + subject.getSurname());
         nameBuilder.addRDN(BCStyle.GIVENNAME, subject.getName());

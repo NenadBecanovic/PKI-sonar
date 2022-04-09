@@ -72,12 +72,12 @@ export class NewCertificateComponent implements OnInit {
       'certTypeCtrl': this.certTypeCtrl,
     });
 
-    this.issuer = new FormControl('', Validators.required);
-    this.subject = new FormControl('', Validators.required);
-    this.validity = new FormControl('', Validators.required);
-    this.organizationUnitName = new FormControl('', Validators.required);
-    this.organizationName = new FormControl('', Validators.required);
-    this.country = new FormControl('', Validators.required);
+    this.issuer = new FormControl("");
+    this.subject = new FormControl("");
+    this.validity = new FormControl("");
+    this.organizationUnitName = new FormControl("");
+    this.organizationName = new FormControl("");
+    this.country = new FormControl("");
     this.certDataFormGroup = new FormGroup({
       'issuer': this.issuer,
       'subject': this.subject,
@@ -108,6 +108,21 @@ export class NewCertificateComponent implements OnInit {
     return user && user.name ? user.name : '';
   }
 
+  setCertDataForm(type: string){
+    this.issuer.setValidators(type != "ROOT" ? Validators.required : [])
+    this.subject.setValidators(type != "ROOT" ? Validators.required : []);
+    this.validity.setValidators(Validators.required);
+    this.organizationUnitName.setValidators(type == "INTERMEDIATE" ? Validators.required : []);
+    this.organizationName.setValidators(type == "ROOT" ? Validators.required : []);
+    this.country.setValidators(type == "ROOT" ? Validators.required : []);
+    this.certDataFormGroup.setControl('issuer', this.issuer);
+    this.certDataFormGroup.setControl('subject', this.subject);
+    this.certDataFormGroup.setControl('validity', this.validity);
+    this.certDataFormGroup.setControl('organizationUnitName', this.organizationUnitName);
+    this.certDataFormGroup.setControl('organizationName', this.organizationName);
+    this.certDataFormGroup.setControl('country', this.country);
+  }
+
   onTypeChange() {
     this.userService.getIssuers(this.certTypeCtrl.value).subscribe((response) =>{
       this.issuerOptions = response;
@@ -115,35 +130,17 @@ export class NewCertificateComponent implements OnInit {
     this.userService.getSubjects().subscribe((response) => {
       this.subjectOptions = response;
     })
+    this.setCertDataForm(this.certTypeCtrl.value);
     if(this.certTypeCtrl.value == 'ROOT'){
-      this.subject.clearValidators();
-      this.organizationUnitName.clearValidators();
-      this.certDataFormGroup.setControl('subject', this.subject);
-      this.certDataFormGroup.setControl('organizationUnitName', this.organizationUnitName);
       const keyUsageArray: FormArray = this.certKeyUsageFormGroup.get('keyUsage') as FormArray;
       let newFormControl = new FormControl(6);
       newFormControl.disable();
       keyUsageArray.push(newFormControl);
     }else if(this.certTypeCtrl.value == 'INTERMEDIATE'){
-      this.organizationName.clearValidators();
-      this.country.clearValidators();
-      this.certDataFormGroup.setControl('organizationName', this.organizationName);
-      this.certDataFormGroup.setControl('country', this.country);
       const keyUsageArray: FormArray = this.certKeyUsageFormGroup.get('keyUsage') as FormArray;
       let newFormControl = new FormControl(6);
       newFormControl.disable();
       keyUsageArray.push(newFormControl);
-    }else {
-      this.organizationName.clearValidators();
-      this.country.clearValidators();
-      this.certDataFormGroup.setControl('organizationName', this.organizationName);
-      this.certDataFormGroup.setControl('country', this.country);
-      this.subject.clearValidators();
-      this.organizationUnitName.clearValidators();
-      this.certDataFormGroup.setControl('subject', this.subject);
-      this.certDataFormGroup.setControl('organizationUnitName', this.organizationUnitName);
-      this.issuer = new FormControl('',Validators.required);
-      this.certDataFormGroup.setControl('issuer', this.issuer);
     }
   }
 
@@ -189,20 +186,22 @@ export class NewCertificateComponent implements OnInit {
 
   onExtensionChange(event: MatCheckboxChange) {
     const extensionArray: FormArray = this.certExtFormGroup.get('extensions') as FormArray;
-    console.log(event.source.value)
-    if (event.checked && event.source.value != "3") {
+    if (event.checked) {
       extensionArray.push(new FormControl(event.source.value));
-    } else if (event.checked && event.source.value == "3") {
-      const extKeyUsageArray: FormArray = this.certExtKeyUsageFormGroup.get('extKeyUsage') as FormArray;
-      for(let i = 0; i < this.extendedKeyUsages.length; i++){
-        extKeyUsageArray.insert(i, new FormControl(this.extendedKeyUsages[i].id));
+      if (event.source.value == "3") {
+        const extKeyUsageArray: FormArray = this.certExtKeyUsageFormGroup.get('extKeyUsage') as FormArray;
+        for (let i = 0; i < this.extendedKeyUsages.length; i++) {
+          extKeyUsageArray.insert(i, new FormControl(this.extendedKeyUsages[i].id));
+        }
+        this.allChecked = true;
       }
-      this.allChecked = true;
-    } else if (!event.checked && event.source.value == "3") {
-      const extKeyUsageArray: FormArray = this.certExtKeyUsageFormGroup.get('extKeyUsage') as FormArray;
-      extKeyUsageArray.clear();
-      this.allChecked = false;
     } else {
+      if(event.source.value == "3"){
+        const extKeyUsageArray: FormArray = this.certExtKeyUsageFormGroup.get('extKeyUsage') as FormArray;
+        extKeyUsageArray.clear();
+        this.allChecked = false;
+      }
+
       let i: number = 0;
       extensionArray.controls.forEach((item: any) => {
         if (item.value == event.source.value) {
@@ -284,5 +283,6 @@ export class NewCertificateComponent implements OnInit {
   console(event: any) {
     console.log(event)
     console.log(this.issuer.value)
+    console.log(this.certDataFormGroup)
   }
 }

@@ -31,12 +31,6 @@ export class CertificateService {
   }
 
   createdCertificate(certType: string, certData: any, extensions: any, keyUsage: any, extKeyUsage: any) {
-    console.log(certType)
-    console.log(certData)
-    console.log(extensions)
-    console.log(keyUsage)
-    console.log(extKeyUsage)
-
     let extensionDto = new ExtensionSettingsDto(extensions, keyUsage, extKeyUsage);
     let newCertDto = new NewCertificateDto(certData.issuer.email, certData.endValidityDate, certData.organizationName, certData.organizationUnitName, certData.country, null, certType, extensionDto);
 
@@ -45,18 +39,15 @@ export class CertificateService {
     }else if(certType == "INTERMEDIATE"){
       newCertDto.subjectEmail = certData.subject.email;
       newCertDto.issuerSerialNumber = certData.issuer.issuerSerialNumber;
-      console.log(newCertDto)
       return this._http.post(environment.apiUrl + "/certificates/createIntermediateCertificate", newCertDto);
     }else{
       newCertDto.subjectEmail = certData.subject.email;
       newCertDto.issuerSerialNumber = certData.issuer.issuerSerialNumber;
-      console.log(newCertDto)
       return this._http.post(environment.apiUrl + "/certificates/createEndEntityCertificate", newCertDto);
     }
   }
 
   revoke(serialNumber: number) {
-    console.log(serialNumber)
     return this._http.put<boolean>(environment.apiUrl + "/certificates/revoke", serialNumber.toString());
   }
 
@@ -68,24 +59,6 @@ export class CertificateService {
     return this._http.get(environment.apiUrl + '/certificates/download/' + serialNumber, {responseType: 'blob'});
   }
 
-  // downladTry = (number) => {
-  //   const FileDownload = require("js-file-download");
-  //
-  //   Axios.get(BASE_URL + "/api/certificate/download/" + number, {
-  //     validateStatus: () => true,
-  //     headers: {Authorization: getAuthHeader()},
-  //     responseType: "blob",
-  //   })
-  //     .then((resp) => {
-  //       if (resp.status === 200) {
-  //         FileDownload(resp.data, "certificate.crt");
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
-
   search(searchText: string) {
     return this._http.get<Array<Certificate>>(environment.apiUrl + "/certificates/search/" + searchText).subscribe((response) =>{
       this.certificatesChange.emit(response);
@@ -93,7 +66,6 @@ export class CertificateService {
   }
 
   filterByType(type: string) {
-    console.log(type)
     return this._http.get<Array<Certificate>>(environment.apiUrl + "/certificates/filterByType/" + type).subscribe((response) => {
       this.certificatesChange.emit(response);
     });

@@ -58,7 +58,7 @@
         </mat-form-field>
         <mat-form-field appearance="fill" >
           <mat-label>Issuer</mat-label>
-          <mat-select [formControl]="issuer" (change)="console($event)">
+          <mat-select [formControl]="issuer">
             <span *ngFor="let option of issuerOptions">
             <mat-option *ngIf="this.subject.value.email != option.email"
                         [value]="option">{{option.displayName + " (" + option.email + ")"}}</mat-option>
@@ -88,7 +88,7 @@
       </div>
       <div class="action-buttons">
         <button mat-stroked-button class="mat-accent next-btn" matStepperPrevious type="button">Back</button>
-        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit" (click)="console($event)"
+        <button mat-raised-button matStepperNext class="mat-primary next-btn" type="submit"
                 >Next</button>
       </div>
     </form>
@@ -101,15 +101,15 @@
         <mat-grid-tile>
           <div class="checkbox-container">
             <span *ngFor="let ext of extensions">
-              <mat-checkbox *ngIf="ext.id != 2"
+              <mat-checkbox *ngIf="ext.id != 3"
                             [value]="ext.id"
                             (change)="onExtensionChange($event)">{{ext.name}}</mat-checkbox>
-              <mat-checkbox *ngIf="ext.id == 2"
+              <mat-checkbox *ngIf="ext.id == 3"
                             [indeterminate]="someChecked()"
                             [value]="ext.id"
                             [checked]="allChecked"
                             (change)="onExtensionChange($event)" >{{ext.name}}</mat-checkbox>
-              <span *ngIf="ext.id == 2">
+              <span *ngIf="ext.id == 3">
                 <ul>
                   <li *ngFor="let extKey of extendedKeyUsages">
                     <form [formGroup]="certExtKeyUsageFormGroup">

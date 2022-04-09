@@ -32,8 +32,6 @@ public class ExtensionService {
 
     public X509v3CertificateBuilder addExtensions(X509v3CertificateBuilder certGen, ExtensionSettingsDto dto, String certificateType) throws IOException, NoSuchAlgorithmException {
         for (Integer id : dto.getExtensionsIds()) {
-            System.out.println("////////////////////////////////");
-            System.out.println(id);
             CertificateExtension extension = extensionRepository.getById(id);
 
             if (extension.getExtensionType().equals(ExtensionType.BASIC_CONSTRAINTS)) {
@@ -105,10 +103,6 @@ public class ExtensionService {
         KeyPurposeId[] extendedKeyUsages = new KeyPurposeId[keyPurposeIds.size()];
         keyPurposeIds.toArray(extendedKeyUsages);
 
-        //TODO: delete for loop
-        for (int i = 0; i < extendedKeyUsages.length; i++) {
-            System.out.println(i + "       " + extendedKeyUsages[i] + "\n\n");
-        }
         certGen.addExtension(Extension.extendedKeyUsage, false, new ExtendedKeyUsage(extendedKeyUsages));
 
         return certGen;

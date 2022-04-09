@@ -55,6 +55,8 @@ VALUES ('OCSP signing', 'OCSP_SIGNING');
 INSERT INTO certificate_extension (name, extension_type)
 VALUES ('Basic constraints', 'BASIC_CONSTRAINTS');
 INSERT INTO certificate_extension (name, extension_type)
+VALUES ('Authority key identifier', 'KEY_USAGE');
+INSERT INTO certificate_extension (name, extension_type)
 VALUES ('Extended key usage', 'EXTENDED_KEY_USAGE');
 INSERT INTO certificate_extension (name, extension_type)
 VALUES ('Subject key identifier', 'SUBJECT_KEY_ID');
