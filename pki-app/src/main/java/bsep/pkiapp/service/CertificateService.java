@@ -27,10 +27,7 @@ import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -142,28 +139,31 @@ public class CertificateService {
 				certificateChainRepository.save(chain);
 				keyStoreService.writeRootCertificateToKeyStore(chain.getSerialNumber().toString(), keyPair.getPrivate(),
 						certificate, chain.getSerialNumber().toString());
-			} else if (dto.getCertificateType().equals("INTERMEDIATE")) {
-				Date startDate = new Date();
-				CertificateChain chain = new CertificateChain(serialNumber, new BigInteger(dto.getIssuerSerialNumber()),
-						dto.getOrganizationUnit(),
-						CertificateType.INTERMEDIATE, user,
-						startDate, dto.getValidityEndDate(), true);
-				String rootSerialNumber2 = findRootSerialNumber(chain);
-				certificateChainRepository.save(chain);
-				keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(),
-						rootSerialNumber2, keyPair.getPrivate(), certificate, rootSerialNumber2);
 			} else {
-				Date startDate = new Date();
-				// TO DO: Add user info to CertificateChain instead of organization unit
-				CertificateChain chain = new CertificateChain(serialNumber,
-						new BigInteger(dto.getIssuerSerialNumber()), user.getEmail(),
-						CertificateType.END_ENTITY, user,
-						startDate, dto.getValidityEndDate(), false);
+				CertificateChain chain;
+				if (dto.getCertificateType().equals("INTERMEDIATE")) {
+					chain = new CertificateChain(serialNumber, new BigInteger(dto.getIssuerSerialNumber()),
+							dto.getOrganizationUnit(),
+							CertificateType.INTERMEDIATE, user,
+							new Date(), dto.getValidityEndDate(), true);
+				} else {
+					// TODO: Add user info to CertificateChain instead of organization unit
+					chain = new CertificateChain(serialNumber,
+							new BigInteger(dto.getIssuerSerialNumber()), user.getEmail(),
+							CertificateType.END_ENTITY, user,
+							new Date(), dto.getValidityEndDate(), false);
+
+				}
 				String rootSerialNumber2 = findRootSerialNumber(chain);
 				certificateChainRepository.save(chain);
+
+//				keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(),
+//						rootSerialNumber2, keyPair.getPrivate(), certificate, rootSerialNumber2);
 				keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(),
-						rootSerialNumber2, keyPair.getPrivate(), certificate, rootSerialNumber2);
-			}
+						rootSerialNumber2, keyPair.getPrivate(),
+						findCertificateChainHierarchy(certificate, dto.getIssuerSerialNumber(), rootSerialNumber2),
+						rootSerialNumber2);
+		}
 
 			if (dto.getCertificateType().equals("CA") && user.getRole().getId() == 1) {
 				user.setRole(roleService.getById(2));
@@ -226,6 +226,24 @@ public class CertificateService {
 		return certificate.getSerialNumber().toString();
 	}
 
+	private X509Certificate[] findCertificateChainHierarchy(X509Certificate newCertificate, String issuerSerialNumber,
+															String rootSerialNumber) {
+		X509Certificate certificate = getX509Certificate(new BigInteger(issuerSerialNumber));
+		List<X509Certificate> certificateChainHierarchy = new ArrayList<>();
+		certificateChainHierarchy.add(newCertificate);
+		certificateChainHierarchy.add(certificate);
+
+		String currentSerialNumber = issuerSerialNumber;
+		while(!certificate.getSerialNumber().equals(new BigInteger(rootSerialNumber))){
+			currentSerialNumber =
+					certificateChainRepository.getBySerialNumber(new BigInteger(currentSerialNumber)).getSignerSerialNumber().toString();
+			certificate = getX509Certificate(new BigInteger(currentSerialNumber));
+			certificateChainHierarchy.add(certificate);
+		}
+		X509Certificate[] certificateChainHierarchyArray = new X509Certificate[certificateChainHierarchy.size()];
+		return certificateChainHierarchy.toArray(certificateChainHierarchyArray);
+	}
+
 	public byte[] getCertificate(BigInteger serialNumber) throws CertificateEncodingException {
 		byte[] crt = getX509Certificate(serialNumber).getEncoded();
 		return crt;
@@ -243,6 +261,8 @@ public class CertificateService {
 			certificate = (X509Certificate) ksr.readCertificate(".\\files\\hierarchy" + rootSerialNumber + ".jks",
 					rootSerialNumber, serialNumber.toString());
 		}
+		System.out.println("FUNKCJIA");
+		System.out.println(certificate.getSerialNumber());
 
 		return certificate;
 	}

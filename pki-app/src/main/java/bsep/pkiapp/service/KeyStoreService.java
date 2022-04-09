@@ -13,7 +13,7 @@ public class KeyStoreService {
 	public void writeRootCertificateToKeyStore(String serialNumber, PrivateKey privateKey, Certificate certificate, String password) {
 		KeyStoreWriter ksw = new KeyStoreWriter();
 		ksw.loadKeyStore(null, password.toCharArray());
-		ksw.write(serialNumber, privateKey, password.toCharArray(), certificate);
+		ksw.write(serialNumber, privateKey, password.toCharArray(), new Certificate[]{certificate});
 		ksw.saveKeyStore(".\\files\\root" + serialNumber + ".jks", password.toCharArray());
 		
 		KeyStoreWriter kswHierarchy = new KeyStoreWriter();
@@ -21,10 +21,13 @@ public class KeyStoreService {
 		kswHierarchy.saveKeyStore(".\\files\\hierarchy" + serialNumber + ".jks", password.toCharArray());
 	}
     
-    public void writeCertificateToHierarchyKeyStore(String serialNumber, String rootSerialNumber, PrivateKey privateKey, Certificate certificate, String password) {
+    public void writeCertificateToHierarchyKeyStore(String serialNumber, String rootSerialNumber,
+													PrivateKey privateKey, Certificate[] certificates,
+													String password) {
 		KeyStoreWriter ksw = new KeyStoreWriter();
 		ksw.loadKeyStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", rootSerialNumber.toString().toCharArray());
-		ksw.write(serialNumber, privateKey, rootSerialNumber.toString().toCharArray(), certificate);
+		ksw.write(serialNumber, privateKey, rootSerialNumber.toString().toCharArray(), certificates);
 		ksw.saveKeyStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", rootSerialNumber.toString().toCharArray());
 	}
+
 }

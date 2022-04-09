@@ -79,6 +79,8 @@ public class CertificateController {
         headers.set("Content-Disposition", "attachment; filename=\"certificate-" + serialNumber.toString() + ".crt\"");
 
         try {
+            System.out.println("CONTROLER");
+            System.out.println(serialNumber);
             return ResponseEntity.status(HttpStatus.OK).headers(headers)
                     .body(certificateService.getCertificate(new BigInteger(serialNumber)));
         } catch (AuthorizationServiceException e) {
