@@ -5,12 +5,13 @@ import {environment} from "../../../../environments/environment";
 import {map, Subject} from "rxjs";
 import {RegisterUsetDto} from "../../../shared/dto/RegisterUset.dto";
 import {UserTokenStateDto} from "../dtos/UserTokenState.dto";
+import {Router} from "@angular/router";
 
 @Injectable({providedIn: 'root'})
 export class AuthService{
   public logInUserChanged = new Subject<UserTokenStateDto>();
 
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClient, private router: Router) {
   }
 
   loginUser(loginUserDto: LoginUserDto){
@@ -20,8 +21,8 @@ export class AuthService{
     }).subscribe(
       {
         next: (response) => {
-          console.log(response)
           localStorage.setItem('token', response.accessToken);
+          this.router.navigate(['/overview']).then();
           this.logInUserChanged.next(response);
         },
         error: (error: HttpErrorResponse) => {

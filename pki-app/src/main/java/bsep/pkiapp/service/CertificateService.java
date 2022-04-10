@@ -61,11 +61,7 @@ public class CertificateService {
 			generateCertificate(dto, subject, subject);
 		} else {
 			if(!isChosenEndDateAllowed(dto.getValidityEndDate(), new BigInteger(dto.getIssuerSerialNumber()))){
-				System.out.println("date not valid");
 				throw new BadRequestException("Chosen validity date range exceeds CAs validity end date.");
-			}
-			else{
-				System.out.println("date valid");
 			}
 			// TODO: get issuer from KeyStorage, check if issuer is of role: ROLE_CA
 			checkIfIssuerHasSigningPermission(new BigInteger(dto.getIssuerSerialNumber())); //da li je dobro ovo pozvati ovako?
@@ -156,11 +152,9 @@ public class CertificateService {
 				if (dto.getCertificateType().equals("INTERMEDIATE")) {
 					User issuerUser = userService.getByEmail(IETFUtils.valueToString((issuer.getRDNs(BCStyle.E)[0]).getFirst().getValue()));
 					if(issuerUser.getRole().getAuthority().equals("ROLE_USER")){
-						System.out.println("##############################");
 						throw new BadRequestException("User with EE certificate cannot issue an CA certificate.");
 					}
 					if(user.getEmail().equals(IETFUtils.valueToString((issuer.getRDNs(BCStyle.E)[0]).getFirst().getValue()))){
-						System.out.println("******************************");
 						throw new BadRequestException("Issuer and subject cannot be the same.");
 					}
 					chain = new CertificateChain(serialNumber, new BigInteger(dto.getIssuerSerialNumber()),
@@ -282,8 +276,6 @@ public class CertificateService {
 			certificate = (X509Certificate) ksr.readCertificate(".\\files\\hierarchy" + rootSerialNumber + ".jks",
 					rootSerialNumber, serialNumber.toString());
 		}
-		System.out.println("FUNKCJIA");
-		System.out.println(certificate.getSerialNumber());
 
 		return certificate;
 	}

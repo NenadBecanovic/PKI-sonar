@@ -148,12 +148,13 @@
         </mat-grid-tile>
         <mat-grid-tile>
           <div class="checkbox-container">
-            <mat-checkbox *ngFor="let usage of keyUsages | slice:5:9"
-                          [value]="usage.id"
-                          (change)="onKeyUsageChange($event)"
-                          [checked]="isChecked(usage.id)"
-                          [disabled]="isDisabled(usage.id)"
-            >{{usage.name}}</mat-checkbox>
+            <span *ngFor="let usage of keyUsages | slice:5:9">
+              <mat-checkbox *ngIf="usage.id != 6 && this.certTypeCtrl.value == 'END_ENTITY'"
+                            [value]="usage.id"
+                            (change)="onKeyUsageChange($event)"
+                            [checked]="isChecked(usage.id)"
+                            [disabled]="isDisabled(usage.id)" >{{usage.name}}</mat-checkbox>
+            </span>
           </div>
         </mat-grid-tile>
       </mat-grid-list>

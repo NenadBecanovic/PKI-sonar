@@ -20,18 +20,10 @@ export class CertificateComponent implements OnInit {
   }
 
   onRevoke() {
-    this._certificateService.revoke(this.certificate.serialNumber).subscribe({
-      next: (response) => {
-        if (response) {
-          this._snackBar.open("Certificate successfully revoked.", "OK", {
-            panelClass: ["black-snackbar"]
-          });
-        } else {
-          this._snackBar.open("Certificate could not be revoked.", "OK", {
-            panelClass: ["black-snackbar"]
-          });
-        }
-      }
+    this._certificateService.revoke(this.certificate.serialNumber).subscribe((response) =>{
+      this._snackBar.open("Certificate successfully revoked.", "OK", {
+        panelClass: ["black-snackbar"]
+      });
     });
   }
 

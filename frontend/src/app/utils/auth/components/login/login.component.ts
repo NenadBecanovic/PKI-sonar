@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
@@ -13,7 +13,7 @@ import {UserTokenStateDto} from "../../dtos/UserTokenState.dto";
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   public errorMessage: string;
   public hide = true;
   public form: FormGroup;
@@ -24,8 +24,7 @@ export class LoginComponent implements OnInit {
   constructor(private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
     this.errorMessage = "";
     this.loginUserChanged = this.authService.logInUserChanged.subscribe({
-      next:() =>{
-        this.router.navigate(['/overview']).then();
+      next:(res) =>{
         },
       error: (error: HttpErrorResponse) => {
         this.errorHandler(error);
@@ -55,14 +54,14 @@ export class LoginComponent implements OnInit {
 
   }
 
+  ngOnDestroy() {
+    this.loginUserChanged.unsubscribe();
+  }
+
   onLogin() {
+    this.errorMessage = "";
     if (this.form.valid) {
-      console.log(this.form.value)
-      // localStorage.setItem('role', 'admin');
-      // this.router.navigate(['/overview']).then();
-
       this.authService.loginUser(new LoginUserDto(this.email.value, this.password.value));
-
     } else {
       console.log("Not valid")
     }

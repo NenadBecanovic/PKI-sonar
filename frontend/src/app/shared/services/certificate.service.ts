@@ -48,7 +48,7 @@ export class CertificateService {
   }
 
   revoke(serialNumber: number) {
-    return this._http.put<boolean>(environment.apiUrl + "/certificates/revoke", serialNumber.toString());
+    return this._http.put(environment.apiUrl + "/certificates/revoke", serialNumber.toString());
   }
 
   validityCheck(serialNumber: number) {

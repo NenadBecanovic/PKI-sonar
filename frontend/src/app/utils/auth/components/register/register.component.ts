@@ -68,12 +68,10 @@ export class RegisterComponent implements OnInit {
   }
 
   onRegister() {
-    console.log(this.passwordCtrl)
     if(this.form.valid){
       let user = new RegisterUsetDto(this.nameCtrl.value, this.surnameCtrl.value,
         this.emailCtrl.value, this.passwordCtrl.value);
 
-      console.log(user)
       this.authService.register(user).subscribe({
         next: (res) =>{
           this.router.navigate(['login']).then();

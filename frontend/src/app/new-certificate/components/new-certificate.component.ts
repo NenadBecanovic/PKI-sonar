@@ -52,15 +52,12 @@ export class NewCertificateComponent implements OnInit {
     })
     this.certificateService.getCertExtensions().subscribe((response: Array<any>) =>{
       this.extensions = response;
-      console.log(response)
     });
     this.certificateService.getCertKeyUsages().subscribe((response: Array<any>) =>{
       this.keyUsages = response;
-      console.log(response)
     });
     this.certificateService.getCertExtKeyUsages().subscribe((response: Array<any>) => {
       this.extendedKeyUsages = response;
-      console.log(response)
     });
 
     this.stepperOrientation = breakpointObserver
@@ -278,11 +275,5 @@ export class NewCertificateComponent implements OnInit {
       i++;
     });
     return retVal;
-  }
-
-  console(event: any) {
-    console.log(event)
-    console.log(this.issuer.value)
-    console.log(this.certDataFormGroup)
   }
 }
