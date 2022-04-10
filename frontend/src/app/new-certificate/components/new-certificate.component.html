@@ -76,7 +76,7 @@
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label>Choose a date</mat-label>
-          <input matInput [matDatepicker]="datepicker" required formControlName="endValidityDate">
+          <input matInput [matDatepicker]="datepicker" required formControlName="endValidityDate" [min]="now">
           <mat-datepicker-toggle matSuffix [for]="datepicker" ></mat-datepicker-toggle>
           <mat-datepicker #datepicker>
             <mat-datepicker-actions>
@@ -149,11 +149,16 @@
         <mat-grid-tile>
           <div class="checkbox-container">
             <span *ngFor="let usage of keyUsages | slice:5:9">
-              <mat-checkbox *ngIf="usage.id != 6 && this.certTypeCtrl.value == 'END_ENTITY'"
+              <mat-checkbox *ngIf="usage.id != 6 "
                             [value]="usage.id"
                             (change)="onKeyUsageChange($event)"
                             [checked]="isChecked(usage.id)"
                             [disabled]="isDisabled(usage.id)" >{{usage.name}}</mat-checkbox>
+              <mat-checkbox *ngIf="usage.id == 6 && this.certTypeCtrl.value != 'END_ENTITY'"
+                            [value]="usage.id"
+                            (change)="onKeyUsageChange($event)"
+                            [checked]="isChecked(usage.id)"
+                            [disabled]="isDisabled(usage.id)">{{usage.name}}</mat-checkbox>
             </span>
           </div>
         </mat-grid-tile>

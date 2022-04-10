@@ -31,7 +31,6 @@ public class X500NameGenerator {
         User subject = userService.getByEmail(newCertificateDto.getSubjectEmail());
         X500Name x500NameIssuer = null;
         if (newCertificateDto.getIssuerSerialNumber() != null) {
-            //TODO: get certificate from KeyStorage
         	if(isIssuerRootCertificate(newCertificateDto.getIssuerSerialNumber().toString())) {
         		KeyStoreReader keyStore = new KeyStoreReader();
                 x500NameIssuer =
@@ -65,7 +64,6 @@ public class X500NameGenerator {
 	}
 
 	private boolean isIssuerRootCertificate(String issuerSerialNumber) {
-		// TODO Auto-generated method stub
         CertificateChain certificate = certificateChainRepository.getBySerialNumber(new BigInteger(issuerSerialNumber));
 		return (CertificateType.ROOT).equals(certificate.getCertificateType());
 	}

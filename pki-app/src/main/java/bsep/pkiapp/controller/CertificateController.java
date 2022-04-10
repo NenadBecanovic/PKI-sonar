@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AuthorizationServiceException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -27,6 +28,7 @@ public class CertificateController {
         return new ResponseEntity<>(certificateService.getAllByUser(token.split(" ")[1]), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/createRootCertificate")
     public ResponseEntity<?> createRootCertificate(@RequestBody NewCertificateDto certificateDto) {
         try {
@@ -44,6 +46,7 @@ public class CertificateController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CA')")
     @PostMapping("/createIntermediateCertificate")
     public ResponseEntity<?> createIntermediateCertificate(@RequestBody NewCertificateDto certificateDto) {
         try {
@@ -61,6 +64,7 @@ public class CertificateController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CA')")
     @PostMapping("/createEndEntityCertificate")
     public ResponseEntity<?> createEndEntityCertificate(@RequestBody NewCertificateDto certificateDto) {
         try {

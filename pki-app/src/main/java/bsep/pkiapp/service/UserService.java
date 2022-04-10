@@ -32,7 +32,6 @@ public class UserService implements UserDetailsService {
 
     public List<User> getAll() { return userRepository.findAll(); }
 
-    // TODO: possible problem, I added null because I could not compile
     public User getById(Integer id) { return userRepository.findById(id).orElseThrow(null); }
 
     @Override

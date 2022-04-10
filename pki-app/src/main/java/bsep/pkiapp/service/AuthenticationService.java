@@ -71,7 +71,6 @@ public class AuthenticationService {
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userService.saveUser(user);
-            // TODO: sendRegistrationEmail(client);
         }
     }
 

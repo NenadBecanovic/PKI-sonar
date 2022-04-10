@@ -60,11 +60,12 @@ public class CertificateService {
 		if (dto.getCertificateType().equals("ROOT")) {
 			generateCertificate(dto, subject, subject);
 		} else {
+			if (!isCertificateValid(dto.getIssuerSerialNumber())) {
+				throw new BadRequestException("Issuer certificate is not valid.");
+			}
 			if(!isChosenEndDateAllowed(dto.getValidityEndDate(), new BigInteger(dto.getIssuerSerialNumber()))){
 				throw new BadRequestException("Chosen validity date range exceeds CAs validity end date.");
 			}
-			// TODO: get issuer from KeyStorage, check if issuer is of role: ROLE_CA
-			checkIfIssuerHasSigningPermission(new BigInteger(dto.getIssuerSerialNumber())); //da li je dobro ovo pozvati ovako?
 			if (isIssuerRootCertificate(new BigInteger(dto.getIssuerSerialNumber()))) {
 				KeyStoreReader keyStore = new KeyStoreReader();
 				X500Name x500NameIssuer = keyStore.readIssuerNameFromStore(
@@ -94,8 +95,6 @@ public class CertificateService {
 
 	public void generateCertificate(NewCertificateDto dto, X500Name issuer, X500Name subject) {
 		try {
-			// TODO: validation checks, keyStorage, DataBase storage, extensions and
-			// purposes
 			JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
 			builder = builder.setProvider("BC");
 			KeyStoreReader ksr = new KeyStoreReader();
@@ -138,8 +137,6 @@ public class CertificateService {
 			certConverter = certConverter.setProvider("BC");
 			X509Certificate certificate = certConverter.getCertificate(certHolder);
 			if (dto.getCertificateType().equals("ROOT")) {
-				if(!user.getRole().getAuthority().equals("ROLE_ADMIN"))
-					throw new BadRequestException("Only admin is authorized to issue a root cetificate.");
 				Date startDate = new Date();
 				CertificateChain chain = new CertificateChain(serialNumber, serialNumber, dto.getOrganizationName(),
 						CertificateType.ROOT, user,
@@ -150,10 +147,6 @@ public class CertificateService {
 			} else {
 				CertificateChain chain;
 				if (dto.getCertificateType().equals("INTERMEDIATE")) {
-					User issuerUser = userService.getByEmail(IETFUtils.valueToString((issuer.getRDNs(BCStyle.E)[0]).getFirst().getValue()));
-					if(issuerUser.getRole().getAuthority().equals("ROLE_USER")){
-						throw new BadRequestException("User with EE certificate cannot issue an CA certificate.");
-					}
 					if(user.getEmail().equals(IETFUtils.valueToString((issuer.getRDNs(BCStyle.E)[0]).getFirst().getValue()))){
 						throw new BadRequestException("Issuer and subject cannot be the same.");
 					}
@@ -162,7 +155,6 @@ public class CertificateService {
 							CertificateType.INTERMEDIATE, user,
 							new Date(), dto.getValidityEndDate(), true);
 				} else {
-					// TODO: Add user info to CertificateChain instead of organization unit
 					chain = new CertificateChain(serialNumber,
 							new BigInteger(dto.getIssuerSerialNumber()), user.getEmail(),
 							CertificateType.END_ENTITY, user,
@@ -172,8 +164,6 @@ public class CertificateService {
 				String rootSerialNumber2 = findRootSerialNumber(chain);
 				certificateChainRepository.save(chain);
 
-//				keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(),
-//						rootSerialNumber2, keyPair.getPrivate(), certificate, rootSerialNumber2);
 				keyStoreService.writeCertificateToHierarchyKeyStore(chain.getSerialNumber().toString(),
 						rootSerialNumber2, keyPair.getPrivate(),
 						findCertificateChainHierarchy(certificate, dto.getIssuerSerialNumber(), rootSerialNumber2),
@@ -241,8 +231,7 @@ public class CertificateService {
 		return certificate.getSerialNumber().toString();
 	}
 
-	private X509Certificate[] findCertificateChainHierarchy(X509Certificate newCertificate, String issuerSerialNumber,
-															String rootSerialNumber) {
+	private X509Certificate[] findCertificateChainHierarchy(X509Certificate newCertificate, String issuerSerialNumber,String rootSerialNumber) {
 		X509Certificate certificate = getX509Certificate(new BigInteger(issuerSerialNumber));
 		List<X509Certificate> certificateChainHierarchy = new ArrayList<>();
 		certificateChainHierarchy.add(newCertificate);
@@ -317,24 +306,10 @@ public class CertificateService {
 		return getAllByUser(token).stream().filter(cert -> cert.type.equals(filter)).collect(Collectors.toList());
 	}
 
-	//TODO: provera da li je datum unutar scopa datuma signer sertifikata
 	private Boolean isChosenEndDateAllowed(Date subjectNotAfter, BigInteger issuerSerialNumber){X509Certificate issuerCertificate = getX509Certificate(issuerSerialNumber);
-		if (subjectNotAfter.after(issuerCertificate.getNotAfter()))
-			return false;
-		return true;
+		return !subjectNotAfter.after(issuerCertificate.getNotAfter());
 	}
 
-	//TODO: subject i issuer nisu isti
-
-	//TODO: da issuer nije end entity
-	private Boolean checkIfIssuerHasSigningPermission(BigInteger issuerSerialNumber){
-		X509Certificate issuerCertificate = getX509Certificate(issuerSerialNumber);
-		//TODO: proveriti da li ima KeyUsage.keyCertSign
-
-		return true;
-	}
-
-	//TODO: VALIDACIJA - proveri datum i potpis za niz (i povucenost) - done? proveriti u primeru sa vezbi
 	public Boolean isCertificateValid(String serialNumberStr) {
 		BigInteger serialNumber = new BigInteger(serialNumberStr);
 		if(isCertRevoked(serialNumber))
@@ -369,7 +344,6 @@ public class CertificateService {
 		return true;
 	}
 
-	//TODO: POVLACENJE SERTIFIKATA - done?
 	public void revokeCertificate(String serialNumberStr) {
 		BigInteger serialNumber = new BigInteger(serialNumberStr);
 		CertificateChain certificateChain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
@@ -394,8 +368,9 @@ public class CertificateService {
 		return certificateChain.isRevoked();
 	}
 
-	/*
+
 	//TODO: provera povucenosti - OCSP :'(
+	/*
 	public boolean isCertificateRevoked(BigInteger serialNumber){
 		OCSPReq request = createOCSPRequest(serialNumber);
 		BasicOCSPResp response = getOCSPResponse(request);
@@ -418,7 +393,8 @@ public class CertificateService {
 		CertificateID certId = null;
 		try {
 			DigestCalculator digestCalculator = new JcaDigestCalculatorProviderBuilder().setProvider("BC").build().get(CertificateID.HASH_SHA1);
-			certId = new CertificateID(digestCalculator, new X509CertificateHolder(cert.getEncoded()), cert.getSerialNumber()); //TODO: proveriti - cert ili issuerCert za drugi parametar?
+			certId = new CertificateID(digestCalculator, new X509CertificateHolder(issuerCert.getEncoded()),
+					cert.getSerialNumber());
 		} catch (OperatorCreationException | OCSPException | CertificateEncodingException | IOException e) {
 			e.printStackTrace();
 		}
@@ -438,7 +414,7 @@ public class CertificateService {
 		BigInteger serialNumber = request.getRequestList()[0].getCertID().getSerialNumber();
 		//BigInteger serialNumber = request.getCerts()[0].getSerialNumber();
 
-		X509Certificate cert = getX509Certificate(serialNumber.longValue());
+		X509Certificate cert = getX509Certificate(serialNumber);
 		DigestCalculatorProvider digitalCalculatorProvider = null;
 
 		try {

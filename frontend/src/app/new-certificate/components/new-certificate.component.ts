@@ -45,6 +45,7 @@ export class NewCertificateComponent implements OnInit {
   public country: FormControl;
 
   stepperOrientation: Observable<StepperOrientation>;
+  public now: Date = new Date();
 
   constructor(private _authService: AuthService, private userService: UserService,private _elementRef: ElementRef, private _formBuilder: FormBuilder, breakpointObserver: BreakpointObserver, private certificateService: CertificateService, private router: Router) {
     this._authService.getRole().subscribe((response: string) => {
