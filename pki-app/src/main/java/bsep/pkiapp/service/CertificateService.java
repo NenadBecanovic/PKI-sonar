@@ -17,9 +17,14 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.cert.ocsp.*;
+import org.bouncycastle.cert.ocsp.jcajce.JcaBasicOCSPRespBuilder;
 import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.DigestCalculator;
+import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -368,9 +373,8 @@ public class CertificateService {
 		return certificateChain.isRevoked();
 	}
 
-
-	//TODO: provera povucenosti - OCSP :'(
 	/*
+	//TODO: provera povucenosti - OCSP :'(
 	public boolean isCertificateRevoked(BigInteger serialNumber){
 		OCSPReq request = createOCSPRequest(serialNumber);
 		BasicOCSPResp response = getOCSPResponse(request);
@@ -381,21 +385,19 @@ public class CertificateService {
 	}
 
 	private OCSPReq createOCSPRequest(BigInteger serialNumber) {
-		X509Certificate cert = getX509Certificate(serialNumber.longValue());
+		X509Certificate cert = getX509Certificate(serialNumber);
 		CertificateChain chain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
-		X509Certificate issuerCert = getX509Certificate(chain.getSignerSerialNumber().longValue());
-
-		//(X509Certificate issuerCert, BigInteger serialNumber)
-		//Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		//OCSPReqBuilder gen = new OCSPReqBuilder();
-		//gen.addRequest(new JcaCertificateID(new JcaDigestCalculatorProviderBuilder().setProvider("BC").build().get(CertificateID.HASH_SHA1), issuerCert, serialNumber));
+		X509Certificate issuerCert = null;
+		if (chain.getCertificateType().equals(CertificateType.ROOT))
+			issuerCert = getX509Certificate(serialNumber);
+		else
+			issuerCert = getX509Certificate(chain.getSignerSerialNumber());
 
 		CertificateID certId = null;
 		try {
 			DigestCalculator digestCalculator = new JcaDigestCalculatorProviderBuilder().setProvider("BC").build().get(CertificateID.HASH_SHA1);
-			certId = new CertificateID(digestCalculator, new X509CertificateHolder(issuerCert.getEncoded()),
-					cert.getSerialNumber());
-		} catch (OperatorCreationException | OCSPException | CertificateEncodingException | IOException e) {
+			certId = new CertificateID(digestCalculator, new X509CertificateHolder(issuerCert.getEncoded()), cert.getSerialNumber());
+		} catch (OperatorCreationException| OCSPException | CertificateEncodingException | IOException e) {
 			e.printStackTrace();
 		}
 
@@ -416,7 +418,6 @@ public class CertificateService {
 
 		X509Certificate cert = getX509Certificate(serialNumber);
 		DigestCalculatorProvider digitalCalculatorProvider = null;
-
 		try {
 			digitalCalculatorProvider = new JcaDigestCalculatorProviderBuilder().setProvider("BC").build();
 		} catch (OperatorCreationException e) {
@@ -431,16 +432,49 @@ public class CertificateService {
 		}
 
 		CertificateChain chain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
+
 		if(chain.isRevoked())
 			responseBuilder.addResponse(request.getRequestList()[0].getCertID(), new RevokedStatus(new Date(), 0));
 		else
 			responseBuilder.addResponse(request.getRequestList()[0].getCertID(), CertificateStatus.GOOD);
 
+
 		JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
-
 		builder = builder.setProvider("BC");
+		ContentSigner contentSigner = null;
 
+		KeyStoreReader ksr = new KeyStoreReader();
+		PrivateKey privateKey = null;
+		if (isIssuerRootCertificate(chain.getSignerSerialNumber())) {
+			privateKey = ksr.readPrivateKey(".\\files\\root" + chain.getSignerSerialNumber().toString() + ".jks",
+					chain.getSignerSerialNumber().toString(), chain.getSignerSerialNumber().toString(),
+					chain.getSignerSerialNumber().toString());
+		} else {
+			String rootSerialNumber = findRootSerialNumberByIssuerSerialNumber(chain.getSignerSerialNumber().toString());
+			privateKey = ksr.readPrivateKey(".\\files\\hierarchy" + rootSerialNumber + ".jks",
+					rootSerialNumber, chain.getSignerSerialNumber().toString(),
+					rootSerialNumber);
+		}
+		try {
+			contentSigner = builder.build(privateKey);
+		} catch (OperatorCreationException e) {
+			e.printStackTrace();
+		}
 
-		return null;
-	}*/
+		X509CertificateHolder[] responseCertHolderList = new X509CertificateHolder[1];
+		try {
+			responseCertHolderList[0] = new X509CertificateHolder(cert.getEncoded());
+		} catch (IOException | CertificateEncodingException e) {
+			e.printStackTrace();
+		}
+		BasicOCSPResp response = null;
+		try {
+			response = responseBuilder.build(contentSigner, responseCertHolderList, new Date());
+		} catch (OCSPException e) {
+			e.printStackTrace();
+		}
+
+		return response;
+	}
+	*/
 }
