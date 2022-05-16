@@ -31,6 +31,9 @@ public class User implements UserDetails {
     @ManyToOne(targetEntity = Role.class, cascade = CascadeType.MERGE)
     private Role role;
 
+    @Column(name = "activated", nullable = false)
+    private boolean activated;
+
     public User() {}
 
     public User(Integer id, String name, String surname, String email, String password, Role role) {
@@ -129,4 +132,11 @@ public class User implements UserDetails {
         this.role = role;
     }
 
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+    }
 }

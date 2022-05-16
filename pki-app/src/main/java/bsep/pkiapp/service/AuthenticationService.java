@@ -1,14 +1,14 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.UserDto;
-import bsep.pkiapp.model.RoleType;
+import bsep.pkiapp.model.ConfirmationToken;
+import bsep.pkiapp.model.ConfirmationTokenType;
 import bsep.pkiapp.model.User;
 import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;
 import bsep.pkiapp.security.util.UserTokenState;
 import bsep.pkiapp.security.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,11 +39,20 @@ public class AuthenticationService {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private ConfirmationTokenService confirmationTokenService;
+
+    @Autowired
+    private EmailService emailService;
+
     public UserTokenState login(JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getEmail(), authenticationRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
+        if (!user.isActivated()) {
+            return null;
+        }
         return getAuthentication(user);
     }
 
@@ -71,11 +80,48 @@ public class AuthenticationService {
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userService.saveUser(user);
+            sendRegistrationEmail(user);
         }
+    }
+
+    private void sendRegistrationEmail(User user) {
+        String token = confirmationTokenService.generateConfirmationToken(user.getEmail(), true);
+        emailService.sendRegistrationEmail(user, token);
     }
 
     public String getRoleFromToken(String token) {
         return tokenUtils.getRoleFromToken(token);
     }
 
+    public void confirmAccount(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
+        if (confirmationToken.getTokenType().equals(ConfirmationTokenType.REGISTRATION_TOKEN)) {
+            User user = userService.getByEmail(confirmationToken.getEmail());
+            user.setActivated(true);
+            userService.saveUser(user);
+            confirmationTokenService.deleteToken(confirmationToken);
+        }
+    }
+
+    public void recoverAccount(String email) {
+        User user = userService.getByEmail(email);
+        if (user != null) {
+            String token = confirmationTokenService.generateConfirmationToken(email, false);
+            emailService.sendRecoveryEmail(user, token);
+        }
+    }
+
+    public boolean areNewPasswordsMatching(String newPassword, String newPasswordRetyped) {
+        return newPassword.equals(newPasswordRetyped);
+    }
+
+    public void setupNewPassword(String token, String newPassword) {
+        ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
+        if (confirmationToken.getTokenType().equals(ConfirmationTokenType.RECOVERY_TOKEN)) {
+            User user = userService.getByEmail(confirmationToken.getEmail());
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userService.saveUser(user);
+            confirmationTokenService.deleteToken(confirmationToken);
+        }
+    }
 }
