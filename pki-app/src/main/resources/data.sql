@@ -72,3 +72,6 @@ VALUES (102, 5864156063556204784, 5350930521431098546, FALSE, 'bb', 103, '2022-0
 INSERT INTO certificate_chain (id, serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
                                date_to, certificate_type, has_signing_permission)
 VALUES (103, 6546362447523901530, 5864156063556204784, FALSE, 'ca2@gmail.com', 106, '2022-04-09 18:28:28.045', '2022-05-20 00:00:00', 'END_ENTITY', FALSE);
+INSERT INTO certificate_chain (id, serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
+                               date_to, certificate_type, has_signing_permission)
+VALUES (104, 1496910453755217097, 1496910453755217097, FALSE, 'PKI', 101, '2022-05-17 15:27:47.623', '2022-05-31 00:00:00', 'ROOT', TRUE);
