@@ -36,7 +36,7 @@ public class EmailService {
         mail.setFrom(env.getProperty("spring.mail.username"));
         mail.setSubject("Account recovery");
         mail.setText("Hello " + user.getName() + ",\n\nTo set up a new password, please click here : "
-                + "http://localhost:4200/auth/reset-password?token=" + token);
+                + "https://localhost:4200/auth/reset-password?token=" + token);
         javaMailSender.send(mail);
     }
 }
