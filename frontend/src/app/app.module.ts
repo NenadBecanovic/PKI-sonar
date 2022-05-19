@@ -18,6 +18,7 @@ import {MatDividerModule} from "@angular/material/divider";
 import {RegisterComponent} from "./utils/auth/components/register/register.component";
 import {AuthInterceptor} from "./utils/auth/auth.interceptor";
 import { AccountValidationComponent } from './account-validation/components/account-validation.component';
+import { PageNotFoundComponent } from './utils/page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { AccountValidationComponent } from './account-validation/components/acco
     SearchComponent,
     NewCertificateComponent,
     RegisterComponent,
-    AccountValidationComponent
+    AccountValidationComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
