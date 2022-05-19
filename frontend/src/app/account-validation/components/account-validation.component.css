@@ -1,0 +1,60 @@
+.content{
+    background-image: linear-gradient(141deg, #304156 1%, #282a3a 21%, #060914 52%);
+  }
+  mat-grid-list{
+    height: 90vh
+  }
+  .main-container{
+    display: grid;
+  
+  }
+  
+  h1{
+    color: white;
+    font-size: 40px;
+    line-height: 50px;
+  }
+  
+  
+  h3 {
+    color: white;
+    font-size: 20px;
+    line-height: 20px;
+  }
+  .welcome-text-container{
+    padding: 50px;
+  }
+  
+  img{
+    opacity: 1;
+    animation-name: cf3FadeInOut;
+    animation-timing-function: ease-in;
+    animation-iteration-count: 1;
+    animation-duration: 1000ms;
+    animation-direction: alternate;
+    transform: scale(1);
+  }
+  
+  @keyframes cf3FadeInOut {
+    0% {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    25%{
+      opacity: 0.25;
+      transform: scale(0.97);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(0.98);
+    }
+    75%{
+      opacity: 0.75;
+      transform: scale(0.99);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  

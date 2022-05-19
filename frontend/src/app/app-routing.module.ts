@@ -5,6 +5,7 @@ import {LoginComponent} from "./utils/auth/components/login/login.component";
 import {CertificateOverviewComponent} from "./certificate-overview/components/certificate-overview.component";
 import {NewCertificateComponent} from "./new-certificate/components/new-certificate.component";
 import {RegisterComponent} from "./utils/auth/components/register/register.component";
+import { AccountValidationComponent } from './account-validation/components/account-validation.component';
 
 const routes: Routes = [
   {path: '', component: WelcomeComponent},
@@ -12,6 +13,8 @@ const routes: Routes = [
   {path: 'overview', component: CertificateOverviewComponent},
   {path: 'new', component: NewCertificateComponent},
   {path: 'register', component: RegisterComponent},
+  {path: 'account-validation/:token', component: AccountValidationComponent},
+  //{path: '**', component: WelcomeComponent},
 ];
 
 @NgModule({

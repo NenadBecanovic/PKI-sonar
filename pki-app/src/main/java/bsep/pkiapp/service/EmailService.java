@@ -25,7 +25,7 @@ public class EmailService {
         mail.setFrom(env.getProperty("spring.mail.username"));
         mail.setSubject("Registration confirmation");
         mail.setText("Hello " + user.getName() + ",\n\nTo confirm your account, please click here : "
-                + "https://localhost:8080/auth/confirm-account?token=" + token);
+                + "https://localhost:4200/account-validation/" + token);
         javaMailSender.send(mail);
     }
 
@@ -36,7 +36,7 @@ public class EmailService {
         mail.setFrom(env.getProperty("spring.mail.username"));
         mail.setSubject("Account recovery");
         mail.setText("Hello " + user.getName() + ",\n\nTo set up a new password, please click here : "
-                + "https://localhost:4200/auth/reset-password?token=" + token);
+                + "https://localhost:4200/reset-password/" + token);
         javaMailSender.send(mail);
     }
 }

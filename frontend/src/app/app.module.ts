@@ -17,6 +17,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {MatDividerModule} from "@angular/material/divider";
 import {RegisterComponent} from "./utils/auth/components/register/register.component";
 import {AuthInterceptor} from "./utils/auth/auth.interceptor";
+import { AccountValidationComponent } from './account-validation/components/account-validation.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import {AuthInterceptor} from "./utils/auth/auth.interceptor";
     CertificateComponent,
     SearchComponent,
     NewCertificateComponent,
-    RegisterComponent
+    RegisterComponent,
+    AccountValidationComponent
   ],
   imports: [
     BrowserModule,

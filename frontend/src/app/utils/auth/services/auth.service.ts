@@ -22,6 +22,7 @@ export class AuthService{
       {
         next: (response) => {
           localStorage.setItem('token', response.accessToken);
+          console.log(response.accessToken)
           this.router.navigate(['/overview']).then();
           this.logInUserChanged.next(response);
         },

@@ -54,15 +54,19 @@ public class AuthenticationController {
     }
 
     @GetMapping("/confirm-account")
-    public ResponseEntity<String> confirmAccount(@RequestParam(name = "token") String token) {
-        authenticationService.confirmAccount(token);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Boolean> confirmAccount(@RequestParam(name = "token") String token) {
+        return new ResponseEntity<>(authenticationService.confirmAccount(token), HttpStatus.OK);
     }
 
     @GetMapping("/account-recovery")
     public ResponseEntity<String> recoverAccount(@RequestParam(name = "email") String email) {
         authenticationService.recoverAccount(email);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/token-check")
+    public ResponseEntity<Boolean> isTokenValid(@RequestParam(name = "token") String token) {
+        return new ResponseEntity<>(authenticationService.isTokenValid(token), HttpStatus.OK);
     }
 
     //TODO: add password validation checks
