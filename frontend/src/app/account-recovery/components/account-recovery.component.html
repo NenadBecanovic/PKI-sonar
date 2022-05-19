@@ -1,0 +1,50 @@
+<div class="content" *ngIf="!isTokenValid">
+    <mat-grid-list cols="2" rowHeight="fit">
+        <mat-grid-tile>
+            <div class="welcome-text-container">
+                <h1 class="error-message">
+                    SORRY, IT SEEMS YOUR TOKEN IS UNVALID.
+                </h1>
+                <h3 class="error-redirect">
+                    Go to <a href="/" style="color: #4BA7F9;">home page</a>.
+                </h3>
+            </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <img src="assets/lock.png" class="cdk-overlay-pane" alt="Lock image" />
+        </mat-grid-tile>
+    </mat-grid-list>
+</div>
+
+<form [formGroup]="form" *ngIf="isTokenValid">
+    <h1  style="text-align: center">RESET PASSWORD</h1>
+    <div style="text-align: center">
+        <mat-form-field appearance="fill">
+            <mat-label>Enter new password</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" formControlName="newPassword" required>
+            <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide">
+                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+    <div style="text-align: center">
+        <mat-form-field appearance="fill">
+            <mat-label>Repeat new password</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" formControlName="newPasswordRetyped" required>
+            <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide">
+                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+      {{errorMessage}}
+    </div>
+    <div>
+        <div class="col-xs-12 button-container">
+            <button mat-raised-button class="mat-primary" [disabled]="!form.valid" (click)="resetPassword()">Reset password</button>
+        </div>
+        <br>
+    </div>
+</form>

@@ -70,7 +70,7 @@ public class AuthenticationController {
     }
 
     //TODO: add password validation checks
-    @PutMapping("/reset-password")
+    @PostMapping("/reset-password")
     public ResponseEntity<String> recoverPassword(@RequestParam(name = "token") String token,
                                                   @RequestBody ForgottenPasswordDto passwordDto) {
         if (!authenticationService.areNewPasswordsMatching(passwordDto.getNewPassword(), passwordDto.getNewPasswordRetyped()))
