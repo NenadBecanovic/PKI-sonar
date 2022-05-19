@@ -8,7 +8,7 @@ import { ForgottenPasswordDto } from '../dtos/ForgottenPassword.dto';
 @Injectable({
   providedIn: 'root'
 })
-export class AccountRecoveryService {
+export class PasswordResetService {
 
   constructor(private _http: HttpClient, private router: Router) {
   }

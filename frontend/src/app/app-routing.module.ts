@@ -7,7 +7,7 @@ import {NewCertificateComponent} from "./new-certificate/components/new-certific
 import {RegisterComponent} from "./utils/auth/components/register/register.component";
 import { AccountValidationComponent } from './account-validation/components/account-validation.component';
 import { PageNotFoundComponent } from './utils/page-not-found/page-not-found.component';
-import { AccountRecoveryComponent } from './account-recovery/components/account-recovery.component';
+import { PasswordResetComponent } from './password-reset/components/password-reset.component';
 
 const routes: Routes = [
   {path: '', component: WelcomeComponent},
@@ -16,7 +16,7 @@ const routes: Routes = [
   {path: 'new', component: NewCertificateComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'account-validation/:token', component: AccountValidationComponent},
-  {path: 'account-recovery/:token', component: AccountRecoveryComponent},
+  {path: 'password-reset/:token', component: PasswordResetComponent},
   {path: '**', component: PageNotFoundComponent},
 ];
 

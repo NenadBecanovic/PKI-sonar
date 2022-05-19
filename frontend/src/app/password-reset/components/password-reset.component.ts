@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ForgottenPasswordDto } from '../dtos/ForgottenPassword.dto';
-import { AccountRecoveryService } from '../services/account-recovery.service';
+import { PasswordResetService } from '../services/password-reset.service';
 
 @Component({
-  selector: 'app-account-recovery',
-  templateUrl: './account-recovery.component.html',
-  styleUrls: ['./account-recovery.component.css']
+  selector: 'app-password-reset',
+  templateUrl: './password-reset.component.html',
+  styleUrls: ['./password-reset.component.css']
 })
-export class AccountRecoveryComponent implements OnInit {
+export class PasswordResetComponent implements OnInit {
   public token: string | null = "";
   public isTokenValid: boolean = true;
   public isSuccess: boolean = false;
@@ -23,7 +23,7 @@ export class AccountRecoveryComponent implements OnInit {
     'newPasswordRetyped': this.newPasswordRetyped
   })
 
-  constructor(private _route: ActivatedRoute, private recoveryService: AccountRecoveryService, private router: Router) { }
+  constructor(private _route: ActivatedRoute, private recoveryService: PasswordResetService, private router: Router) { }
 
   ngOnInit(): void {
     this.token = this._route.snapshot.paramMap.get('token');
@@ -37,15 +37,6 @@ export class AccountRecoveryComponent implements OnInit {
 
     })
 
-    /*
-    this.errorMessage = "";
-    this.email = new FormControl('', [Validators.required, Validators.email]);
-    this.password = new FormControl();
-
-    this.form = new FormGroup({
-      'email': this.email,
-      'password': this.password
-    })*/
   }
 
   resetPassword() {

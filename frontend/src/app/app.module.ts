@@ -19,7 +19,7 @@ import {RegisterComponent} from "./utils/auth/components/register/register.compo
 import {AuthInterceptor} from "./utils/auth/auth.interceptor";
 import { AccountValidationComponent } from './account-validation/components/account-validation.component';
 import { PageNotFoundComponent } from './utils/page-not-found/page-not-found.component';
-import { AccountRecoveryComponent } from './account-recovery/components/account-recovery.component';
+import { PasswordResetComponent } from './password-reset/components/password-reset.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +34,7 @@ import { AccountRecoveryComponent } from './account-recovery/components/account-
     RegisterComponent,
     AccountValidationComponent,
     PageNotFoundComponent,
-    AccountRecoveryComponent
+    PasswordResetComponent
   ],
   imports: [
     BrowserModule,
