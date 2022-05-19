@@ -1,0 +1,33 @@
+form{
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+  
+  h1{
+    color: white;
+    font-weight: bold;
+  }
+  
+  mat-form-field{
+    width: 30vw;
+    max-width: 30em;
+    min-width: 20em;
+  }
+  
+  .button-container{
+    text-align: center
+  }
+  
+  
+  
+  .register-question{
+    color: white;
+    text-align: center;
+  }
+  
+  .register-question a{
+    color: white
+  }
+  
