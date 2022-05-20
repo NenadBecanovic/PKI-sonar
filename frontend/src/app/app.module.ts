@@ -21,6 +21,8 @@ import { AccountValidationComponent } from './account-validation/components/acco
 import { PageNotFoundComponent } from './utils/page-not-found/page-not-found.component';
 import { PasswordResetComponent } from './password-reset/components/password-reset.component';
 import { AccountRecoveryComponent } from './account-recovery/components/account-recovery.component';
+import { PasswordlessLoginComponent } from './utils/auth/components/passwordless-login/passwordless-login.component';
+import { PasswordlessLoginValidationComponent } from './utils/auth/components/passwordless-login-validation/passwordless-login-validation.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { AccountRecoveryComponent } from './account-recovery/components/account-
     AccountValidationComponent,
     PageNotFoundComponent,
     PasswordResetComponent,
-    AccountRecoveryComponent
+    AccountRecoveryComponent,
+    PasswordlessLoginComponent,
+    PasswordlessLoginValidationComponent
   ],
   imports: [
     BrowserModule,

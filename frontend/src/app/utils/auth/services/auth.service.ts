@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {LoginUserDto} from "../dtos/LoginUser.dto";
 import {environment} from "../../../../environments/environment";
-import {map, Subject} from "rxjs";
+import {map, Observable, Subject} from "rxjs";
 import {RegisterUsetDto} from "../../../shared/dto/RegisterUset.dto";
 import {UserTokenStateDto} from "../dtos/UserTokenState.dto";
 import {Router} from "@angular/router";
@@ -44,4 +44,25 @@ export class AuthService{
   getRole() {
     return this._http.get(environment.apiUrl + "/auth/getRole", {responseType: 'text'});
   }
+
+  requestLoginWithEmail(email: string) : Observable<boolean> {
+    return this._http.get<boolean>(environment.apiUrl + "/auth/login-link?email=" + email)
+  }
+
+  loginWithEmail(token: string | null) {
+    this._http.get<UserTokenStateDto>(environment.apiUrl + "/auth/passwordless-login?token="+token).subscribe(
+      {
+        next: (response) => {
+          localStorage.setItem('token', response.accessToken);
+          console.log(response.accessToken)
+          this.router.navigate(['/overview']).then();
+          this.logInUserChanged.next(response);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.logInUserChanged.error(error)
+        }
+      })
+  }
+
+
 }

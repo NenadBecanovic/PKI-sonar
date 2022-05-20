@@ -47,7 +47,7 @@ public class EmailService {
         mail.setFrom(env.getProperty("spring.mail.username"));
         mail.setSubject("Login link");
         mail.setText("Hello " + user.getName() + ",\n\nTo login into you account, please click the following link : "
-                + "https://localhost:4200?token=" + token);
+                + "https://localhost:4200/passwordless-login-validation/" + token);
         javaMailSender.send(mail);
     }
 }
