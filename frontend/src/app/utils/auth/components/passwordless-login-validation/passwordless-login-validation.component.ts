@@ -34,22 +34,6 @@ export class PasswordlessLoginValidationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    /*this.token = this._route.snapshot.paramMap.get('token');
-    if (this.token === null) {
-      this.token = ""
-    }
-    console.log(this.token)
-    this.authService.checkAuthToken(this.token).subscribe((response) => {
-      this.isTokenValid = response;
-      console.log(this.isTokenValid)
-      if (this.isTokenValid) {
-        this.validationService.validateAccount(this.token).subscribe((response2) => {
-          console.log(response2);
-          this.isSuccess = response2;
-        })
-      }
-
-    })*/
   }
 
 }

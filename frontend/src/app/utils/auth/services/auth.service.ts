@@ -45,6 +45,10 @@ export class AuthService{
     return this._http.get(environment.apiUrl + "/auth/getRole", {responseType: 'text'});
   }
 
+  getPermissions(): Observable<string[]> {
+    return this._http.get<string[]>(environment.apiUrl + "/auth/getAuthorities");
+  }
+
   requestLoginWithEmail(email: string) : Observable<boolean> {
     return this._http.get<boolean>(environment.apiUrl + "/auth/login-link?email=" + email)
   }

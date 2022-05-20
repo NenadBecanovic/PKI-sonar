@@ -11,12 +11,14 @@ import { PasswordResetComponent } from './password-reset/components/password-res
 import { AccountRecoveryComponent } from './account-recovery/components/account-recovery.component';
 import { PasswordlessLoginComponent } from './utils/auth/components/passwordless-login/passwordless-login.component';
 import { PasswordlessLoginValidationComponent } from './utils/auth/components/passwordless-login-validation/passwordless-login-validation.component';
+import { NewCertGuard } from './shared/auth-guards/new-cert.guard';
+import { ViewCertsGuard } from './shared/auth-guards/view-certs.guard';
 
 const routes: Routes = [
   {path: '', component: WelcomeComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'overview', component: CertificateOverviewComponent},
-  {path: 'new', component: NewCertificateComponent},
+  {path: 'overview', component: CertificateOverviewComponent, canActivate: [ViewCertsGuard]},
+  {path: 'new', component: NewCertificateComponent, canActivate: [NewCertGuard]},
   {path: 'register', component: RegisterComponent},
   {path: 'account-validation/:token', component: AccountValidationComponent},
   {path: 'account-recovery', component: AccountRecoveryComponent},
