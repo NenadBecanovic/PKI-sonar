@@ -18,3 +18,7 @@
   gap: 1em;
   grid-auto-flow: column;
 }
+
+.register-question a{
+  color: white
+}

@@ -14,6 +14,7 @@ import { PasswordlessLoginValidationComponent } from './utils/auth/components/pa
 import { NewCertGuard } from './shared/auth-guards/new-cert.guard';
 import { ViewCertsGuard } from './shared/auth-guards/view-certs.guard';
 import { NoAuthGuard } from './shared/auth-guards/no-auth.guard';
+import { ChangePasswordComponent } from './utils/auth/components/change-password/change-password.component';
 
 const routes: Routes = [
   {path: '', component: WelcomeComponent},
@@ -24,6 +25,7 @@ const routes: Routes = [
   {path: 'account-validation/:token', component: AccountValidationComponent, canActivate: [NoAuthGuard]},
   {path: 'account-recovery', component: AccountRecoveryComponent, canActivate: [NoAuthGuard]},
   {path: 'password-reset/:token', component: PasswordResetComponent, canActivate: [NoAuthGuard]},
+  {path: 'change-password', component: ChangePasswordComponent, canActivate: [ViewCertsGuard]},
   {path: 'passwordless-login', component: PasswordlessLoginComponent, canActivate: [NoAuthGuard]},
   {path: 'passwordless-login-validation/:token', component:PasswordlessLoginValidationComponent, canActivate: [NoAuthGuard]},
   {path: '**', component: PageNotFoundComponent},

@@ -1,5 +1,6 @@
 package bsep.pkiapp.service;
 
+import bsep.pkiapp.dto.ChangedPasswordDto;
 import bsep.pkiapp.dto.UserDto;
 import bsep.pkiapp.model.ConfirmationToken;
 import bsep.pkiapp.model.ConfirmationTokenType;
@@ -11,6 +12,7 @@ import bsep.pkiapp.security.util.UserTokenState;
 import bsep.pkiapp.security.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -150,6 +152,24 @@ public class AuthenticationService {
 
     public boolean areNewPasswordsMatching(String newPassword, String newPasswordRetyped) {
         return newPassword.equals(newPasswordRetyped);
+    }
+
+    public boolean changePassword(String token, ChangedPasswordDto passwordDto){
+        String email = tokenUtils.getEmailFromToken(token);
+        try{
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    email, passwordDto.getOldPassword()));
+            if(authentication.isAuthenticated()){
+                User user = userService.getByEmail(email);
+                user.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
+                userService.saveUser(user);
+                return true;
+            }
+            return false;
+        } catch (BadCredentialsException e){
+            return false;
+        }
+
     }
 
     public void setupNewPassword(String token, String newPassword) {

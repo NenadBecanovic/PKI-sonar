@@ -1,5 +1,6 @@
 package bsep.pkiapp.controller;
 
+import bsep.pkiapp.dto.ChangedPasswordDto;
 import bsep.pkiapp.dto.ForgottenPasswordDto;
 import bsep.pkiapp.dto.UserDto;
 import bsep.pkiapp.model.ConfirmationToken;
@@ -37,6 +38,20 @@ public class AuthenticationController {
     @GetMapping(value = "getUser")
     public ResponseEntity<UserDto> getUser(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(authenticationService.getUser(token.split(" ")[1]));
+    }
+
+    @PostMapping(value = "/change-password")
+    public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token,
+                                                 @RequestBody ChangedPasswordDto passwordDto) {
+        if (!authenticationService.areNewPasswordsMatching(passwordDto.getNewPassword(), passwordDto.getNewPasswordRetyped()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else {
+            boolean isSuccess = authenticationService.changePassword(token.split(" ")[1], passwordDto);
+            if (isSuccess)
+                return new ResponseEntity<>(HttpStatus.OK);
+            else
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/login")

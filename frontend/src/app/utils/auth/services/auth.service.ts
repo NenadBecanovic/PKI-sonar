@@ -6,6 +6,7 @@ import {map, Observable, Subject} from "rxjs";
 import {RegisterUsetDto} from "../../../shared/dto/RegisterUset.dto";
 import {UserTokenStateDto} from "../dtos/UserTokenState.dto";
 import {Router} from "@angular/router";
+import { ChangedPasswordDto } from "../dtos/ChangedPasswordDto";
 
 @Injectable({providedIn: 'root'})
 export class AuthService{
@@ -47,6 +48,10 @@ export class AuthService{
 
   getPermissions(): Observable<string[]> {
     return this._http.get<string[]>(environment.apiUrl + "/auth/getAuthorities");
+  }
+
+  changePassword(dto: ChangedPasswordDto)  {
+    return this._http.post(environment.apiUrl + "/auth/change-password", dto);
   }
 
   requestLoginWithEmail(email: string) : Observable<boolean> {

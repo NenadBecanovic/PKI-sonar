@@ -23,6 +23,7 @@ import { PasswordResetComponent } from './password-reset/components/password-res
 import { AccountRecoveryComponent } from './account-recovery/components/account-recovery.component';
 import { PasswordlessLoginComponent } from './utils/auth/components/passwordless-login/passwordless-login.component';
 import { PasswordlessLoginValidationComponent } from './utils/auth/components/passwordless-login-validation/passwordless-login-validation.component';
+import { ChangePasswordComponent } from './utils/auth/components/change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { PasswordlessLoginValidationComponent } from './utils/auth/components/pa
     PasswordResetComponent,
     AccountRecoveryComponent,
     PasswordlessLoginComponent,
-    PasswordlessLoginValidationComponent
+    PasswordlessLoginValidationComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,

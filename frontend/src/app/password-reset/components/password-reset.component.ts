@@ -30,13 +30,9 @@ export class PasswordResetComponent implements OnInit {
     if (this.token === null) {
       this.token = ""
     }
-    console.log(this.token)
     this.recoveryService.checkToken(this.token).subscribe((response) => {
       this.isTokenValid = response;
-      console.log(this.isTokenValid)
-
     })
-
   }
 
   resetPassword() {
@@ -45,14 +41,12 @@ export class PasswordResetComponent implements OnInit {
       this.recoveryService.resetPassword(this.token, new ForgottenPasswordDto(this.newPassword.value, this.newPasswordRetyped.value)).subscribe((response) => {
         this.isSuccess = response;
         console.log(this.isSuccess)
-        
+
         this.router.navigate(['/login'])
       });
     } else {
       console.log("Not valid")
     }
-
-
   }
 
 }
