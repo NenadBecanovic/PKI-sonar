@@ -107,3 +107,5 @@ INSERT INTO role_permissions
 VALUES (2, 5); /* ca <- revoke_certificate */
 INSERT INTO role_permissions
 VALUES (3, 5); /* admin <- revoke_certificate */
+INSERT INTO role_permissions
+VALUES (1, 5); /* user <- revoke_certificate*/
