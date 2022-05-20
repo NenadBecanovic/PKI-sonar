@@ -56,6 +56,22 @@ public class AuthenticationService {
         return getAuthentication(user);
     }
 
+    public UserTokenState loginPasswordless(String token) throws AuthenticationException {
+        ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
+        if (confirmationToken.getTokenType().equals(ConfirmationTokenType.LOGIN_TOKEN)) {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    confirmationToken.getEmail(), null);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            User user = userService.getByEmail(confirmationToken.getEmail());
+            if (!user.isActivated()) {
+                return null;
+            }
+            return getAuthentication(user);
+        }
+        else
+            return null;
+    }
+
     public UserTokenState getAuthentication(User user) {
         return new UserTokenState(tokenUtils.generateToken(user.getEmail(), user.getRole().getAuthority(), user.getRole().getPermissionNames()), tokenUtils.getExpiredIn(), getRoles(user));
     }
@@ -84,8 +100,16 @@ public class AuthenticationService {
         }
     }
 
+    public void sendLoginLink(String email) {
+        User user = userService.getByEmail(email);
+        if (user != null) {
+            String token = confirmationTokenService.generateConfirmationToken(email, ConfirmationTokenType.LOGIN_TOKEN);
+            emailService.sendLoginEmail(user, token);
+        }
+    }
+
     private void sendRegistrationEmail(User user) {
-        String token = confirmationTokenService.generateConfirmationToken(user.getEmail(), true);
+        String token = confirmationTokenService.generateConfirmationToken(user.getEmail(), ConfirmationTokenType.REGISTRATION_TOKEN);
         emailService.sendRegistrationEmail(user, token);
     }
 
@@ -110,7 +134,7 @@ public class AuthenticationService {
     public void recoverAccount(String email) {
         User user = userService.getByEmail(email);
         if (user != null) {
-            String token = confirmationTokenService.generateConfirmationToken(email, false);
+            String token = confirmationTokenService.generateConfirmationToken(email, ConfirmationTokenType.RECOVERY_TOKEN);
             emailService.sendRecoveryEmail(user, token);
         }
     }
@@ -136,4 +160,5 @@ public class AuthenticationService {
         }
         return false;
     }
+
 }

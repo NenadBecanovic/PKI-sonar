@@ -43,6 +43,23 @@ public class AuthenticationController {
         }
     }
 
+    @GetMapping("/passwordless-login")
+    public ResponseEntity<UserTokenState> createAuthenticationTokenForPasswordlessLogin(
+            @RequestParam(name = "token") String token) {
+        try{
+            UserTokenState userTokenState = authenticationService.loginPasswordless(token);
+            return ResponseEntity.ok(userTokenState);
+        }catch (AuthenticationException e){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/login-link")
+    public ResponseEntity<String> sendLoginLink(@RequestParam(name = "email") String email) {
+        authenticationService.sendLoginLink(email);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
         try {

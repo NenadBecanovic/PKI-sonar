@@ -28,14 +28,11 @@ public class ConfirmationTokenService {
         confirmationTokenRepository.delete(confirmationToken);
     }
 
-    public String generateConfirmationToken(String email, boolean isForRegistration) {
+    public String generateConfirmationToken(String email, ConfirmationTokenType tokenType) {
         ConfirmationToken confirmationToken = new ConfirmationToken();
         confirmationToken.setEmail(email);
         confirmationToken.setToken(tokenUtils.generateToken(email, "ROLE_USER", null));
-        if (isForRegistration)
-            confirmationToken.setTokenType(ConfirmationTokenType.REGISTRATION_TOKEN);
-        else
-            confirmationToken.setTokenType(ConfirmationTokenType.RECOVERY_TOKEN);
+        confirmationToken.setTokenType(tokenType);
         saveToken(confirmationToken);
         return confirmationToken.getToken();
     }
