@@ -284,11 +284,19 @@ public class CertificateService {
 
 	public List<CertificateDto> getAllByUser(String token) {
 		User user = userService.getUserFromToken(token);
-		List<CertificateDto> dtos;
+		List<CertificateDto> dtos = new ArrayList<>();
 		if (user.getRole().getAuthority().equals("ROLE_ADMIN")) {
-			dtos = convertChainToDto(certificateChainRepository.findAll());
-		} else {
-			dtos = convertChainToDto(certificateChainRepository.getByUser(user));
+			dtos.addAll(convertChainToDto(certificateChainRepository.findAll()));
+		} else if(user.getRole().getAuthority().equals("ROLE_CA")){
+				List<CertificateChain> intermediateCerts = certificateChainRepository.getByUserAndCertificateType(user,
+						CertificateType.INTERMEDIATE);
+				for(CertificateChain cert: intermediateCerts){
+					dtos.addAll(convertChainToDto(certificateChainRepository.getCertificateChainsBySignerSerialNumber(cert.getSerialNumber())));
+				}
+				dtos.addAll(convertChainToDto(intermediateCerts));
+		}else {
+			dtos.addAll(convertChainToDto(certificateChainRepository.getByUserAndCertificateType(user,
+					CertificateType.END_ENTITY)));
 		}
 		return dtos;
 	}
