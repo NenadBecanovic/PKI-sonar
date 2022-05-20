@@ -3,6 +3,7 @@ package bsep.pkiapp.service;
 import bsep.pkiapp.dto.UserDto;
 import bsep.pkiapp.model.ConfirmationToken;
 import bsep.pkiapp.model.ConfirmationTokenType;
+import bsep.pkiapp.model.Role;
 import bsep.pkiapp.model.User;
 import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;
@@ -117,6 +118,10 @@ public class AuthenticationService {
         return tokenUtils.getRoleFromToken(token);
     }
 
+    public List<String> getAuthoritiesFromToken(String token) {
+        return roleService.getByName(tokenUtils.getRoleFromToken(token)).getPermissionNames();
+    }
+
     public boolean confirmAccount(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
         if (confirmationToken != null && confirmationToken.getTokenType().equals(ConfirmationTokenType.REGISTRATION_TOKEN)) {
@@ -160,5 +165,4 @@ public class AuthenticationService {
         }
         return false;
     }
-
 }

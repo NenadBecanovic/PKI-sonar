@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
@@ -25,6 +27,11 @@ public class AuthenticationController {
     @GetMapping(value = "getRole")
     public ResponseEntity<String> getRole(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(authenticationService.getRoleFromToken(token.split(" ")[1]));
+    }
+
+    @GetMapping(value = "getAuthorities")
+    public ResponseEntity<List<String>> getAuthorities(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(authenticationService.getAuthoritiesFromToken(token.split(" ")[1]));
     }
 
     @GetMapping(value = "getUser")
