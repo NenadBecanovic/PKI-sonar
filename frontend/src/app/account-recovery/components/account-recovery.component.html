@@ -1,0 +1,18 @@
+<form [formGroup]="form" >
+    <h1  style="text-align: center">ACCOUNT RECOVERY</h1>
+    <div style="text-align: center;margin: 20px;">
+        <mat-form-field appearance="fill">
+          <mat-label>Enter your email</mat-label>
+          <input matInput placeholder="example@example.com" formControlName="email" required>
+        </mat-form-field>
+      </div>
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+      {{errorMessage}}
+    </div>
+    <div>
+        <div class="col-xs-12 button-container">
+            <button mat-raised-button class="mat-primary" [disabled]="!form.valid" (click)="send()">Send</button>
+        </div>
+        <br>
+    </div>
+</form>

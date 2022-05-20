@@ -93,14 +93,18 @@ public class AuthenticationService {
         return tokenUtils.getRoleFromToken(token);
     }
 
-    public void confirmAccount(String token) {
+    public boolean confirmAccount(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
-        if (confirmationToken.getTokenType().equals(ConfirmationTokenType.REGISTRATION_TOKEN)) {
+        if (confirmationToken != null && confirmationToken.getTokenType().equals(ConfirmationTokenType.REGISTRATION_TOKEN)) {
             User user = userService.getByEmail(confirmationToken.getEmail());
+            if(user == null)
+                return false;
             user.setActivated(true);
             userService.saveUser(user);
             confirmationTokenService.deleteToken(confirmationToken);
+            return true;
         }
+        return false;
     }
 
     public void recoverAccount(String email) {
@@ -123,5 +127,13 @@ public class AuthenticationService {
             userService.saveUser(user);
             confirmationTokenService.deleteToken(confirmationToken);
         }
+    }
+
+    public boolean isTokenValid(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
+        if (confirmationToken != null) {
+            return true;
+        }
+        return false;
     }
 }

@@ -5,6 +5,10 @@ import {LoginComponent} from "./utils/auth/components/login/login.component";
 import {CertificateOverviewComponent} from "./certificate-overview/components/certificate-overview.component";
 import {NewCertificateComponent} from "./new-certificate/components/new-certificate.component";
 import {RegisterComponent} from "./utils/auth/components/register/register.component";
+import { AccountValidationComponent } from './account-validation/components/account-validation.component';
+import { PageNotFoundComponent } from './utils/page-not-found/page-not-found.component';
+import { PasswordResetComponent } from './password-reset/components/password-reset.component';
+import { AccountRecoveryComponent } from './account-recovery/components/account-recovery.component';
 
 const routes: Routes = [
   {path: '', component: WelcomeComponent},
@@ -12,6 +16,10 @@ const routes: Routes = [
   {path: 'overview', component: CertificateOverviewComponent},
   {path: 'new', component: NewCertificateComponent},
   {path: 'register', component: RegisterComponent},
+  {path: 'account-validation/:token', component: AccountValidationComponent},
+  {path: 'account-recovery', component: AccountRecoveryComponent},
+  {path: 'password-reset/:token', component: PasswordResetComponent},
+  {path: '**', component: PageNotFoundComponent},
 ];
 
 @NgModule({

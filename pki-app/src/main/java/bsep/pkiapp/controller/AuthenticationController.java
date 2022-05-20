@@ -54,9 +54,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/confirm-account")
-    public ResponseEntity<String> confirmAccount(@RequestParam(name = "token") String token) {
-        authenticationService.confirmAccount(token);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Boolean> confirmAccount(@RequestParam(name = "token") String token) {
+        return new ResponseEntity<>(authenticationService.confirmAccount(token), HttpStatus.OK);
     }
 
     @GetMapping("/account-recovery")
@@ -65,8 +64,13 @@ public class AuthenticationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/token-check")
+    public ResponseEntity<Boolean> isTokenValid(@RequestParam(name = "token") String token) {
+        return new ResponseEntity<>(authenticationService.isTokenValid(token), HttpStatus.OK);
+    }
+
     //TODO: add password validation checks
-    @PutMapping("/reset-password")
+    @PostMapping("/reset-password")
     public ResponseEntity<String> recoverPassword(@RequestParam(name = "token") String token,
                                                   @RequestBody ForgottenPasswordDto passwordDto) {
         if (!authenticationService.areNewPasswordsMatching(passwordDto.getNewPassword(), passwordDto.getNewPasswordRetyped()))

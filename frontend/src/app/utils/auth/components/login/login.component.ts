@@ -1,12 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
-import {AuthService} from "../../services/auth.service";
-import {LoginUserDto} from "../../dtos/LoginUser.dto";
-import {Subscription} from "rxjs";
-import {HttpErrorResponse} from "@angular/common/http";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {UserTokenStateDto} from "../../dtos/UserTokenState.dto";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
+import { AuthService } from "../../services/auth.service";
+import { LoginUserDto } from "../../dtos/LoginUser.dto";
+import { Subscription } from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { UserTokenStateDto } from "../../dtos/UserTokenState.dto";
 
 @Component({
   selector: 'app-login',
@@ -24,12 +24,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
     this.errorMessage = "";
     this.loginUserChanged = this.authService.logInUserChanged.subscribe({
-      next:(res) =>{
-        },
+      next: (res) => {
+      },
       error: (error: HttpErrorResponse) => {
         this.errorHandler(error);
-    }
-  })
+      }
+    })
 
     this.email = new FormControl('', [Validators.required, Validators.email]);
     this.password = new FormControl();
