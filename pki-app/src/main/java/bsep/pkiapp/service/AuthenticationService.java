@@ -57,7 +57,7 @@ public class AuthenticationService {
     }
 
     public UserTokenState getAuthentication(User user) {
-        return new UserTokenState(tokenUtils.generateToken(user.getEmail(), user.getRole().getAuthority()), tokenUtils.getExpiredIn(), getRoles(user));
+        return new UserTokenState(tokenUtils.generateToken(user.getEmail(), user.getRole().getAuthority(), user.getRole().getPermissionNames()), tokenUtils.getExpiredIn(), getRoles(user));
     }
 
     public List<String> getRoles(User user) {

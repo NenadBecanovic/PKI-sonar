@@ -75,3 +75,35 @@ VALUES (103, 6546362447523901530, 5864156063556204784, FALSE, 'ca2@gmail.com', 1
 INSERT INTO certificate_chain (id, serial_number, signer_serial_number, revoked, common_name, user_id, date_from,
                                date_to, certificate_type, has_signing_permission)
 VALUES (104, 1496910453755217097, 1496910453755217097, FALSE, 'PKI', 101, '2022-05-17 15:27:47.623', '2022-05-31 00:00:00', 'ROOT', TRUE);
+
+INSERT INTO permission
+VALUES (1, 'read_certificate');
+INSERT INTO permission
+VALUES (2, 'create_root_certificate');
+INSERT INTO permission
+VALUES (3, 'create_inter_certificate');
+INSERT INTO permission
+VALUES (4, 'create_ee_certificate');
+INSERT INTO permission
+VALUES (5, 'revoke_certificate');
+
+INSERT INTO role_permissions
+VALUES (1, 1); /* user <- read_certificate*/
+INSERT INTO role_permissions
+VALUES (2, 1); /* ca <- read_certificate */
+INSERT INTO role_permissions
+VALUES (3, 1); /* admin <- read_certificate */
+INSERT INTO role_permissions
+VALUES (3, 2); /* admin <- create_root_certificate */
+INSERT INTO role_permissions
+VALUES (2, 3); /* ca <- create_inter_certificate */
+INSERT INTO role_permissions
+VALUES (3, 3); /* admin <- create_inter_certificate */
+INSERT INTO role_permissions
+VALUES (2, 4); /* ca <- create_ee_certificate */
+INSERT INTO role_permissions
+VALUES (3, 4); /* admin <- create_ee_certificate */
+INSERT INTO role_permissions
+VALUES (2, 5); /* ca <- revoke_certificate */
+INSERT INTO role_permissions
+VALUES (3, 5); /* admin <- revoke_certificate */

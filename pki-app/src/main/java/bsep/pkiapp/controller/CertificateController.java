@@ -23,12 +23,13 @@ public class CertificateController {
     @Autowired
     private CertificateService certificateService;
 
+    @PreAuthorize("hasAuthority('read_certificate')")
     @GetMapping("/all")
     public ResponseEntity<?> getAllByUser(@RequestHeader("Authorization") String token) {
         return new ResponseEntity<>(certificateService.getAllByUser(token.split(" ")[1]), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('create_root_certificate')")
     @PostMapping("/createRootCertificate")
     public ResponseEntity<?> createRootCertificate(@RequestBody NewCertificateDto certificateDto) {
         try {
@@ -46,7 +47,7 @@ public class CertificateController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CA')")
+    @PreAuthorize("hasAuthority('create_inter_certificate')")
     @PostMapping("/createIntermediateCertificate")
     public ResponseEntity<?> createIntermediateCertificate(@RequestBody NewCertificateDto certificateDto) {
         try {
@@ -64,7 +65,7 @@ public class CertificateController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CA')")
+    @PreAuthorize("hasAuthority('create_ee_certificate')")
     @PostMapping("/createEndEntityCertificate")
     public ResponseEntity<?> createEndEntityCertificate(@RequestBody NewCertificateDto certificateDto) {
         try {
@@ -83,6 +84,7 @@ public class CertificateController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('read_certificate')")
     @GetMapping("/download/{serialNumber}")
     @Transactional
     public ResponseEntity<?> downloadCertificate(@PathVariable String serialNumber) {
@@ -101,28 +103,33 @@ public class CertificateController {
         }
     }
 
+    @PreAuthorize("hasAuthority('read_certificate')")
     @GetMapping("/getRootCertificates")
     public ResponseEntity<?> getRootCertificates() {
         return new ResponseEntity<>(certificateService.getRootCertificates(), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('revoke_certificate')")
     @PutMapping("/revoke")
     public ResponseEntity<?> revokeCertificate(@RequestBody String certSerialNumber) {
         certificateService.revokeCertificate(certSerialNumber);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('read_certificate')")
     @GetMapping("/validityCheck/{certSerialNumber}")
     public ResponseEntity<?> validityCheck(@PathVariable String certSerialNumber) {
         return new ResponseEntity<>(certificateService.isCertificateValid(certSerialNumber), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('read_certificate')")
     @GetMapping("/search/{searchText}")
     public ResponseEntity<?> search(@RequestHeader("Authorization") String token, @PathVariable String searchText) {
         return new ResponseEntity<>(certificateService.searchCertificates(token.split(" ")[1], searchText),
                 HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('read_certificate')")
     @GetMapping("/filterByType/{filter}")
     public ResponseEntity<?> filterByType(@RequestHeader("Authorization") String token, @PathVariable String filter) {
         return new ResponseEntity<>(certificateService.filterCertificates(token.split(" ")[1], filter), HttpStatus.OK);

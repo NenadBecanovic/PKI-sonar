@@ -31,7 +31,7 @@ public class ConfirmationTokenService {
     public String generateConfirmationToken(String email, boolean isForRegistration) {
         ConfirmationToken confirmationToken = new ConfirmationToken();
         confirmationToken.setEmail(email);
-        confirmationToken.setToken(tokenUtils.generateToken(email, "ROLE_USER"));
+        confirmationToken.setToken(tokenUtils.generateToken(email, "ROLE_USER", null));
         if (isForRegistration)
             confirmationToken.setTokenType(ConfirmationTokenType.REGISTRATION_TOKEN);
         else
