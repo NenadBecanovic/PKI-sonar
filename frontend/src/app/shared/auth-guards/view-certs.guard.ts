@@ -28,7 +28,6 @@ export class ViewCertsGuard implements CanActivate {
         }
         console.log(hasReadCertPermission)
         if (hasReadCertPermission) {
-          console.log("in if")
           resolve(true);
           return true;
         }

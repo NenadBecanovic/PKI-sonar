@@ -13,18 +13,19 @@ import { PasswordlessLoginComponent } from './utils/auth/components/passwordless
 import { PasswordlessLoginValidationComponent } from './utils/auth/components/passwordless-login-validation/passwordless-login-validation.component';
 import { NewCertGuard } from './shared/auth-guards/new-cert.guard';
 import { ViewCertsGuard } from './shared/auth-guards/view-certs.guard';
+import { NoAuthGuard } from './shared/auth-guards/no-auth.guard';
 
 const routes: Routes = [
   {path: '', component: WelcomeComponent},
-  {path: 'login', component: LoginComponent},
+  {path: 'login', component: LoginComponent, canActivate: [NoAuthGuard]},
   {path: 'overview', component: CertificateOverviewComponent, canActivate: [ViewCertsGuard]},
   {path: 'new', component: NewCertificateComponent, canActivate: [NewCertGuard]},
-  {path: 'register', component: RegisterComponent},
-  {path: 'account-validation/:token', component: AccountValidationComponent},
-  {path: 'account-recovery', component: AccountRecoveryComponent},
-  {path: 'password-reset/:token', component: PasswordResetComponent},
-  {path: 'passwordless-login', component: PasswordlessLoginComponent},
-  {path: 'passwordless-login-validation/:token', component:PasswordlessLoginValidationComponent},
+  {path: 'register', component: RegisterComponent, canActivate: [NoAuthGuard]},
+  {path: 'account-validation/:token', component: AccountValidationComponent, canActivate: [NoAuthGuard]},
+  {path: 'account-recovery', component: AccountRecoveryComponent, canActivate: [NoAuthGuard]},
+  {path: 'password-reset/:token', component: PasswordResetComponent, canActivate: [NoAuthGuard]},
+  {path: 'passwordless-login', component: PasswordlessLoginComponent, canActivate: [NoAuthGuard]},
+  {path: 'passwordless-login-validation/:token', component:PasswordlessLoginValidationComponent, canActivate: [NoAuthGuard]},
   {path: '**', component: PageNotFoundComponent},
 ];
 
