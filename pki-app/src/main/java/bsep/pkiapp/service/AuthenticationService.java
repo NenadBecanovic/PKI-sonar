@@ -64,6 +64,7 @@ public class AuthenticationService {
                     confirmationToken.getEmail(), null);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             User user = userService.getByEmail(confirmationToken.getEmail());
+            confirmationTokenService.deleteToken(confirmationToken);
             if (!user.isActivated()) {
                 return null;
             }
@@ -104,14 +105,16 @@ public class AuthenticationService {
     public void sendLoginLink(String email) {
         User user = userService.getByEmail(email);
         if (user != null) {
-            String token = confirmationTokenService.generateConfirmationToken(email, ConfirmationTokenType.LOGIN_TOKEN);
-            emailService.sendLoginEmail(user, token);
+            ConfirmationToken token = confirmationTokenService.generateConfirmationToken(email, ConfirmationTokenType.LOGIN_TOKEN);
+            emailService.sendLoginEmail(user, token.getToken());
+            confirmationTokenService.encodeToken(token);
         }
     }
 
     private void sendRegistrationEmail(User user) {
-        String token = confirmationTokenService.generateConfirmationToken(user.getEmail(), ConfirmationTokenType.REGISTRATION_TOKEN);
-        emailService.sendRegistrationEmail(user, token);
+        ConfirmationToken token = confirmationTokenService.generateConfirmationToken(user.getEmail(), ConfirmationTokenType.REGISTRATION_TOKEN);
+        emailService.sendRegistrationEmail(user, token.getToken());
+        confirmationTokenService.encodeToken(token);
     }
 
     public String getRoleFromToken(String token) {
@@ -139,8 +142,9 @@ public class AuthenticationService {
     public void recoverAccount(String email) {
         User user = userService.getByEmail(email);
         if (user != null) {
-            String token = confirmationTokenService.generateConfirmationToken(email, ConfirmationTokenType.RECOVERY_TOKEN);
-            emailService.sendRecoveryEmail(user, token);
+            ConfirmationToken token = confirmationTokenService.generateConfirmationToken(email, ConfirmationTokenType.RECOVERY_TOKEN);
+            emailService.sendRecoveryEmail(user, token.getToken());
+            confirmationTokenService.encodeToken(token);
         }
     }
 
