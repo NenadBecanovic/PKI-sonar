@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class TokenUtils {
 
-    @Value("spring-security-example")
+    @Value("PKI")
     private String APP_NAME;
 
 
