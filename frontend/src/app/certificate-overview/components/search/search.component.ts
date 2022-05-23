@@ -7,6 +7,7 @@ import {CertificateService} from "../../../shared/services/certificate.service";
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit {
+  public SEARCH_PATTERN: string = "^[a-zA-Z0-9' @.]*$";
   public selectedFilter: string = '';
   public searchText: string = '';
   constructor(private _certificateService: CertificateService) { }

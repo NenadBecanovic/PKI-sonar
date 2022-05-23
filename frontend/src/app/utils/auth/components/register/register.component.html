@@ -5,18 +5,21 @@
       <mat-form-field appearance="fill">
         <mat-label>Enter your name</mat-label>
         <input matInput placeholder="John" formControlName="nameCtrl" required>
+        <mat-error *ngIf="nameCtrl.hasError('pattern')">Please fill using only letters, digits, space and ' character.</mat-error>
       </mat-form-field>
     </div>
     <div style="text-align: center">
       <mat-form-field appearance="fill">
         <mat-label>Enter your surname</mat-label>
         <input matInput placeholder="Doe" formControlName="surnameCtrl" required>
+        <mat-error *ngIf="surnameCtrl.hasError('pattern')">Please fill using only letters, digits, space and ' character.</mat-error>
       </mat-form-field>
     </div>
     <div style="text-align: center">
       <mat-form-field appearance="fill">
         <mat-label>Enter your email</mat-label>
         <input matInput placeholder="example@example.com" formControlName="emailCtrl" required>
+        <mat-error *ngIf="emailCtrl.hasError('email')">Email form not valid!</mat-error>
       </mat-form-field>
     </div>
     <div style="text-align: center">
@@ -27,8 +30,24 @@
                 [attr.aria-pressed]="hide">
           <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
         </button>
-        <mat-error *ngIf="passwordCtrl.hasError('pattern')">Password must have lowercase, uppercase and
-          number!</mat-error>
+        <mat-error *ngIf="passwordCtrl.hasError('pattern') || passwordCtrl.hasError('minlenght')">Password must have at least 8 characters, inluding lowercase, uppercase,
+          digit and a special character!</mat-error>
+      </mat-form-field>
+    </div>
+    <div style="text-align: center">
+      <mat-form-field appearance="fill">
+        <mat-label>Enter your password</mat-label>
+        <input matInput [type]="confirmHide ? 'password' : 'text'" formControlName="confirmPasswordCtrl" required>
+        <button type="button" mat-icon-button matSuffix (click)="confirmHide = !confirmHide" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="confirmHide">
+          <mat-icon>{{confirmHide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="confirmPasswordCtrl.hasError('pattern') || confirmPasswordCtrl.hasError('minlenght')">Password must have at
+          least 8 characters, inluding lowercase, uppercase,
+          digit and a special character!
+        </mat-error>
+        <mat-error *ngIf="confirmPasswordCtrl.hasError('matching')"> Passwords doesn't match!
+        </mat-error>
       </mat-form-field>
     </div>
     <div class="action-buttons">

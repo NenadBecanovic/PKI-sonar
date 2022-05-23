@@ -34,6 +34,7 @@ import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.*;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -379,6 +380,35 @@ public class CertificateService {
 	private boolean isCertRevoked(BigInteger serialNumber) {
 		CertificateChain certificateChain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
 		return certificateChain.isRevoked();
+	}
+
+	public boolean isNameValid(String password){
+		if(Pattern.matches("[A-Za-z ']+", password))
+			return true;
+
+		System.out.println("name not valid");
+		return false;
+	}
+
+	public boolean isSerialNumberValid(String serialNumber){
+		if(Pattern.matches("[0-9]*", serialNumber))
+			return true;
+		System.out.println("serial number not valid");
+		return false;
+	}
+
+	public boolean isEmailValid(String email){
+		if(Pattern.matches("[a-z0-9.\\-_]{3,64}@([a-z0-9]+\\.){1,2}[a-z]+", email))
+			return true;
+		System.out.println("email not valid");
+		return false;
+	}
+	public boolean isSearchTextValid(String text){
+		if(Pattern.matches("[A-Za-z0-9.\\-_@' ]+", text))
+			return true;
+
+		System.out.println("search text not valid");
+		return false;
 	}
 
 	/*

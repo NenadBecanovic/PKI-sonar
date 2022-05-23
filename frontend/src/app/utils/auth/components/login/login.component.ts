@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     })
 
     this.email = new FormControl('', [Validators.required, Validators.email]);
-    this.password = new FormControl();
+    this.password = new FormControl('', [Validators.maxLength(64)]); //login -> ne cuva se u bazi i ne formira se upit na osnovu toga
 
     this.form = new FormGroup({
       'email': this.email,

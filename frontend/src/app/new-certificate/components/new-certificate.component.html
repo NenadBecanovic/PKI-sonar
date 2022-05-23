@@ -47,14 +47,17 @@
         <mat-form-field appearance="fill" *ngIf="this.certTypeCtrl.value == 'ROOT'">
           <mat-label>Enter country</mat-label>
           <input matInput type="text" formControlName="country" required>
+          <mat-error *ngIf="country.hasError('pattern')">Please fill using only letters, digits, space and ' character.</mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill" *ngIf="this.certTypeCtrl.value == 'ROOT'">
           <mat-label>Enter organization name</mat-label>
           <input matInput type="text" formControlName="organizationName" required>
+          <mat-error *ngIf="organizationName.hasError('pattern')">Please fill using only letters, digits, space and ' character.</mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill" *ngIf="this.certTypeCtrl.value == 'INTERMEDIATE'">
           <mat-label>Enter organization unit name</mat-label>
           <input matInput type="text" formControlName="organizationUnitName" required>
+          <mat-error *ngIf="organizationUnitName.hasError('pattern')">Please fill using only letters, digits, space and ' character.</mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill" >
           <mat-label>Issuer</mat-label>

@@ -8,19 +8,19 @@ INSERT INTO role
 VALUES (3, 'ROLE_ADMIN');
 
 INSERT INTO users
-VALUES (101, TRUE, 'admin1@gmail.com', 'Tim', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Smith', 3);
+VALUES (101, TRUE, 'admin1@gmail.com', 'Tim', '$2a$10$1PB9d9Pok0BXEzqEG6iBPOJjdrE1PnsLWJqQ4ux30RU1Ts6BigyVS', 'Smith', 3);
 INSERT INTO users
-VALUES (102, TRUE, 'user1@gmail.com', 'Annie', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Robinson', 1);
+VALUES (102, TRUE, 'user1@gmail.com', 'Annie', '$2a$10$1PB9d9Pok0BXEzqEG6iBPOJjdrE1PnsLWJqQ4ux30RU1Ts6BigyVS', 'Robinson', 1);
 INSERT INTO users
-VALUES (103, TRUE, 'user2@gmail.com', 'Cameron', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Topaz', 2);
+VALUES (103, TRUE, 'user2@gmail.com', 'Cameron', '$2a$10$1PB9d9Pok0BXEzqEG6iBPOJjdrE1PnsLWJqQ4ux30RU1Ts6BigyVS', 'Topaz', 2);
 INSERT INTO users
-VALUES (104, TRUE, 'user3@gmail.com', 'Mark', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Anderson', 1);
+VALUES (104, TRUE, 'user3@gmail.com', 'Mark', '$2a$10$1PB9d9Pok0BXEzqEG6iBPOJjdrE1PnsLWJqQ4ux30RU1Ts6BigyVS', 'Anderson', 1);
 INSERT INTO users
-VALUES (105, TRUE, 'ca1@gmail.com', 'Brian', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Milner', 2);
+VALUES (105, TRUE, 'ca1@gmail.com', 'Brian', '$2a$10$1PB9d9Pok0BXEzqEG6iBPOJjdrE1PnsLWJqQ4ux30RU1Ts6BigyVS', 'Milner', 2);
 INSERT INTO users
-VALUES (106, TRUE, 'ca2@gmail.com', 'Glenn', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Potter', 2);
+VALUES (106, TRUE, 'ca2@gmail.com', 'Glenn', '$2a$10$1PB9d9Pok0BXEzqEG6iBPOJjdrE1PnsLWJqQ4ux30RU1Ts6BigyVS', 'Potter', 2);
 INSERT INTO users
-VALUES (107, TRUE, 'ca3@gmail.com', 'Tommie', '$2a$10$jUW5JeJEac6gqAsFZ3Su/O14C4PnZrsdpt/qCjVLNxkNbG4DkDhxC', 'Findlay', 2);
+VALUES (107, TRUE, 'ca3@gmail.com', 'Tommie', '$2a$10$1PB9d9Pok0BXEzqEG6iBPOJjdrE1PnsLWJqQ4ux30RU1Ts6BigyVS', 'Findlay', 2);
 
 INSERT INTO key_usage (name, key_usage_type)
 VALUES ('Digital Signature', 'DIGITAL_SIGNATURE');

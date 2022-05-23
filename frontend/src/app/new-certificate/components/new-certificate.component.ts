@@ -20,6 +20,8 @@ export interface User{
   styleUrls: ['./new-certificate.component.css']
 })
 export class NewCertificateComponent implements OnInit {
+  public NAME_PATTERN: string = "^[a-zA-Z0-9' ]+$";
+
   public loggedInUser: string | undefined = undefined;
 
   public keyUsages: Array<any> = [];
@@ -110,9 +112,9 @@ export class NewCertificateComponent implements OnInit {
     this.issuer.setValidators(type != "ROOT" ? Validators.required : [])
     this.subject.setValidators(type != "ROOT" ? Validators.required : []);
     this.validity.setValidators(Validators.required);
-    this.organizationUnitName.setValidators(type == "INTERMEDIATE" ? Validators.required : []);
-    this.organizationName.setValidators(type == "ROOT" ? Validators.required : []);
-    this.country.setValidators(type == "ROOT" ? Validators.required : []);
+    this.organizationUnitName.setValidators(type == "INTERMEDIATE" ? [Validators.required, Validators.pattern(this.NAME_PATTERN)] : []);
+    this.organizationName.setValidators(type == "ROOT" ? [Validators.required, Validators.pattern(this.NAME_PATTERN)] : []);
+    this.country.setValidators(type == "ROOT" ? [Validators.required, Validators.pattern(this.NAME_PATTERN)] : []);
     this.certDataFormGroup.setControl('issuer', this.issuer);
     this.certDataFormGroup.setControl('subject', this.subject);
     this.certDataFormGroup.setControl('validity', this.validity);

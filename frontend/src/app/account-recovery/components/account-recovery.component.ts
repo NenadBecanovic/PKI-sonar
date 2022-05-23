@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AccountRecoveryService } from '../services/account-recovery.service';
 
@@ -16,7 +17,7 @@ export class AccountRecoveryComponent implements OnInit {
     'email': this.email
   })
 
-  constructor(private validationService: AccountRecoveryService, private router: Router) { }
+  constructor(private validationService: AccountRecoveryService, private router: Router, private _snackBar: MatSnackBar) { }
 
 
   ngOnInit(): void {
@@ -25,6 +26,9 @@ export class AccountRecoveryComponent implements OnInit {
   send(){
     this.validationService.recoverAccount(this.email.value).subscribe((response) => {
       console.log(response);
+      this._snackBar.open("Success. Further steps will be sent to you via email if account exist.", "OK", {
+        panelClass: ["black-snackbar"]
+      });
       this.router.navigate(['/login'])
     })
   }

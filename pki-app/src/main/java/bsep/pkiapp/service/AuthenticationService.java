@@ -4,7 +4,6 @@ import bsep.pkiapp.dto.ChangedPasswordDto;
 import bsep.pkiapp.dto.UserDto;
 import bsep.pkiapp.model.ConfirmationToken;
 import bsep.pkiapp.model.ConfirmationTokenType;
-import bsep.pkiapp.model.Role;
 import bsep.pkiapp.model.User;
 import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;
@@ -22,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -188,5 +188,49 @@ public class AuthenticationService {
             return true;
         }
         return false;
+    }
+
+    public boolean isEmailValid(String email){
+        if(Pattern.matches("[a-z0-9.\\-_]{3,64}@([a-z0-9]+\\.){1,2}[a-z]+", email))
+            return true;
+        return false;
+    }
+
+    public boolean isPasswordValid(String password){
+        if(Pattern.matches("[0-9A-Za-z!?#$@.*+_\\-]+", password))
+            return true;
+        return false;
+    }
+
+    public boolean isNameValid(String password){
+        if(Pattern.matches("[A-Za-z ']+", password))
+            return true;
+        return false;
+    }
+
+
+    public boolean isNewPasswordValid(String password){
+        boolean isValid = true;
+        if (!Pattern.matches(".*[0-9].*", password)){
+            System.out.println("\tdigit");
+            isValid = false;
+        }
+        if (!Pattern.matches(".*[a-z].*", password)){
+            System.out.println("\tlower");
+            isValid = false;
+        }
+        if (!Pattern.matches(".*[A-Z].*", password)){
+            System.out.println("\tupper");
+            isValid = false;
+        }
+        if(!Pattern.matches(".*[!?#$@.*+_].*", password)){
+            System.out.println("\tspecial");
+            isValid = false;
+        }
+        if(!Pattern.matches("[0-9A-Za-z!?#$@.*+_]{8,50}", password)){
+            System.out.println("\tgeneral");
+            isValid = false;
+        }
+        return isValid;
     }
 }

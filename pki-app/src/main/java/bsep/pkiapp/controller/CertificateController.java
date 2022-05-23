@@ -32,6 +32,10 @@ public class CertificateController {
     @PreAuthorize("hasAuthority('create_root_certificate')")
     @PostMapping("/createRootCertificate")
     public ResponseEntity<?> createRootCertificate(@RequestBody NewCertificateDto certificateDto) {
+        if (!certificateService.isNameValid(certificateDto.getOrganizationName())
+                || !certificateService.isNameValid(certificateDto.getCountry())
+                || !certificateService.isEmailValid(certificateDto.getSubjectEmail()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         try {
 
             if (certificateDto.getCertificateType().equals("ROOT")) {
@@ -50,6 +54,10 @@ public class CertificateController {
     @PreAuthorize("hasAuthority('create_inter_certificate')")
     @PostMapping("/createIntermediateCertificate")
     public ResponseEntity<?> createIntermediateCertificate(@RequestBody NewCertificateDto certificateDto) {
+        if (!certificateService.isNameValid(certificateDto.getOrganizationUnit())
+                || !certificateService.isSerialNumberValid(certificateDto.getIssuerSerialNumber())
+                || !certificateService.isEmailValid(certificateDto.getSubjectEmail()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         try {
             if (certificateDto.getCertificateType().equals("INTERMEDIATE")) {
                 certificateService.createCertificate(certificateDto);
@@ -68,6 +76,9 @@ public class CertificateController {
     @PreAuthorize("hasAuthority('create_ee_certificate')")
     @PostMapping("/createEndEntityCertificate")
     public ResponseEntity<?> createEndEntityCertificate(@RequestBody NewCertificateDto certificateDto) {
+        if (!certificateService.isSerialNumberValid(certificateDto.getIssuerSerialNumber())
+                || !certificateService.isEmailValid(certificateDto.getSubjectEmail()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         try {
             if (certificateDto.getCertificateType().equals("END_ENTITY")) {
                 certificateService.createCertificate(certificateDto);
@@ -119,12 +130,16 @@ public class CertificateController {
     @PreAuthorize("hasAuthority('read_certificate')")
     @GetMapping("/validityCheck/{certSerialNumber}")
     public ResponseEntity<?> validityCheck(@PathVariable String certSerialNumber) {
+        if (!certificateService.isSerialNumberValid(certSerialNumber))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(certificateService.isCertificateValid(certSerialNumber), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('read_certificate')")
     @GetMapping("/search/{searchText}")
     public ResponseEntity<?> search(@RequestHeader("Authorization") String token, @PathVariable String searchText) {
+        if (!certificateService.isSearchTextValid(searchText))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(certificateService.searchCertificates(token.split(" ")[1], searchText),
                 HttpStatus.OK);
     }

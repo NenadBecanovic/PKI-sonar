@@ -3,12 +3,10 @@ package bsep.pkiapp.controller;
 import bsep.pkiapp.dto.ChangedPasswordDto;
 import bsep.pkiapp.dto.ForgottenPasswordDto;
 import bsep.pkiapp.dto.UserDto;
-import bsep.pkiapp.model.ConfirmationToken;
 import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;
 import bsep.pkiapp.security.util.UserTokenState;
 import bsep.pkiapp.service.AuthenticationService;
-import bsep.pkiapp.service.ConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,6 +43,8 @@ public class AuthenticationController {
                                                  @RequestBody ChangedPasswordDto passwordDto) {
         if (!authenticationService.areNewPasswordsMatching(passwordDto.getNewPassword(), passwordDto.getNewPasswordRetyped()))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else if (!authenticationService.isNewPasswordValid(passwordDto.getNewPassword()) || !authenticationService.isPasswordValid(passwordDto.getOldPassword()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else {
             boolean isSuccess = authenticationService.changePassword(token.split(" ")[1], passwordDto);
             if (isSuccess)
@@ -57,6 +57,8 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<UserTokenState> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest) {
+        if (!authenticationService.isEmailValid(authenticationRequest.getEmail()) || !authenticationService.isPasswordValid(authenticationRequest.getPassword()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         try{
             UserTokenState userTokenState = authenticationService.login(authenticationRequest);
             return ResponseEntity.ok(userTokenState);
@@ -78,12 +80,19 @@ public class AuthenticationController {
 
     @GetMapping("/login-link")
     public ResponseEntity<String> sendLoginLink(@RequestParam(name = "email") String email) {
+        if (!authenticationService.isEmailValid(email))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         authenticationService.sendLoginLink(email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
+        if (!authenticationService.isNewPasswordValid(userDto.getPassword())
+                || !authenticationService.isEmailValid(userDto.getEmail())
+                || !authenticationService.isNameValid(userDto.getName())
+                || !authenticationService.isNameValid(userDto.getSurname()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         try {
             authenticationService.signUp(userDto);
             return new ResponseEntity<>(userDto, HttpStatus.CREATED);
@@ -99,6 +108,8 @@ public class AuthenticationController {
 
     @GetMapping("/account-recovery")
     public ResponseEntity<String> recoverAccount(@RequestParam(name = "email") String email) {
+        if (!authenticationService.isEmailValid(email))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         authenticationService.recoverAccount(email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -108,11 +119,12 @@ public class AuthenticationController {
         return new ResponseEntity<>(authenticationService.isTokenValid(token), HttpStatus.OK);
     }
 
-    //TODO: add password validation checks
     @PostMapping("/reset-password")
     public ResponseEntity<String> recoverPassword(@RequestParam(name = "token") String token,
                                                   @RequestBody ForgottenPasswordDto passwordDto) {
         if (!authenticationService.areNewPasswordsMatching(passwordDto.getNewPassword(), passwordDto.getNewPasswordRetyped()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else if (!authenticationService.isNewPasswordValid(passwordDto.getNewPassword()))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else {
             authenticationService.setupNewPassword(token, passwordDto.getNewPassword());

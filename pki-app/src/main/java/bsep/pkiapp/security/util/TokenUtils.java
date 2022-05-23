@@ -46,11 +46,13 @@ public class TokenUtils {
      * @return JWT token
      */
     public String generateToken(String username, String role, List<String> authorities) {
+        Date exp_date = new Date(new Date().getTime() + EXPIRES_IN);
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(username)
                 .claim("role", role)
                 .claim("authorities", authorities)
+                .setExpiration(exp_date)
                 .setAudience(generateAudience())
                 .setIssuedAt(new Date())
                 .signWith(SIGNATURE_ALGORITHM, SECRET).compact();

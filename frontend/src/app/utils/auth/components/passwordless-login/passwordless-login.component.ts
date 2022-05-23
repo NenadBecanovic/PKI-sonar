@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -16,7 +17,7 @@ export class PasswordlessLoginComponent implements OnInit {
     'email': this.email
   })
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private _snackBar: MatSnackBar) { }
 
 
   ngOnInit(): void {
@@ -25,6 +26,9 @@ export class PasswordlessLoginComponent implements OnInit {
   send(){
     this.authService.requestLoginWithEmail(this.email.value).subscribe((response) => {
       console.log(response);
+      this._snackBar.open("Success. Further steps will be sent to you via email if account exist.", "OK", {
+        panelClass: ["black-snackbar"]
+      });
       //snackbar u odnosu na odgovor: zao nam je ne postoji nalog sa tim emailom ili check your email for further steps
       this.router.navigate([''])
     })
