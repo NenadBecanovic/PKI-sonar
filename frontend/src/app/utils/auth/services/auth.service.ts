@@ -7,10 +7,12 @@ import {RegisterUsetDto} from "../../../shared/dto/RegisterUset.dto";
 import {UserTokenStateDto} from "../dtos/UserTokenState.dto";
 import {Router} from "@angular/router";
 import { ChangedPasswordDto } from "../dtos/ChangedPasswordDto";
+import {JwtHelperService} from "@auth0/angular-jwt";
 
 @Injectable({providedIn: 'root'})
 export class AuthService{
   public logInUserChanged = new Subject<UserTokenStateDto>();
+  helper = new JwtHelperService();
 
   constructor(private _http: HttpClient, private router: Router) {
   }
@@ -43,7 +45,13 @@ export class AuthService{
   }
 
   getRole() {
-    return this._http.get(environment.apiUrl + "/auth/getRole", {responseType: 'text'});
+    if(this.helper.isTokenExpired(localStorage.getItem('token')!)){
+      this.router.navigate(['/']).then()
+      localStorage.clear()
+      return new Observable<string>()
+    }else{
+      return this._http.get(environment.apiUrl + "/auth/getRole", {responseType: 'text'});
+    }
   }
 
   getPermissions(): Observable<string[]> {
