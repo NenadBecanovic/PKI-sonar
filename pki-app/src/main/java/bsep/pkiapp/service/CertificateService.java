@@ -10,6 +10,7 @@ import bsep.pkiapp.model.User;
 import bsep.pkiapp.repository.CertificateChainRepository;
 import bsep.pkiapp.utils.X500NameGenerator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 public class CertificateService {
 
 	@Autowired
@@ -61,6 +63,7 @@ public class CertificateService {
 
 	@Transactional
 	public void createCertificate(NewCertificateDto dto) {
+		log.debug("Create new certificate with payload: {}", dto);
 		X500Name subject = x500NameGenerator.generateX500Name(dto);
 
 		if (dto.getCertificateType().equals("ROOT")) {
@@ -90,16 +93,19 @@ public class CertificateService {
 	}
 
 	private String findRootSerialNumberByIssuerSerialNumber(String issuerSerialNumber) {
+		log.debug("Find root serial number by issuer serial number: {}", issuerSerialNumber);
 		CertificateChain certificate = certificateChainRepository.getBySerialNumber(new BigInteger(issuerSerialNumber));
 		return findRootSerialNumber(certificate);
 	}
 
 	private boolean isIssuerRootCertificate(BigInteger issuerSerialNumber) {
+		log.debug("Check is issuer with serial number [{}] root certificate", issuerSerialNumber);
 		CertificateChain certificate = certificateChainRepository.getBySerialNumber(issuerSerialNumber);
 		return (CertificateType.ROOT).equals(certificate.getCertificateType());
 	}
 
 	public void generateCertificate(NewCertificateDto dto, X500Name issuer, X500Name subject) {
+		log.debug("Generate certificate for data: {}", dto);
 		try {
 			JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
 			builder = builder.setProvider("BC");
@@ -182,11 +188,13 @@ public class CertificateService {
 
 		} catch (IllegalArgumentException | IllegalStateException | OperatorCreationException | CertificateException
 				| NoSuchAlgorithmException | IOException e) {
+			log.warn("Failed to generate certificate for data: {}", dto);
 			e.printStackTrace();
 		}
 	}
 
 	private PublicKey getIssuerPublicKey(NewCertificateDto dto, KeyStoreReader ksr, String rootSerialNumber) {
+		log.debug("Get issuer public key for new certificate");
 		PublicKey issuerPublicKey;
 		if(dto.getIssuerSerialNumber() == null){
 			issuerPublicKey = dto.getExtensionSettingsDto().getPublicKey();
@@ -218,18 +226,21 @@ public class CertificateService {
 	}
 
 	private KeyPair generateKeyPair() {
+		log.debug("Generate key pair");
 		try {
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
 			keyGen.initialize(2048, random);
 			return keyGen.generateKeyPair();
 		} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+			log.warn("Failed to generate key pair");
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	private String findRootSerialNumber(CertificateChain certificate) {
+		log.debug("Find root serial number for certificate wih serial number: {}", certificate.getSerialNumber());
 		while (!Objects.equals(certificate.getSerialNumber(), certificate.getSignerSerialNumber())) {
 			certificate = certificateChainRepository
 					.getBySerialNumber(certificate.getSignerSerialNumber());
@@ -238,6 +249,7 @@ public class CertificateService {
 	}
 
 	private X509Certificate[] findCertificateChainHierarchy(X509Certificate newCertificate, String issuerSerialNumber,String rootSerialNumber) {
+		log.debug("Find new certificate chain hierarchy for issuer with serial number [{}] and root with serial number [{}]", issuerSerialNumber, rootSerialNumber);
 		X509Certificate certificate = getX509Certificate(new BigInteger(issuerSerialNumber));
 		List<X509Certificate> certificateChainHierarchy = new ArrayList<>();
 		certificateChainHierarchy.add(newCertificate);
@@ -255,11 +267,13 @@ public class CertificateService {
 	}
 
 	public byte[] getCertificate(BigInteger serialNumber) throws CertificateEncodingException {
+		log.debug("Encode certificate with serial number: {}", serialNumber);
 		byte[] crt = getX509Certificate(serialNumber).getEncoded();
 		return crt;
 	}
 
 	private X509Certificate getX509Certificate(BigInteger serialNumber) {
+		log.debug("Get certificate with serial number: {}", serialNumber);
 		KeyStoreReader ksr = new KeyStoreReader();
 		X509Certificate certificate = null;
 		CertificateChain certificateChain = certificateChainRepository.getBySerialNumber(serialNumber);
@@ -276,6 +290,7 @@ public class CertificateService {
 	}
 
 	public List<CertificateDto> getRootCertificates() {
+		log.debug("Get all ROOT certificates");
 		List<CertificateDto> certificates = new ArrayList<>();
 		for (CertificateChain cert : certificateChainRepository.getByCertificateType(CertificateType.ROOT)) {
 			certificates.add(new CertificateDto(cert));
@@ -285,6 +300,7 @@ public class CertificateService {
 
 	public List<CertificateDto> getAllByUser(String token) {
 		User user = userService.getUserFromToken(token);
+		log.debug("Get all certificates for user: {}", user.getEmail());
 		List<CertificateDto> dtos = new ArrayList<>();
 		if (user.getRole().getAuthority().equals("ROLE_ADMIN")) {
 			dtos.addAll(convertChainToDto(certificateChainRepository.findAll()));
@@ -303,6 +319,7 @@ public class CertificateService {
 	}
 
 	private List<CertificateDto> convertChainToDto(List<CertificateChain> all) {
+		log.debug("Convert CertificateChain list to CertificateDto list");
 		List<CertificateDto> dtos = new ArrayList<>();
 		for (CertificateChain chain : all) {
 			dtos.add(new CertificateDto(chain));
@@ -311,20 +328,25 @@ public class CertificateService {
 	}
 
 	public List<CertificateDto> searchCertificates(String token, String searchText) {
+		log.debug("Search certificates by text: {}", searchText);
 		String finalSearchText = searchText.toLowerCase().trim();
 		return getAllByUser(token).stream().filter(cert -> cert.issuer.toLowerCase().trim().contains(finalSearchText)
 				|| cert.subject.toLowerCase().trim().contains(finalSearchText)).collect(Collectors.toList());
 	}
 
 	public List<CertificateDto> filterCertificates(String token, String filter) {
+		log.debug("Filter certificates by type: {}", filter);
 		return getAllByUser(token).stream().filter(cert -> cert.type.equals(filter)).collect(Collectors.toList());
 	}
 
-	private Boolean isChosenEndDateAllowed(Date subjectNotAfter, BigInteger issuerSerialNumber){X509Certificate issuerCertificate = getX509Certificate(issuerSerialNumber);
+	private Boolean isChosenEndDateAllowed(Date subjectNotAfter, BigInteger issuerSerialNumber){
+		log.debug("Check is chosen end date allowed compared to date: {}", subjectNotAfter);
+		X509Certificate issuerCertificate = getX509Certificate(issuerSerialNumber);
 		return !subjectNotAfter.after(issuerCertificate.getNotAfter());
 	}
 
 	public Boolean isCertificateValid(String serialNumberStr) {
+		log.debug("Check is certificate valid with serial number: {}", serialNumberStr);
 		BigInteger serialNumber = new BigInteger(serialNumberStr);
 		if(isCertRevoked(serialNumber))
 			return false;
@@ -334,6 +356,7 @@ public class CertificateService {
 		try {
 			certificate.checkValidity(new Date());
 		} catch (CertificateExpiredException | CertificateNotYetValidException e) {
+			log.warn("Certificate with serial number [{}] not valid!", serialNumber);
 			e.printStackTrace();
 			return false;
 		}
@@ -359,6 +382,7 @@ public class CertificateService {
 	}
 
 	public void revokeCertificate(String serialNumberStr) {
+		log.debug("Revoke certificate with serial number: {}", serialNumberStr);
 		BigInteger serialNumber = new BigInteger(serialNumberStr);
 		CertificateChain certificateChain = certificateChainRepository.getCertificateChainBySerialNumber(serialNumber);
 		certificateChain.setRevoked(true);
@@ -368,6 +392,7 @@ public class CertificateService {
 	}
 
 	private void revokeCertificatesSignedBy(BigInteger signerSerialNumber) {
+		log.debug("Revoke certificates signed by signer serial number: {}", signerSerialNumber);
 		List<CertificateChain> certificateChainsSignedByRevoked = certificateChainRepository.getCertificateChainsBySignerSerialNumber(signerSerialNumber);
 		for(CertificateChain cert : certificateChainsSignedByRevoked){
 			cert.setRevoked(true);

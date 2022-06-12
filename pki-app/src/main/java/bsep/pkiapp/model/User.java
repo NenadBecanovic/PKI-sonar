@@ -1,6 +1,7 @@
 package bsep.pkiapp.model;
 
 import bsep.pkiapp.dto.UserDto;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

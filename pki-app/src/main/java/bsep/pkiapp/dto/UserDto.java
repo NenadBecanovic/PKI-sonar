@@ -2,7 +2,9 @@ package bsep.pkiapp.dto;
 
 
 import bsep.pkiapp.model.User;
+import lombok.ToString;
 
+@ToString
 public class UserDto {
 
     private String name;

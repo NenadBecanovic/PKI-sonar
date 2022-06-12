@@ -16,9 +16,11 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 
+@Slf4j
 public class KeyStoreReader {
 	//KeyStore je Java klasa za citanje specijalizovanih datoteka koje se koriste za cuvanje kljuceva
 	//Tri tipa entiteta koji se obicno nalaze u ovakvim datotekama su:
@@ -74,6 +76,7 @@ public class KeyStoreReader {
 	
 	public X500Name readIssuerNameFromStore(String keyStoreFile, String alias, char[] password, char[] keyPass) {
 		try {
+			log.debug("Get certificate issuer name from store [{}] with alias [{}]", keyStoreFile, alias);
 			//Datoteka se ucitava
 			BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
 			keyStore.load(in, password);
@@ -83,6 +86,7 @@ public class KeyStoreReader {
 			X500Name issuerName = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
 			return issuerName;
 		} catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
+			log.warn("Failed to get issuer name from store [{}] with alias [{}]", keyStoreFile, alias);
 			e.printStackTrace();
 		}
 		return null;
@@ -90,6 +94,7 @@ public class KeyStoreReader {
 	
 	public PrivateKey readIssuerFromStore(String keyStoreFile, String alias, char[] password, char[] keyPass) {
 		try {
+			log.debug("Get private key from store [{}] with alias [{}]", keyStoreFile, alias);
 			//Datoteka se ucitava
 			BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile));
 			keyStore.load(in, password);
@@ -98,6 +103,7 @@ public class KeyStoreReader {
 
 			return privKey;
 		} catch (UnrecoverableKeyException | CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
+			log.warn("Failed to get private key from store [{}] with alias [{}]", keyStoreFile, alias);
 			e.printStackTrace();
 		}
 		return null;
@@ -108,6 +114,7 @@ public class KeyStoreReader {
 	 */
     public Certificate readCertificate(String keyStoreFile, String keyStorePass, String alias) {
 		try {
+			log.debug("Get certificate with alias [{}] from store [{}]", alias, keyStoreFile);
 			//kreiramo instancu KeyStore
 			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
 			//ucitavamo podatke
@@ -119,6 +126,7 @@ public class KeyStoreReader {
 				return cert;
 			}
 		} catch (NoSuchProviderException | CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
+			log.warn("Failed to get certificate with alias [{}] from store [{}]", alias, keyStoreFile);
 			e.printStackTrace();
 		}
 		return null;
@@ -129,6 +137,7 @@ public class KeyStoreReader {
 	 */
 	public PrivateKey readPrivateKey(String keyStoreFile, String keyStorePass, String alias, String pass) {
 		try {
+			log.debug("Get private key from store [{}] with alias [{}]", keyStoreFile, alias);
 			//kreiramo instancu KeyStore
 			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
 			//ucitavamo podatke
@@ -140,6 +149,7 @@ public class KeyStoreReader {
 				return pk;
 			}
 		} catch (NoSuchProviderException | CertificateException | NoSuchAlgorithmException | KeyStoreException | UnrecoverableKeyException | IOException e) {
+			log.warn("Failed to get private key from store [{}] with alias [{}]", keyStoreFile, alias);
 			e.printStackTrace();
 		}
 		return null;

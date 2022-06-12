@@ -3,6 +3,7 @@ package bsep.pkiapp.service;
 import bsep.pkiapp.dto.ExtensionSettingsDto;
 import bsep.pkiapp.model.*;
 import bsep.pkiapp.repository.ExtensionRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
 import org.bouncycastle.asn1.x509.KeyUsage;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ExtensionService {
 
     @Autowired
@@ -31,6 +33,7 @@ public class ExtensionService {
     private ExtendedKeyUsageService extendedKeyUsageService;
 
     public X509v3CertificateBuilder addExtensions(X509v3CertificateBuilder certGen, ExtensionSettingsDto dto, String certificateType, PublicKey issuerPublicKey) throws IOException, NoSuchAlgorithmException {
+        log.debug("Add extensions to new certificate with type: {}", certificateType);
         for (Integer id : dto.getExtensionsIds()) {
             CertificateExtension extension = extensionRepository.getById(id);
 
@@ -50,7 +53,7 @@ public class ExtensionService {
     }
 
     private X509v3CertificateBuilder setKeyUsage(X509v3CertificateBuilder certGen, List<Integer> keyUsageIds, String certificateType) throws CertIOException {
-
+        log.debug("Set key usage with ids [{}] to new certificate with type: {}", keyUsageIds, certificateType);
         int usage = 0;
         for (Integer id : keyUsageIds) {
             bsep.pkiapp.model.KeyUsage keyUsage = keyUsageService.getById(id);
@@ -84,7 +87,7 @@ public class ExtensionService {
     }
 
     private X509v3CertificateBuilder setExtendedKeyUsage(X509v3CertificateBuilder certGen, List<Integer> extendedKeyUsageIds) throws CertIOException {
-
+        log.debug("Set extended key usages with ids: {}", extendedKeyUsageIds);
         List<KeyPurposeId> keyPurposeIds = new ArrayList<>();
 
         for(Integer id : extendedKeyUsageIds) {

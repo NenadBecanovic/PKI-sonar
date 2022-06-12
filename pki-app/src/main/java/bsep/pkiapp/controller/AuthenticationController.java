@@ -7,6 +7,7 @@ import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;
 import bsep.pkiapp.security.util.UserTokenState;
 import bsep.pkiapp.service.AuthenticationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+@Slf4j
 public class AuthenticationController {
 
     @Autowired
@@ -25,22 +27,26 @@ public class AuthenticationController {
 
     @GetMapping(value = "getRole")
     public ResponseEntity<String> getRole(@RequestHeader("Authorization") String token) {
+        log.debug("GET request received - /auth/getRole from JWT token");
         return ResponseEntity.ok(authenticationService.getRoleFromToken(token.split(" ")[1]));
     }
 
     @GetMapping(value = "getAuthorities")
     public ResponseEntity<List<String>> getAuthorities(@RequestHeader("Authorization") String token) {
+        log.debug("GET request received - /auth/getAuthorities from JWT token");
         return ResponseEntity.ok(authenticationService.getAuthoritiesFromToken(token.split(" ")[1]));
     }
 
     @GetMapping(value = "getUser")
     public ResponseEntity<UserDto> getUser(@RequestHeader("Authorization") String token) {
+        log.debug("GET request received - /auth/getUser from JWT token");
         return ResponseEntity.ok(authenticationService.getUser(token.split(" ")[1]));
     }
 
     @PostMapping(value = "/change-password")
     public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token,
                                                  @RequestBody ChangedPasswordDto passwordDto) {
+        log.debug("POST request received - /auth/change-password with password data: {}", passwordDto);
         if (!authenticationService.areNewPasswordsMatching(passwordDto.getNewPassword(), passwordDto.getNewPasswordRetyped()))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else if (!authenticationService.isNewPasswordValid(passwordDto.getNewPassword()) || !authenticationService.isPasswordValid(passwordDto.getOldPassword()))

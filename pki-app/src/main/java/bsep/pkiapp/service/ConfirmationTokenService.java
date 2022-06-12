@@ -4,11 +4,13 @@ import bsep.pkiapp.model.ConfirmationToken;
 import bsep.pkiapp.model.ConfirmationTokenType;
 import bsep.pkiapp.repository.ConfirmationTokenRepository;
 import bsep.pkiapp.security.util.TokenUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ConfirmationTokenService {
 
     @Autowired
@@ -37,6 +39,7 @@ public class ConfirmationTokenService {
     }
 
     public ConfirmationToken generateConfirmationToken(String email, ConfirmationTokenType tokenType) {
+        log.debug("Generate confirmation token with type [{}] for user [{}]", tokenType.toString(), email);
         ConfirmationToken confirmationToken = new ConfirmationToken();
         confirmationToken.setEmail(email);
         confirmationToken.setToken(tokenUtils.generateToken(email, "ROLE_USER", null));
@@ -46,6 +49,7 @@ public class ConfirmationTokenService {
     }
 
     public void encodeToken(ConfirmationToken token) {
+        log.debug("Encode token: {}", token);
         token.setToken(passwordEncoder.encode(token.getToken().substring(token.getToken().length() - 10)));
         saveToken(token);
     }

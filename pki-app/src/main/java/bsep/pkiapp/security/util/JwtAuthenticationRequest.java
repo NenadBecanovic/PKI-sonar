@@ -1,5 +1,8 @@
 package bsep.pkiapp.security.util;
 
+import lombok.ToString;
+
+@ToString
 public class JwtAuthenticationRequest {
 
     private String email;

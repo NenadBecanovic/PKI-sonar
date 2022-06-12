@@ -1,5 +1,7 @@
 package bsep.pkiapp.keystores;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +14,7 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
+@Slf4j
 public class KeyStoreWriter {
 	//KeyStore je Java klasa za citanje specijalizovanih datoteka koje se koriste za cuvanje kljuceva
 	//Tri tipa entiteta koji se obicno nalaze u ovakvim datotekama su:
@@ -30,6 +33,7 @@ public class KeyStoreWriter {
 	
 	public void loadKeyStore(String fileName, char[] password) {
 		try {
+			log.debug("Load key store: {}", fileName);
 			if(fileName != null) {
 				keyStore.load(new FileInputStream(fileName), password);
 			} else {
@@ -37,22 +41,27 @@ public class KeyStoreWriter {
 				keyStore.load(null, password);
 			}
 		} catch (CertificateException | NoSuchAlgorithmException | IOException e) {
+			log.warn("Failed to load key store: {}", fileName);
 			e.printStackTrace();
 		}
 	}
 	
 	public void saveKeyStore(String fileName, char[] password) {
 		try {
+			log.debug("Save key store: {}", fileName);
 			keyStore.store(new FileOutputStream(fileName), password);
 		} catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
+			log.warn("Failed to save key store: {}", fileName);
 			e.printStackTrace();
 		}
 	}
 	
 	public void write(String alias, PrivateKey privateKey, char[] password, Certificate[] certificates) {
 		try {
+			log.debug("Write to key store with alias: {}", alias);
 			keyStore.setKeyEntry(alias, privateKey, password, certificates);
 		} catch (KeyStoreException e) {
+			log.warn("Failed to write to key store with alias: {}", alias);
 			e.printStackTrace();
 		}
 	}

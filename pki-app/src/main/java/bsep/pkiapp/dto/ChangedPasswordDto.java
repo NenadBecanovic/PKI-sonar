@@ -1,5 +1,8 @@
 package bsep.pkiapp.dto;
 
+import lombok.ToString;
+
+@ToString
 public class ChangedPasswordDto {
 
     private String newPassword;

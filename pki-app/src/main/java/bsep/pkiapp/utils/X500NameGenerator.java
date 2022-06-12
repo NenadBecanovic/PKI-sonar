@@ -7,6 +7,7 @@ import bsep.pkiapp.model.CertificateType;
 import bsep.pkiapp.model.User;
 import bsep.pkiapp.repository.CertificateChainRepository;
 import bsep.pkiapp.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 
 @Service
+@Slf4j
 public class X500NameGenerator {
 
     private X500NameBuilder nameBuilder;
@@ -28,6 +30,7 @@ public class X500NameGenerator {
    	private CertificateChainRepository certificateChainRepository;
 
     public X500Name generateX500Name(NewCertificateDto newCertificateDto) {
+        log.debug("Generate X500Name for new certificate: {}", newCertificateDto);
         User subject = userService.getByEmail(newCertificateDto.getSubjectEmail());
         X500Name x500NameIssuer = null;
         if (newCertificateDto.getIssuerSerialNumber() != null) {
@@ -56,6 +59,7 @@ public class X500NameGenerator {
     }
     
     private String findRootSerialNumberByIssuerSerialNumber(String issuerSerialNumber) {
+        log.debug("Find root serial number by issuer serial number: {}", issuerSerialNumber);
     	CertificateChain certificate = certificateChainRepository.getBySerialNumber(new BigInteger(issuerSerialNumber));
     	while(!(CertificateType.ROOT).equals(certificate.getCertificateType())) {
     		certificate = certificateChainRepository.getBySerialNumber(certificate.getSignerSerialNumber());
@@ -64,11 +68,13 @@ public class X500NameGenerator {
 	}
 
 	private boolean isIssuerRootCertificate(String issuerSerialNumber) {
+        log.debug("Check is issuer with serial number [{}] root certificate", issuerSerialNumber);
         CertificateChain certificate = certificateChainRepository.getBySerialNumber(new BigInteger(issuerSerialNumber));
 		return (CertificateType.ROOT).equals(certificate.getCertificateType());
 	}
 
     private X500Name generateX500NameForRoot(User subject, NewCertificateDto newCertificateDto) {
+        log.debug("Generate X500Name for root certificate: {}", newCertificateDto);
         nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
         nameBuilder.addRDN(BCStyle.CN, newCertificateDto.getOrganizationName());
         nameBuilder.addRDN(BCStyle.O, newCertificateDto.getOrganizationName());
@@ -79,6 +85,7 @@ public class X500NameGenerator {
     }
 
     private X500Name generateX500NameForIntermediate(User subject, NewCertificateDto newCertificateDto, X500Name x500NameIssuer) {
+        log.debug("Generate X500Name for intermediate certificate: {}", newCertificateDto);
         nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
         nameBuilder.addRDN(BCStyle.CN, newCertificateDto.getOrganizationUnit());
         nameBuilder.addRDN(BCStyle.O, IETFUtils.valueToString((x500NameIssuer.getRDNs(BCStyle.O)[0]).getFirst().getValue()));
@@ -90,6 +97,7 @@ public class X500NameGenerator {
     }
 
     private X500Name generateX500NameForEndEntity(User subject, X500Name x500NameIssuer) {
+        log.debug("Generate X500Name for end entity certificate");
         nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
         nameBuilder.addRDN(BCStyle.CN, subject.getName() + " " + subject.getSurname());
         nameBuilder.addRDN(BCStyle.GIVENNAME, subject.getName());

@@ -1,6 +1,7 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.MailException;
@@ -10,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class EmailService {
 
     @Autowired
@@ -20,6 +22,7 @@ public class EmailService {
 
     @Async
     public void sendRegistrationEmail(User user, String token) throws MailException {
+        log.debug("Send registration email to user: {}", user.getEmail());
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getEmail());
         mail.setFrom(env.getProperty("spring.mail.username"));
@@ -31,6 +34,7 @@ public class EmailService {
 
     @Async
     public void sendRecoveryEmail(User user, String token) {
+        log.debug("Send recovery email to user: {}", user.getEmail());
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getEmail());
         mail.setFrom(env.getProperty("spring.mail.username"));
@@ -42,6 +46,7 @@ public class EmailService {
 
     @Async
     public void sendLoginEmail(User user, String token) {
+        log.debug("Send login email to user: {}", user.getEmail());
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getEmail());
         mail.setFrom(env.getProperty("spring.mail.username"));
