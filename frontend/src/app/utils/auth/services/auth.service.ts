@@ -45,7 +45,7 @@ export class AuthService{
   }
 
   getRole() {
-    if(this.helper.isTokenExpired(localStorage.getItem('token')!)){
+    if(localStorage.getItem('token') && this.helper.isTokenExpired(localStorage.getItem('token')!)){
       this.router.navigate(['/']).then()
       localStorage.clear()
       return new Observable<string>()

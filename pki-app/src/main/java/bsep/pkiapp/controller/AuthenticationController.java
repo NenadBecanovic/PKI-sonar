@@ -109,6 +109,7 @@ public class AuthenticationController {
 
     @GetMapping("/confirm-account")
     public ResponseEntity<Boolean> confirmAccount(@RequestParam(name = "token") String token) {
+        System.out.println(authenticationService.isTokenValid(token));
         return new ResponseEntity<>(authenticationService.confirmAccount(token), HttpStatus.OK);
     }
 
