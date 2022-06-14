@@ -199,7 +199,7 @@ public class AuthenticationService {
     public boolean isTokenValid(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
         if (confirmationToken != null) {
-            return true;
+            return !tokenUtils.isTokenExpired(token);
         }
         return false;
     }

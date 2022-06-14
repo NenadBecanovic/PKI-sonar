@@ -272,4 +272,8 @@ public class TokenUtils {
         return request.getHeader(AUTH_HEADER);
     }
 
+    public Boolean isTokenExpired(String token) {
+        Date date = getExpirationDateFromToken(token);
+        return date.before(new Date());
+    }
 }
