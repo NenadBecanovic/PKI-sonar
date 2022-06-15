@@ -3,6 +3,8 @@ import {Router} from "@angular/router";
 import {Subscription} from "rxjs";
 import {AuthService} from "../auth/services/auth.service";
 import {UserTokenStateDto} from "../auth/dtos/UserTokenState.dto";
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DisplayTwoFactorAuthSecretComponent } from '../auth/components/display-two-factor-auth-secret/display-two-factor-auth-secret.component';
 
 @Component({
   selector: 'app-header',
@@ -14,7 +16,7 @@ export class HeaderComponent implements OnInit {
   public isButtonVisible: boolean = true;
   public loggedInUserChanged: Subscription;
 
-  constructor(private router: Router, private _authService: AuthService) {
+  constructor(public matDialog: MatDialog, private router: Router, private _authService: AuthService) {
     this.loggedInUserChanged = this._authService.logInUserChanged.subscribe((response: UserTokenStateDto)=>{
       this.loggedInUser = response.roles.pop();
     })
@@ -49,5 +51,15 @@ export class HeaderComponent implements OnInit {
 
   changeButtonVisibility() {
     this.isButtonVisible = true;
+  }
+
+  openTfaDialog(){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.id = "2fa-code-modal";
+    dialogConfig.height = "200px";
+    dialogConfig.width = "28%";
+    //dialogConfig.data = { email: emailp, password: passwordp}
+    const tfaModal = this.matDialog.open(DisplayTwoFactorAuthSecretComponent, dialogConfig);
   }
 }
