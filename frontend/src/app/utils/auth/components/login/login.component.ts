@@ -7,6 +7,8 @@ import { Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UserTokenStateDto } from "../../dtos/UserTokenState.dto";
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { TwoFactorAuthLoginComponent } from '../two-factor-auth-login/two-factor-auth-login.component';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +23,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public password: FormControl;
   public loginUserChanged: Subscription;
 
-  constructor(private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
+  constructor(public matDialog: MatDialog, private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
     this.errorMessage = "";
     this.loginUserChanged = this.authService.logInUserChanged.subscribe({
       next: (res) => {
@@ -58,12 +60,25 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loginUserChanged.unsubscribe();
   }
 
-  onLogin() {
+  onLogin1() {
     this.errorMessage = "";
     if (this.form.valid) {
       this.authService.loginUser(new LoginUserDto(this.email.value, this.password.value));
     } else {
       console.log("Not valid")
     }
+  }
+
+  onLogin(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.id = "2fa-code-modal";
+    dialogConfig.height = "300px";
+    dialogConfig.width = "28%";
+    //dialogConfig.data = { companyId: this.cid }
+    const modalDialog = this.matDialog.open(TwoFactorAuthLoginComponent, dialogConfig);
+    /*modalDialog.afterClosed().subscribe(result => {
+      location.reload()
+    })*/
   }
 }

@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import {ViewEncapsulation} from '@angular/core';
 
 @Component({
   selector: 'app-two-factor-auth-login',
   templateUrl: './two-factor-auth-login.component.html',
-  styleUrls: ['./two-factor-auth-login.component.css']
+  styleUrls: ['./two-factor-auth-login.component.css'], 
+  encapsulation: ViewEncapsulation.None
 })
 export class TwoFactorAuthLoginComponent implements OnInit {
   public CONTAINS_DIGIT_PATTERN: string = "[0-9]*";

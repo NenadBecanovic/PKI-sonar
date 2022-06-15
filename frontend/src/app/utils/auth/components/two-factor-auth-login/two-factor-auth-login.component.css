@@ -12,7 +12,7 @@ h1 {
 
 mat-form-field {
     width: 30vw;
-    max-width: 30em;
+    max-width: 25em;
     min-width: 20em;
 }
 
@@ -27,4 +27,12 @@ mat-form-field {
 
 .register-question a {
     color: white
+}
+
+.content {
+    background-color: #1E2028;
+}
+
+.mat-dialog-container {
+    padding: 0px !important;
 }

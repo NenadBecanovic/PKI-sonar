@@ -1,13 +1,14 @@
-<form [formGroup]="form">
-    <h1 style="text-align: center">2FA LOGIN</h1>
-    <div style="text-align: center;margin: 20px;">
+<div class="content" style="height: 100%; width: 100%;">
+    <form [formGroup]="form">
+    <h1 style="text-align: center">Authentication code:</h1>
+    <div style="text-align: center;margin-inline: 20px;">
         <mat-form-field appearance="fill">
-            <mat-label>Enter code</mat-label>
-            <input matInput formControlName="code" required>
+            <mat-label>Code</mat-label>
+            <input matInput formControlName="code" placeholder="123456" required>
             <mat-error  *ngIf="code.errors?.['minlength'] || code.errors?.['maxlength'] || code.errors?.['pattern']">Code must contain 6 digits.</mat-error>
         </mat-form-field>
     </div>
-    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert" style="margin-inline: 20px;">
         {{errorMessage}}
     </div>
     <div>
@@ -17,3 +18,4 @@
         <br>
     </div>
 </form>
+</div>
