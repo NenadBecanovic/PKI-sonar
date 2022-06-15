@@ -75,8 +75,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/tfa-login")
-    public ResponseEntity<UserTokenState> tfaLogin(
-            @RequestBody TfaAuthenticationRequest authenticationRequest) {
+    public ResponseEntity<UserTokenState> tfaLogin(@RequestBody TfaAuthenticationRequest authenticationRequest) {
         if (!authenticationService.isEmailValid(authenticationRequest.getEmail())
                 || !authenticationService.isPasswordValid(authenticationRequest.getPassword())
                 || !authenticationService.isCodeValid(authenticationRequest.getCode()))

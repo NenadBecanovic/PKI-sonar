@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public password: FormControl;
   public loginUserChanged: Subscription;
 
-  constructor(public matDialog: MatDialog, private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
+  constructor(private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
     this.errorMessage = "";
     this.loginUserChanged = this.authService.logInUserChanged.subscribe({
       next: (res) => {
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private errorHandler(error: HttpErrorResponse) {
     switch (error.status) {
       case 400:
-        this.errorMessage = "Invalid email or password.";
+        this.errorMessage = "Invalid credentials.";
         break;
       default:
         this.errorMessage = "Something went wrong. Please try again!";
@@ -60,25 +60,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.loginUserChanged.unsubscribe();
   }
 
-  onLogin1() {
+  onLogin() {
     this.errorMessage = "";
     if (this.form.valid) {
       this.authService.loginUser(new LoginUserDto(this.email.value, this.password.value));
     } else {
       console.log("Not valid")
     }
-  }
-
-  onLogin(): void {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.disableClose = false;
-    dialogConfig.id = "2fa-code-modal";
-    dialogConfig.height = "300px";
-    dialogConfig.width = "28%";
-    //dialogConfig.data = { companyId: this.cid }
-    const modalDialog = this.matDialog.open(TwoFactorAuthLoginComponent, dialogConfig);
-    /*modalDialog.afterClosed().subscribe(result => {
-      location.reload()
-    })*/
   }
 }
