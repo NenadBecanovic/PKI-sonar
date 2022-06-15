@@ -1,0 +1,19 @@
+<form [formGroup]="form">
+    <h1 style="text-align: center">2FA LOGIN</h1>
+    <div style="text-align: center;margin: 20px;">
+        <mat-form-field appearance="fill">
+            <mat-label>Enter code</mat-label>
+            <input matInput formControlName="code" required>
+            <mat-error  *ngIf="code.errors?.['minlength'] || code.errors?.['maxlength'] || code.errors?.['pattern']">Code must contain 6 digits.</mat-error>
+        </mat-form-field>
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        {{errorMessage}}
+    </div>
+    <div>
+        <div class="col-xs-12 button-container">
+            <button mat-raised-button class="mat-primary" [disabled]="!form.valid" (click)="send()">Send</button>
+        </div>
+        <br>
+    </div>
+</form>

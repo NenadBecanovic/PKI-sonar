@@ -15,10 +15,12 @@ import { NewCertGuard } from './shared/auth-guards/new-cert.guard';
 import { ViewCertsGuard } from './shared/auth-guards/view-certs.guard';
 import { NoAuthGuard } from './shared/auth-guards/no-auth.guard';
 import { ChangePasswordComponent } from './utils/auth/components/change-password/change-password.component';
+import { TwoFactorAuthLoginComponent } from './utils/auth/components/two-factor-auth-login/two-factor-auth-login.component';
 
 const routes: Routes = [
   {path: '', component: WelcomeComponent},
   {path: 'login', component: LoginComponent, canActivate: [NoAuthGuard]},
+  {path: 'login/totp', component: TwoFactorAuthLoginComponent },
   {path: 'overview', component: CertificateOverviewComponent, canActivate: [ViewCertsGuard]},
   {path: 'new', component: NewCertificateComponent, canActivate: [NewCertGuard]},
   {path: 'register', component: RegisterComponent, canActivate: [NoAuthGuard]},

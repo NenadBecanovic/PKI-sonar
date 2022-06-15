@@ -24,6 +24,7 @@ import { AccountRecoveryComponent } from './account-recovery/components/account-
 import { PasswordlessLoginComponent } from './utils/auth/components/passwordless-login/passwordless-login.component';
 import { PasswordlessLoginValidationComponent } from './utils/auth/components/passwordless-login-validation/passwordless-login-validation.component';
 import { ChangePasswordComponent } from './utils/auth/components/change-password/change-password.component';
+import { TwoFactorAuthLoginComponent } from './utils/auth/components/two-factor-auth-login/two-factor-auth-login.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { ChangePasswordComponent } from './utils/auth/components/change-password
     AccountRecoveryComponent,
     PasswordlessLoginComponent,
     PasswordlessLoginValidationComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    TwoFactorAuthLoginComponent
   ],
   imports: [
     BrowserModule,
