@@ -7,9 +7,13 @@ import bsep.pkiapp.model.ConfirmationTokenType;
 import bsep.pkiapp.model.User;
 import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;
+import bsep.pkiapp.security.util.TfaAuthenticationRequest;
 import bsep.pkiapp.security.util.UserTokenState;
 import bsep.pkiapp.security.util.TokenUtils;
+import de.taimos.totp.TOTP;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -56,11 +61,46 @@ public class AuthenticationService {
                 authenticationRequest.getEmail(), authenticationRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
+        //String secret = user.getSecret();
+        //System.out.println(getTOTPCode(secret));
         if (!user.isActivated()) {
             log.debug("User {} is not activated!", user.getUsername());
             return null;
         }
+        UserTokenState token = getAuthentication(user);
+        if(user.isUsing2FA()){
+            token.setAccessToken("2fa");
+        }
+        return token;
+    }
+
+    public UserTokenState tfaLogin(TfaAuthenticationRequest authenticationRequest) throws AuthenticationException {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                authenticationRequest.getEmail(), authenticationRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User user = (User) authentication.getPrincipal();
+        if (!user.isActivated()) {
+            log.debug("User {} is not activated!", user.getUsername());
+            return null;
+        }
+        if (!user.isUsing2FA()) {
+            log.debug("User {} is not using 2FA!", user.getUsername());
+            return null;
+        }
+        String secret = user.getSecret();
+        String code = getTOTPCode(secret);
+        if(code == null || !(code.equals(authenticationRequest.getCode()))){
+            log.debug("TOTP code for user {} is not valid!", user.getUsername());
+            return null;
+        }
         return getAuthentication(user);
+    }
+
+    private String getTOTPCode(String secretKey) {
+        Base32 base32 = new Base32();
+        byte[] bytes = base32.decode(secretKey);
+        String hexKey = Hex.encodeHexString(bytes);
+        return TOTP.getOTP(hexKey);
     }
 
     public UserTokenState loginPasswordless(String token) throws AuthenticationException {
@@ -103,6 +143,12 @@ public class AuthenticationService {
         log.debug("sign up new user with payload: {}", userDto);
         User user = new User(userDto);
         user.setRole(roleService.getById(1));
+
+        user.setSecret("YQQIXDH6XVXXPHJXLAEDF3GUWMBDQ3FE");
+        //String secret = generateSecretKey();
+        //user.setSecret(secret);
+        //System.out.println(secret);
+
         if (userService.isEmailRegistered(user.getEmail()).equals(true)) {
             throw new ResourceConflictException("Email already exists");
         } else {
@@ -110,6 +156,14 @@ public class AuthenticationService {
             userService.saveUser(user);
             sendRegistrationEmail(user);
         }
+    }
+
+    private static String generateSecretKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes(bytes);
+        Base32 base32 = new Base32();
+        return base32.encodeToString(bytes);
     }
 
     public void sendLoginLink(String email) {
@@ -218,6 +272,12 @@ public class AuthenticationService {
 
     public boolean isNameValid(String password){
         if(Pattern.matches("[A-Za-z ']+", password))
+            return true;
+        return false;
+    }
+
+    public boolean isCodeValid(String code){
+        if(Pattern.matches("[0-9]*", code))
             return true;
         return false;
     }

@@ -5,6 +5,7 @@ import bsep.pkiapp.dto.ForgottenPasswordDto;
 import bsep.pkiapp.dto.UserDto;
 import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;
+import bsep.pkiapp.security.util.TfaAuthenticationRequest;
 import bsep.pkiapp.security.util.UserTokenState;
 import bsep.pkiapp.service.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +68,21 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         try{
             UserTokenState userTokenState = authenticationService.login(authenticationRequest);
+            return ResponseEntity.ok(userTokenState);
+        }catch (AuthenticationException e){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/tfa-login")
+    public ResponseEntity<UserTokenState> tfaLogin(
+            @RequestBody TfaAuthenticationRequest authenticationRequest) {
+        if (!authenticationService.isEmailValid(authenticationRequest.getEmail())
+                || !authenticationService.isPasswordValid(authenticationRequest.getPassword())
+                || !authenticationService.isCodeValid(authenticationRequest.getCode()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try{
+            UserTokenState userTokenState = authenticationService.tfaLogin(authenticationRequest);
             return ResponseEntity.ok(userTokenState);
         }catch (AuthenticationException e){
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

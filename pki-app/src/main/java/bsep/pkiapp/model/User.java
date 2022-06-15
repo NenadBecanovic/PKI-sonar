@@ -37,6 +37,12 @@ public class User implements UserDetails {
     @Column(name = "activated", nullable = false)
     private boolean activated;
 
+    @Column(name = "is_using_2fa", nullable = false)
+    private boolean isUsing2FA;
+
+    @Column(name = "secret", nullable = false)
+    private String secret;
+
     public User() {}
 
     public User(Integer id, String name, String surname, String email, String password, Role role) {
@@ -46,6 +52,8 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.role = role;
+        //this.isUsing2FA = false;
+        //this.secret = "";
     }
 
     public User(UserDto userDto) {
@@ -53,6 +61,8 @@ public class User implements UserDetails {
         this.surname = userDto.getSurname();
         this.email = userDto.getEmail();
         this.password = userDto.getPassword();
+        this.secret = "";
+        this.isUsing2FA = false;
     }
 
     public Integer getId() {
@@ -85,6 +95,22 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isUsing2FA() {
+        return isUsing2FA;
+    }
+
+    public void setUsing2FA(boolean using2FA) {
+        isUsing2FA = using2FA;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     @Override
@@ -143,4 +169,5 @@ public class User implements UserDetails {
     public void setActivated(boolean activated) {
         this.activated = activated;
     }
+
 }
