@@ -15,7 +15,8 @@ export interface DialogData {
   encapsulation: ViewEncapsulation.None
 })
 export class DisplayTwoFactorAuthSecretComponent implements OnInit {
-  public secret = "YQQIXDH6XVXXPHJXLAEDF3GUWMBDQ3FE"
+  public secret = ""
+  public secretqr = ""
   constructor(private _authService: AuthService, private _snackBar: MatSnackBar, @Inject(MAT_DIALOG_DATA) public data: DialogData,  public dialogRef: MatDialogRef<DisplayTwoFactorAuthSecretComponent>) { }
 
   ngOnInit(): void {
@@ -23,7 +24,12 @@ export class DisplayTwoFactorAuthSecretComponent implements OnInit {
       this._snackBar.open("Two-Factor Authentication is enabled.", "OK", {
         panelClass: ["black-snackbar"]
       });
-      this.secret = response;
+      //let secret1 = response;
+      //this.secret = response;
+      //this.secretqr = "otpauth://totp/Awesome%20Company%3Atest%40gmail.com?secret="+secret1+"&issuer=Awesome%20Company"
+      this.secretqr = response;
+      var parts = this.secretqr.split("=", 2);
+      this.secret = parts[1].split("&", 2)[0];
     });
   }
 

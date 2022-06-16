@@ -62,7 +62,7 @@ export class HeaderComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = false;
     dialogConfig.id = "2fa-code-modal";
-    dialogConfig.height = "200px";
+    dialogConfig.height = "500px";
     dialogConfig.width = "28%";
     
     this.is2faEnabled=true;

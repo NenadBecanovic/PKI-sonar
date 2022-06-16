@@ -25,6 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -61,8 +63,6 @@ public class AuthenticationService {
                 authenticationRequest.getEmail(), authenticationRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
-        //String secret = user.getSecret();
-        //System.out.println(getTOTPCode(secret));
         if (!user.isActivated()) {
             log.debug("User {} is not activated!", user.getUsername());
             return null;
@@ -145,9 +145,19 @@ public class AuthenticationService {
         String secret = generateSecretKey();
         user.setSecret(secret);
         user.setUsing2FA(true);
-        //System.out.println(secret);
         userService.saveUser(user);
-        return secret;
+        return getGoogleAuthenticatorBarCode(secret, user.getEmail(), "PKI");
+    }
+
+    private String getGoogleAuthenticatorBarCode(String secretKey, String account, String issuer) {
+        try {
+            return "otpauth://totp/"
+                    + URLEncoder.encode(issuer + ":" + account, "UTF-8").replace("+", "%20")
+                    + "?secret=" + URLEncoder.encode(secretKey, "UTF-8").replace("+", "%20")
+                    + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public void disable2fa(String token) {
@@ -168,9 +178,6 @@ public class AuthenticationService {
         log.debug("sign up new user with payload: {}", userDto);
         User user = new User(userDto);
         user.setRole(roleService.getById(1));
-
-        user.setSecret("YQQIXDH6XVXXPHJXLAEDF3GUWMBDQ3FE");
-
 
         if (userService.isEmailRegistered(user.getEmail()).equals(true)) {
             throw new ResourceConflictException("Email already exists");
