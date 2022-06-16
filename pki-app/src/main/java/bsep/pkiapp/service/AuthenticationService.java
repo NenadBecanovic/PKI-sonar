@@ -89,7 +89,7 @@ public class AuthenticationService {
         }
         String secret = user.getSecret();
         String code = getTOTPCode(secret);
-        if(code == null || !(code.equals(authenticationRequest.getCode()))){
+        if(authenticationRequest.getCode() == null || !(code.equals(authenticationRequest.getCode()))){
             log.debug("TOTP code for user {} is not valid!", user.getUsername());
             return null;
         }
