@@ -21,13 +21,13 @@ public class UserController {
     @GetMapping(value = "getIssuersByCertificateType/{certType}")
     public ResponseEntity<?> getIssuersByCertificateType(@RequestHeader("Authorization") String token,
                                                                      @PathVariable String certType) {
-        log.debug("GET request received - /users/getIssuersByCertificateType/{}", certType);
+        log.debug("GET RR - UGICT T: {}", certType);
         return ResponseEntity.ok(userService.getByRole(token.split(" ")[1], certType));
     }
 
     @GetMapping(value = "getSubjects")
     public ResponseEntity<?> getSubjects() {
-        log.debug("GET request received - /users/getSubjects");
+        log.debug("GET RR - UGS");
         return ResponseEntity.ok(userService.getAllSubjects());
     }
 

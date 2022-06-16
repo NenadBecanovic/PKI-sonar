@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.util.List;
 
 
 @Component
+@Slf4j
 public class TokenUtils {
 
     @Value("PKI")
@@ -46,6 +48,7 @@ public class TokenUtils {
      * @return JWT token
      */
     public String generateToken(String username, String role, List<String> authorities) {
+        log.debug("GT U: [{}], R: [{}], AS: {}", username, role, authorities);
         Date exp_date = new Date(new Date().getTime() + EXPIRES_IN);
         return Jwts.builder()
                 .setIssuer(APP_NAME)
@@ -111,14 +114,19 @@ public class TokenUtils {
      * @return Korisničko ime iz tokena ili null ukoliko ne postoji.
      */
     public String getEmailFromToken(String token) {
+        log.debug("GEFT");
         String username;
 
         try {
             final Claims claims = this.getAllClaimsFromToken(token);
             username = claims.getSubject();
+            log.debug("GEFT U: {}", username);
         } catch (ExpiredJwtException ex) {
+            log.warn("GEFT TE");
             throw ex;
         } catch (Exception e) {
+            log.warn("GEFT FAILED");
+            e.printStackTrace();
             username = null;
         }
 
@@ -132,14 +140,19 @@ public class TokenUtils {
      * @return Rola iz tokena ili null ukoliko ne postoji.
      */
     public String getRoleFromToken(String token) {
+        log.warn("GRFT");
         String role;
 
         try {
             final Claims claims = this.getAllClaimsFromToken(token);
+            log.debug("GRFT U: {}", claims.getSubject());
             role = claims.get("role", String.class);
         } catch (ExpiredJwtException ex) {
+            log.warn("GRFT TE");
             throw ex;
         } catch (Exception e) {
+            log.warn("GRFT FAILED");
+            e.printStackTrace();
             role = null;
         }
 
@@ -191,13 +204,18 @@ public class TokenUtils {
      * @return Datum do kojeg token važi.
      */
     public Date getExpirationDateFromToken(String token) {
+        log.warn("GEDFT");
         Date expiration;
         try {
             final Claims claims = this.getAllClaimsFromToken(token);
+            log.warn("GEDFT U: {}", claims.getSubject());
             expiration = claims.getExpiration();
         } catch (ExpiredJwtException ex) {
+            log.warn("GEDFT TE");
             throw ex;
         } catch (Exception e) {
+            log.warn("GEDFT FAILED");
+            e.printStackTrace();
             expiration = null;
         }
 
@@ -211,6 +229,7 @@ public class TokenUtils {
      * @return Podaci iz tokena.
      */
     private Claims getAllClaimsFromToken(String token) {
+        log.warn("GACT");
         Claims claims;
         try {
             claims = Jwts.parser()
@@ -218,8 +237,11 @@ public class TokenUtils {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException ex) {
+            log.warn("GACT TE");
             throw ex;
         } catch (Exception e) {
+            log.warn("GACT FAILED");
+            e.printStackTrace();
             claims = null;
         }
 
@@ -236,6 +258,7 @@ public class TokenUtils {
      * @return Informacija da li je token validan ili ne.
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
+        log.debug("VT U: {}", userDetails.getUsername());
         final String username = getEmailFromToken(token);
         return (username != null && username.equals(userDetails.getUsername()));
     }

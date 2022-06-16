@@ -32,19 +32,19 @@ public class ExtensionController {
 
     @GetMapping(value = "extensions")
     public ResponseEntity<List<CertificateExtension>> getAllExtensions() {
-        log.debug("GET request received - /extensions/extensions");
+        log.debug("GET RR - EE");
         return ResponseEntity.ok(extensionService.getAll());
     }
 
     @GetMapping(value = "keyUsages")
     public ResponseEntity<List<KeyUsage>> getAllKeyUsages() {
-        log.debug("GET request received - /extensions/keyUsages");
+        log.debug("GET RR - EKU");
         return ResponseEntity.ok(keyUsageService.getAll());
     }
 
     @GetMapping(value = "extKeyUsages")
     public ResponseEntity<List<ExtendedKeyUsage>> getAllExtendedKeyUsages() {
-        log.debug("GET request received - /extensions/extKeyUsages");
+        log.debug("GET RR - EEKU");
         return ResponseEntity.ok(extendedKeyUsageService.getAll());
     }
 

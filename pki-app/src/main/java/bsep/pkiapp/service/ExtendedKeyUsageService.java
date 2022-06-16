@@ -17,12 +17,11 @@ public class ExtendedKeyUsageService {
     private ExtendedKeyUsageRepository extendedKeyUsageRepository;
 
     public ExtendedKeyUsage getById(Integer id) {
-        log.debug("Get extended key usage with id: {}", id);
+        log.debug("GEKU ID: {}", id);
         return extendedKeyUsageRepository.getById(id);
     }
 
     public List<ExtendedKeyUsage> getAll() {
-        log.debug("Get all extended key usages");
         return extendedKeyUsageRepository.findAll();
     }
 }

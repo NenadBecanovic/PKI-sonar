@@ -13,7 +13,7 @@ import bsep.pkiapp.keystores.KeyStoreWriter;
 public class KeyStoreService {
 
 	public void writeRootCertificateToKeyStore(String serialNumber, PrivateKey privateKey, Certificate certificate, String password) {
-		log.debug("Write root certificate to key store with serial number: {}", serialNumber);
+		log.debug("WRCKS with SN: {}", serialNumber);
 		KeyStoreWriter ksw = new KeyStoreWriter();
 		ksw.loadKeyStore(null, password.toCharArray());
 		ksw.write(serialNumber, privateKey, password.toCharArray(), new Certificate[]{certificate});
@@ -27,7 +27,7 @@ public class KeyStoreService {
     public void writeCertificateToHierarchyKeyStore(String serialNumber, String rootSerialNumber,
 													PrivateKey privateKey, Certificate[] certificates,
 													String password) {
-		log.debug("Write certificate with serial number [{}] to hierarchy key store with serial number [{}]", serialNumber, rootSerialNumber);
+		log.debug("WC with SN [{}] to HKS with SN [{}]", serialNumber, rootSerialNumber);
 		KeyStoreWriter ksw = new KeyStoreWriter();
 		ksw.loadKeyStore(".\\files\\hierarchy" + rootSerialNumber + ".jks", rootSerialNumber.toString().toCharArray());
 		ksw.write(serialNumber, privateKey, rootSerialNumber.toString().toCharArray(), certificates);

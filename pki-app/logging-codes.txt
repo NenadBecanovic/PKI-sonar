@@ -1,0 +1,147 @@
+RR - Request received
+U - User
+AUTHENTICATION-CONTROLLER:
+    ACP - /auth/change-password
+    AL - /auth/login
+    APL - /auth/passwordless-login
+    ALL - /auth/login-link
+    AR - /auth/register
+    ACA - /auth/confirm-account
+    AAR - /auth/account-recovery
+    ATC - /auth/token-check
+    ARP - /auth/reset-password
+    AGR - /auth/getRole
+    AGA - /auth/getAuthorities
+    AGU - /auth/getUser
+    AHT - Authorization header
+    ATFAL - /auth/tfa-login
+    ATFA - /auth/2fa
+    ATFA - /auth/2fa/enable
+    ATFD - /auth/2fa/disable
+CERTIFICATE-CONTROLLER:
+    SN - Serial number
+    ST - Search text
+    F - Filter
+    CALL - /certificates/all
+    CCRC - /certificates/createRootCertificate
+    CCIC - /certificates/createIntermediateCertificate
+    CCEC - /certificates/createEndEntityCertificate
+    CD - /certificates/download/{id}
+    UA - Unauthorized
+    CGRC - /certificates/getRootCertificates
+    CR - /certificates/revoke
+    CV - /certificates/validity/{id}
+    CS - /certificates/search/{text}
+    CFT - /certificates/filterByType/{filter}
+EXTENSION-CONTROLLER:
+    EE - /extensions/extensions
+    EKU - /extensions/keyUsages
+    EEKU - /extensions/extKeyUsages
+USER-CONTROLLER:
+    T - Type
+    UGICT - /users/getIssuersByCertificateType/{}
+    UGS - /users/getSubjects
+KEY-STORE-READER:
+    KSI - Key store instance
+    GCIN - Get certificate issuer name
+    S - store
+    A - alias
+    GPK - Get private key
+    GC - Get certificate
+KEY-STORE-WRITER:
+    KSW - Key store writer
+    LKS - Load key store
+    SKS - Save key store
+    WKS - Write to key store
+TOKEN-AUTHENTICATION:
+    TE - Token expired
+    AUTH - Authenticate
+    U - User
+    R - Role
+    AS - Authorities
+    GT - Generate token
+    GEFT - Get email from token
+    GEDFT - Get expiration date from token
+    VT - Validate token
+X500NAME-GENERATOR:
+    GX5NNC - Generate X500Name for new certificate
+    GX5NRC - Generate X500Name for root certificate
+    GX5NIC - Generate X500Name for intermediate certificate
+    GX5NEC - Generate X500Name for end entity certificate
+    FRSN - Find root serial number
+    ISN - Issuer serial number
+    RC - Root certificate
+AUTHNTICATION-SERVICE:
+    NA - Not activated
+    L - Login
+    2FAL - 2FA login
+    N2FA - Not using 2FA
+    CNV - Code not valid
+    T - token
+    PL - Passwordless login
+    GR - Get roles
+    TFAE - 2FA enable
+    TFAD - 2FA disable
+    GGABC - Get Google authenticator bar code
+    SNU - Sign up new user
+    UEAE - User email already exists
+    SLL - Send login link
+    SRE - Send registration email
+    AC - Confirm account
+    RA - Recover account
+    CP - Change password
+    SNP - Set new password
+CERTIFICATE-CHAIN-SERVICE:
+    CC - Certificate chain
+    CT - Certificate type
+CONFIRMATION-TOKEN-SERVICE:
+    GCT - Generate confirmation token
+    TP - Type
+    ET - Encode token
+EMAIL-SERVICE:
+    SRE - Send registration email
+    SRCE - Send recovery email
+    SLE - Send login email
+EXTENDED-KEY-USAGE-SERVICE:
+    GEKU - Get extended key usage
+EXTENSION-SERVICE:
+    AENC - Add extensions to new certificate
+    SKU - Set key usage
+    NC - New certificate
+    SEKU - Set extended key usages
+KEY-STORE-SERVICE:
+    WRCKS - Write root certificate to key store
+    WC - Write certificate
+    HKS - hierarchy key store
+USER-SERVICE:
+    LU - Load user
+    SU - Save user
+    GUE - Get user with email
+    GI - Get issuers
+    UR - User role
+    A - Admin
+    CC - Convert certificates
+    IL - issuerDto list
+    CU - Convert users
+CERTIFICATE-SERVICE:
+    C - Certificate
+    CNC - Create new certificate
+    NV - Not Valid
+    CI - Certificate issuer
+    EDNA - End date not allowed
+    RC - Root certificate
+    ISN - issuer serial number
+    GC - Generate certificate
+    IPK - issuer public key
+    NC - New certificate
+    GKP - Generate key pair
+    FNCCH - Find new certificate chain hierarchy
+    EC - Encode certificate
+    GA - Get all
+    CL - CertificateDto list
+    CCL - CertificateChain list
+    RVC - Revoke certificates
+    CEDA - chosen end date allowed
+    CV - Certificate valid
+
+

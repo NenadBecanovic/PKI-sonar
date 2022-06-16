@@ -19,12 +19,12 @@ public class CertificateChainService {
 
 
     public List<CertificateChain> getCAByUser(User user) {
-        log.debug("Get CA for user: {}", user.getEmail());
+        log.debug("GET CA U: {}", user.getEmail());
         return certificateChainRepository.getByUserAndCertificateType(user, CertificateType.INTERMEDIATE);
     }
 
     public List<CertificateChain> getByCertificateType(CertificateType type) {
-        log.debug("Get certificate chain by certificate type: {}", type.toString());
+        log.debug("Get CC by CT: {}", type.toString());
         return certificateChainRepository.getByCertificateType(type);
     }
 }

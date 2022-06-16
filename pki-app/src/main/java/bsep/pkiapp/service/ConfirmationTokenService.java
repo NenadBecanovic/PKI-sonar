@@ -39,7 +39,7 @@ public class ConfirmationTokenService {
     }
 
     public ConfirmationToken generateConfirmationToken(String email, ConfirmationTokenType tokenType) {
-        log.debug("Generate confirmation token with type [{}] for user [{}]", tokenType.toString(), email);
+        log.debug("GCT with TP: [{}] for U: [{}]", tokenType.toString(), email);
         ConfirmationToken confirmationToken = new ConfirmationToken();
         confirmationToken.setEmail(email);
         confirmationToken.setToken(tokenUtils.generateToken(email, "ROLE_USER", null));
@@ -49,7 +49,7 @@ public class ConfirmationTokenService {
     }
 
     public void encodeToken(ConfirmationToken token) {
-        log.debug("Encode token: {}", token);
+        log.debug("ET: {}", token);
         token.setToken(passwordEncoder.encode(token.getToken().substring(token.getToken().length() - 10)));
         saveToken(token);
     }

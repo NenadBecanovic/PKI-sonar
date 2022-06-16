@@ -2,6 +2,7 @@ package bsep.pkiapp.security.auth;
 
 import bsep.pkiapp.security.util.TokenUtils;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,13 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 	private TokenUtils tokenUtils;
 
 	private UserDetailsService userDetailsService;
-
-	protected final Log loggerLog = LogFactory.getLog(getClass());
 
 	public TokenAuthenticationFilter(TokenUtils tokenHelper, UserDetailsService userDetailsService) {
 		this.tokenUtils = tokenHelper;
@@ -39,7 +39,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 			if (authToken != null) {
 				username = tokenUtils.getEmailFromToken(authToken);
-
+				log.debug("AUTH U: {}", username);
 				if (username != null) {
 					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 					if (tokenUtils.validateToken(authToken, userDetails).equals(true)) {
@@ -51,7 +51,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 			}
 
 		} catch (ExpiredJwtException ex) {
-			loggerLog.debug("Token expired!");
+			log.warn("TE");
 		}
 
 		chain.doFilter(request, response);

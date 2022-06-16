@@ -25,15 +25,17 @@ public class KeyStoreWriter {
 	
 	public KeyStoreWriter() {
 		try {
+			log.debug("GET KSW");
 			keyStore = KeyStore.getInstance("JKS", "SUN");
 		} catch (KeyStoreException | NoSuchProviderException e) {
+			log.error("GET KSW FAILED");
 			e.printStackTrace();
 		}
 	}
 	
 	public void loadKeyStore(String fileName, char[] password) {
 		try {
-			log.debug("Load key store: {}", fileName);
+			log.debug("LKS: {}", fileName);
 			if(fileName != null) {
 				keyStore.load(new FileInputStream(fileName), password);
 			} else {
@@ -41,27 +43,27 @@ public class KeyStoreWriter {
 				keyStore.load(null, password);
 			}
 		} catch (CertificateException | NoSuchAlgorithmException | IOException e) {
-			log.warn("Failed to load key store: {}", fileName);
+			log.error("FAILED LKS: {}", fileName);
 			e.printStackTrace();
 		}
 	}
 	
 	public void saveKeyStore(String fileName, char[] password) {
 		try {
-			log.debug("Save key store: {}", fileName);
+			log.debug("SKS: {}", fileName);
 			keyStore.store(new FileOutputStream(fileName), password);
 		} catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
-			log.warn("Failed to save key store: {}", fileName);
+			log.error("FAILED SKS: {}", fileName);
 			e.printStackTrace();
 		}
 	}
 	
 	public void write(String alias, PrivateKey privateKey, char[] password, Certificate[] certificates) {
 		try {
-			log.debug("Write to key store with alias: {}", alias);
+			log.debug("WKS with A: {}", alias);
 			keyStore.setKeyEntry(alias, privateKey, password, certificates);
 		} catch (KeyStoreException e) {
-			log.warn("Failed to write to key store with alias: {}", alias);
+			log.warn("FAILED WKS with A: {}", alias);
 			e.printStackTrace();
 		}
 	}

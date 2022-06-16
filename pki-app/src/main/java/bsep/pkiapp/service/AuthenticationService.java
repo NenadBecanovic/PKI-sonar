@@ -58,13 +58,13 @@ public class AuthenticationService {
     private EmailService emailService;
 
     public UserTokenState login(JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
-        log.debug("User log in with data: {}", authenticationRequest);
+        log.debug("L U: {}", authenticationRequest.getEmail());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getEmail(), authenticationRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
         if (!user.isActivated()) {
-            log.debug("User {} is not activated!", user.getUsername());
+            log.debug("NA U: {}", user.getUsername());
             return null;
         }
         UserTokenState token = getAuthentication(user);
@@ -75,22 +75,23 @@ public class AuthenticationService {
     }
 
     public UserTokenState tfaLogin(TfaAuthenticationRequest authenticationRequest) throws AuthenticationException {
+        log.debug("2FAL U: {}", authenticationRequest.getEmail());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getEmail(), authenticationRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
         if (!user.isActivated()) {
-            log.debug("User {} is not activated!", user.getUsername());
+            log.debug("NA U: {}", user.getUsername());
             return null;
         }
         if (!user.isUsing2FA()) {
-            log.debug("User {} is not using 2FA!", user.getUsername());
+            log.debug("N2FA U: {}", user.getUsername());
             return null;
         }
         String secret = user.getSecret();
         String code = getTOTPCode(secret);
         if(authenticationRequest.getCode() == null || !(code.equals(authenticationRequest.getCode()))){
-            log.debug("TOTP code for user {} is not valid!", user.getUsername());
+            log.debug("TOTP CNV U: {}", user.getUsername());
             return null;
         }
         return getAuthentication(user);
@@ -104,7 +105,7 @@ public class AuthenticationService {
     }
 
     public UserTokenState loginPasswordless(String token) throws AuthenticationException {
-        log.debug("Passwordles login with token: {}", token);
+        log.debug("PL T: {}", token);
         ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
         if (confirmationToken.getTokenType().equals(ConfirmationTokenType.LOGIN_TOKEN)) {
             Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -113,7 +114,7 @@ public class AuthenticationService {
             User user = userService.getByEmail(confirmationToken.getEmail());
             confirmationTokenService.deleteToken(confirmationToken);
             if (!user.isActivated()) {
-                log.debug("User {} is not activated!", user.getUsername());
+                log.debug("NA U: {}", user.getUsername());
                 return null;
             }
             return getAuthentication(user);
@@ -127,7 +128,7 @@ public class AuthenticationService {
     }
 
     public List<String> getRoles(User user) {
-        log.debug("Get roles for user {}", user.getUsername());
+        log.debug("GR U: {}", user.getUsername());
         return user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
@@ -135,12 +136,14 @@ public class AuthenticationService {
 
     public boolean getUsing2fa(String token){
         String email = tokenUtils.getEmailFromToken(token);
+        log.debug("CHECK 2FA U: {}", email);
         User user = userService.getByEmail(email);
         return user.isUsing2FA();
     }
 
     public String enable2fa(String token) {
         String email = tokenUtils.getEmailFromToken(token);
+        log.debug("TFAE U: {}",email);
         User user = userService.getByEmail(email);
         String secret = generateSecretKey();
         user.setSecret(secret);
@@ -150,18 +153,21 @@ public class AuthenticationService {
     }
 
     private String getGoogleAuthenticatorBarCode(String secretKey, String account, String issuer) {
+        log.debug("GGABC");
         try {
             return "otpauth://totp/"
                     + URLEncoder.encode(issuer + ":" + account, "UTF-8").replace("+", "%20")
                     + "?secret=" + URLEncoder.encode(secretKey, "UTF-8").replace("+", "%20")
                     + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
+            log.debug("GGABC FAILED");
             throw new IllegalStateException(e);
         }
     }
 
     public void disable2fa(String token) {
         String email = tokenUtils.getEmailFromToken(token);
+        log.debug("TFAD U: {}", email);
         User user = userService.getByEmail(email);
         user.setUsing2FA(false);
         user.setSecret("");
@@ -175,11 +181,12 @@ public class AuthenticationService {
     }
 
     public void signUp(UserDto userDto) throws ResourceConflictException {
-        log.debug("sign up new user with payload: {}", userDto);
+        log.debug("SNU with payload: {}", userDto);
         User user = new User(userDto);
         user.setRole(roleService.getById(1));
 
         if (userService.isEmailRegistered(user.getEmail()).equals(true)) {
+            log.debug("SNU FAILED UEAE U: {}", userDto.getEmail());
             throw new ResourceConflictException("Email already exists");
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -197,7 +204,7 @@ public class AuthenticationService {
     }
 
     public void sendLoginLink(String email) {
-        log.debug("Send login link to email: {}", email);
+        log.debug("SLL to U: {}", email);
         User user = userService.getByEmail(email);
         if (user != null) {
             ConfirmationToken token = confirmationTokenService.generateConfirmationToken(email, ConfirmationTokenType.LOGIN_TOKEN);
@@ -207,7 +214,7 @@ public class AuthenticationService {
     }
 
     private void sendRegistrationEmail(User user) {
-        log.debug("Send registration email to user with email {}", user.getEmail());
+        log.debug("SRE to U: {}", user.getEmail());
         ConfirmationToken token = confirmationTokenService.generateConfirmationToken(user.getEmail(), ConfirmationTokenType.REGISTRATION_TOKEN);
         emailService.sendRegistrationEmail(user, token.getToken());
         confirmationTokenService.encodeToken(token);
@@ -222,11 +229,13 @@ public class AuthenticationService {
     }
 
     public boolean confirmAccount(String token) {
+        log.debug("AC");
         ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
         if (confirmationToken != null && confirmationToken.getTokenType().equals(ConfirmationTokenType.REGISTRATION_TOKEN)) {
             User user = userService.getByEmail(confirmationToken.getEmail());
             if(user == null)
                 return false;
+            log.debug("CA U: {}", user.getEmail());
             user.setActivated(true);
             userService.saveUser(user);
             confirmationTokenService.deleteToken(confirmationToken);
@@ -236,7 +245,7 @@ public class AuthenticationService {
     }
 
     public void recoverAccount(String email) {
-        log.debug("Recover account for user: {}", email);
+        log.debug("RA U: {}", email);
         User user = userService.getByEmail(email);
         if (user != null) {
             ConfirmationToken token = confirmationTokenService.generateConfirmationToken(email, ConfirmationTokenType.RECOVERY_TOKEN);
@@ -251,7 +260,7 @@ public class AuthenticationService {
 
     public boolean changePassword(String token, ChangedPasswordDto passwordDto){
         String email = tokenUtils.getEmailFromToken(token);
-        log.debug("Change password for user: {}", email);
+        log.debug("CP U: {}", email);
         try{
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     email, passwordDto.getOldPassword()));
@@ -263,7 +272,7 @@ public class AuthenticationService {
             }
             return false;
         } catch (BadCredentialsException e){
-            log.warn("Failed to change password for user: {}", email);
+            log.warn("FAILED CP U: {}", email);
             return false;
         }
 
@@ -273,7 +282,7 @@ public class AuthenticationService {
         ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
         if (confirmationToken.getTokenType().equals(ConfirmationTokenType.RECOVERY_TOKEN)) {
             User user = userService.getByEmail(confirmationToken.getEmail());
-            log.debug("Set new password for user: {}", user.getUsername());
+            log.debug("SNP U: {}", user.getUsername());
             user.setPassword(passwordEncoder.encode(newPassword));
             userService.saveUser(user);
             confirmationTokenService.deleteToken(confirmationToken);

@@ -38,9 +38,10 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.debug("Load user with email: {}", email);
+        log.debug("LU: {}", email);
         User user = userRepository.findByEmail(email);
         if (user == null) {
+            log.warn("FAILED LU: {}, NOT FOUND", email);
             throw new UsernameNotFoundException(String.format("No user found with email '%s'.", email));
         } else {
             return user;
@@ -52,17 +53,17 @@ public class UserService implements UserDetailsService {
     }
 
     public void saveUser(User user) {
-        log.debug("Save user: {}", user.getEmail());
+        log.debug("SU: {}", user.getEmail());
         userRepository.save(user);
     }
 
     public User getByEmail(String email) {
-        log.debug("Get user with email: {}", email);
+        log.debug("GUE: {}", email);
         return userRepository.getByEmail(email);
     }
 
     public List<IssuerDto> getByRole(String token, String type) {
-        log.debug("Get issuers by user role");
+        log.debug("GI by UR");
         String email = tokenUtils.getEmailFromToken(token);
         User user = getByEmail(email);
 
@@ -77,13 +78,13 @@ public class UserService implements UserDetailsService {
     }
 
     private List<IssuerDto> getIssuersForCA(User user) {
-        log.debug("Get issuers for CA by user: {}", user.getEmail());
+        log.debug("GI for CA by U: {}", user.getEmail());
         List<CertificateChain> certificates = certificateChainService.getCAByUser(user);
         return convertCerificateToIssuerDto(certificates);
     }
 
     private List<IssuerDto> getIssuersForAdmin(String type) {
-        log.debug("Get issuers for admin with certificate type: {}", type);
+        log.debug("GI for A with CT: {}", type);
         List<User> users = new ArrayList<>();
         List<CertificateChain> certificates = new ArrayList<>();
         if(type.equals("ROOT")){
@@ -96,7 +97,7 @@ public class UserService implements UserDetailsService {
     }
 
     private List<IssuerDto> convertCerificateToIssuerDto(List<CertificateChain> certificates) {
-        log.debug("Convert certificates to issuerDto list");
+        log.debug("CC to IL");
         List<IssuerDto> dtos = new ArrayList<>();
         for(CertificateChain cert: certificates){
             dtos.add(new IssuerDto(cert));
@@ -105,7 +106,7 @@ public class UserService implements UserDetailsService {
     }
 
     private List<IssuerDto> convertUsertToIssuerDto(List<User> users) {
-        log.debug("Convert users to issuerDto list");
+        log.debug("CU to IL");
         List<IssuerDto> dtos = new ArrayList<>();
         for (User user : users) {
             dtos.add(new IssuerDto(user));
@@ -114,7 +115,6 @@ public class UserService implements UserDetailsService {
     }
 
     private List<User> getAllEndEntities() {
-        log.debug("Get all end entities");
         List<User> endEntities = new ArrayList<>();
         for (User user : userRepository.findAll()) {
             if (user.getRole().getAuthority().equals("ROLE_USER")) {
@@ -125,7 +125,6 @@ public class UserService implements UserDetailsService {
     }
 
     private List<User> getAllCAs() {
-        log.debug("Get all CAs");
         List<User> CAs = new ArrayList<>();
         for (User user : userRepository.findAll()) {
             if (user.getRole().getAuthority().equals("ROLE_CA")) {
@@ -136,7 +135,6 @@ public class UserService implements UserDetailsService {
     }
 
     private List<User> getAllAdmins() {
-        log.debug("Get all admins");
         List<User> admins = new ArrayList<>();
         for(User user: userRepository.findAll()){
             if(user.getRole().getAuthority().equals("ROLE_ADMIN")){
@@ -147,7 +145,6 @@ public class UserService implements UserDetailsService {
     }
 
     public List<SubjectDto> getAllSubjects() {
-        log.debug("Get all subjects");
         List<SubjectDto> users = new ArrayList<>();
         for (User user : userRepository.findAll()) {
             if (!user.getRole().getAuthority().equals("ROLE_ADMIN")) {

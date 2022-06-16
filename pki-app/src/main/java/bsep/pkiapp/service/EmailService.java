@@ -22,7 +22,7 @@ public class EmailService {
 
     @Async
     public void sendRegistrationEmail(User user, String token) throws MailException {
-        log.debug("Send registration email to user: {}", user.getEmail());
+        log.debug("SRE U: {}", user.getEmail());
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getEmail());
         mail.setFrom(env.getProperty("spring.mail.username"));
@@ -34,7 +34,7 @@ public class EmailService {
 
     @Async
     public void sendRecoveryEmail(User user, String token) {
-        log.debug("Send recovery email to user: {}", user.getEmail());
+        log.debug("SRCE U: {}", user.getEmail());
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getEmail());
         mail.setFrom(env.getProperty("spring.mail.username"));
@@ -46,7 +46,7 @@ public class EmailService {
 
     @Async
     public void sendLoginEmail(User user, String token) {
-        log.debug("Send login email to user: {}", user.getEmail());
+        log.debug("SLE U: {}", user.getEmail());
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getEmail());
         mail.setFrom(env.getProperty("spring.mail.username"));

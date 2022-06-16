@@ -16,12 +16,11 @@ public class KeyUsageService {
     private KeyUsageRepository keyUsageRepository;
 
     public KeyUsage getById(Integer id) {
-        log.debug("Get key usage with id: {}", id);
+        log.debug("GKU with ID: {}", id);
         return keyUsageRepository.getById(id);
     }
 
     public List<KeyUsage> getAll() {
-        log.debug("Get all key usages");
         return keyUsageRepository.findAll();
     }
 }
