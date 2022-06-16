@@ -44,6 +44,25 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.getUser(token.split(" ")[1]));
     }
 
+    @GetMapping(value = "2fa")
+    public ResponseEntity<Boolean> getUsing2fa(@RequestHeader("Authorization") String token) {
+        log.debug("GET request received - /auth/2fa is 2fa enabled");
+        return ResponseEntity.ok(authenticationService.getUsing2fa(token.split(" ")[1]));
+    }
+
+    @GetMapping(value = "2fa/enable")
+    public ResponseEntity<String> enable2fa(@RequestHeader("Authorization") String token) {
+        log.debug("GET request received - /auth/2fa/enable enable 2fa");
+        return new ResponseEntity<>(authenticationService.enable2fa(token.split(" ")[1]), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "2fa/disable")
+    public ResponseEntity<String> disable2fa(@RequestHeader("Authorization") String token) {
+        log.debug("GET request received - /auth/2fa/enable enable 2fa");
+        authenticationService.disable2fa(token.split(" ")[1]);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping(value = "/change-password")
     public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token,
                                                  @RequestBody ChangedPasswordDto passwordDto) {

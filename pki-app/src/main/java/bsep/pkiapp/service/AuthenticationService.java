@@ -133,6 +133,31 @@ public class AuthenticationService {
                 .collect(Collectors.toList());
     }
 
+    public boolean getUsing2fa(String token){
+        String email = tokenUtils.getEmailFromToken(token);
+        User user = userService.getByEmail(email);
+        return user.isUsing2FA();
+    }
+
+    public String enable2fa(String token) {
+        String email = tokenUtils.getEmailFromToken(token);
+        User user = userService.getByEmail(email);
+        String secret = generateSecretKey();
+        user.setSecret(secret);
+        user.setUsing2FA(true);
+        //System.out.println(secret);
+        userService.saveUser(user);
+        return secret;
+    }
+
+    public void disable2fa(String token) {
+        String email = tokenUtils.getEmailFromToken(token);
+        User user = userService.getByEmail(email);
+        user.setUsing2FA(false);
+        user.setSecret("");
+        userService.saveUser(user);
+    }
+
     public UserDto getUser(String token) {
         String email = tokenUtils.getEmailFromToken(token);
         User user = userService.getByEmail(email);
@@ -145,9 +170,7 @@ public class AuthenticationService {
         user.setRole(roleService.getById(1));
 
         user.setSecret("YQQIXDH6XVXXPHJXLAEDF3GUWMBDQ3FE");
-        //String secret = generateSecretKey();
-        //user.setSecret(secret);
-        //System.out.println(secret);
+
 
         if (userService.isEmailRegistered(user.getEmail()).equals(true)) {
             throw new ResourceConflictException("Email already exists");
@@ -307,4 +330,6 @@ public class AuthenticationService {
         }
         return isValid;
     }
+
+
 }

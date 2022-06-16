@@ -1,5 +1,11 @@
-import {ViewEncapsulation} from '@angular/core';
+import {Inject, ViewEncapsulation} from '@angular/core';
 import { Component, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AuthService } from '../../services/auth.service';
+
+export interface DialogData {
+  secret: string;
+}
 
 @Component({
   selector: 'app-display-two-factor-auth-secret',
@@ -9,9 +15,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DisplayTwoFactorAuthSecretComponent implements OnInit {
   public secret = "YQQIXDH6XVXXPHJXLAEDF3GUWMBDQ3FE"
-  constructor() { }
+  constructor(private _authService: AuthService, @Inject(MAT_DIALOG_DATA) public data: DialogData,  public dialogRef: MatDialogRef<DisplayTwoFactorAuthSecretComponent>) { }
 
   ngOnInit(): void {
+    this._authService.enable2fa().subscribe((response) => {
+      this.secret = response;
+    });
+  }
+
+  close(){
+    this.dialogRef.close();
   }
 
 }

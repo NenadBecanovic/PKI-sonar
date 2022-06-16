@@ -15,6 +15,7 @@ export class HeaderComponent implements OnInit {
   public loggedInUser: string | undefined = undefined;
   public isButtonVisible: boolean = true;
   public loggedInUserChanged: Subscription;
+  public is2faEnabled : boolean = false;
 
   constructor(public matDialog: MatDialog, private router: Router, private _authService: AuthService) {
     this.loggedInUserChanged = this._authService.logInUserChanged.subscribe((response: UserTokenStateDto)=>{
@@ -37,6 +38,9 @@ export class HeaderComponent implements OnInit {
       if(response){
         this.isButtonVisible = false;
         this.loggedInUser = response;
+        this._authService.getUsing2fa().subscribe((response: boolean) => {
+          this.is2faEnabled = response;
+        });
       }
     });
   }
@@ -53,13 +57,26 @@ export class HeaderComponent implements OnInit {
     this.isButtonVisible = true;
   }
 
-  openTfaDialog(){
+  enable2fa(){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = false;
     dialogConfig.id = "2fa-code-modal";
     dialogConfig.height = "200px";
     dialogConfig.width = "28%";
-    //dialogConfig.data = { email: emailp, password: passwordp}
+    /*this._authService.enable2fa().subscribe((response) => {
+      let sec = response;
+      dialogConfig.data = {secret: sec};
+      const tfaModal = this.matDialog.open(DisplayTwoFactorAuthSecretComponent, dialogConfig);
+    });*/
+    
+    this.is2faEnabled=true;
     const tfaModal = this.matDialog.open(DisplayTwoFactorAuthSecretComponent, dialogConfig);
+  }
+
+  disable2fa(){
+    this._authService.disable2fa().subscribe((response: string) => {
+      let a = response;
+      this.is2faEnabled=false;
+    });
   }
 }

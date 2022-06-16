@@ -19,6 +19,9 @@ export class AuthService{
   helper = new JwtHelperService();
   //tfaModal: any | null = null;
 
+  //headers = new HttpHeaders({'Content-Type' : 'application/json', 'Access-Control-Allow-Origin': 'https://localhost:8080'} );
+
+  
 
   constructor(public matDialog: MatDialog, private _http: HttpClient, private router: Router) {
   }
@@ -100,6 +103,18 @@ export class AuthService{
 
   getPermissions(): Observable<string[]> {
     return this._http.get<string[]>(environment.apiUrl + "/auth/getAuthorities");
+  }
+
+  getUsing2fa(): Observable<boolean> {
+    return this._http.get<boolean>(environment.apiUrl + "/auth/2fa");
+  }
+
+  enable2fa(){
+    return this._http.get(environment.apiUrl + "/auth/2fa/enable", {responseType: "text"});
+  }
+
+  disable2fa(): Observable<string> {
+    return this._http.get<string>(environment.apiUrl + "/auth/2fa/disable");
   }
 
   changePassword(dto: ChangedPasswordDto)  {

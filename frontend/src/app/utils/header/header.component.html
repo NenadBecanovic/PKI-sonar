@@ -14,7 +14,8 @@
       <button mat-button  class="mat-accent" [matMenuTriggerFor]="menu" *ngIf="loggedInUser">Profile</button>
       <mat-menu #menu="matMenu">
         <button mat-menu-item routerLink="/change-password">Change password</button>
-        <button mat-menu-item (click)="openTfaDialog()">Two-Factor Authentication</button>
+        <button mat-menu-item (click)="enable2fa()" *ngIf="!is2faEnabled"> Enable Two-Factor Authentication</button>
+        <button mat-menu-item (click)="disable2fa()" *ngIf="is2faEnabled"> Disable Two-Factor Authentication</button>
       </mat-menu>
       <button mat-stroked-button class="mat-accent" *ngIf="loggedInUser && loggedInUser != 'ROLE_USER'"
         routerLink="/new">
