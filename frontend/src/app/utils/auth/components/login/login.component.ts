@@ -7,6 +7,8 @@ import { Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { UserTokenStateDto } from "../../dtos/UserTokenState.dto";
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { TwoFactorAuthLoginComponent } from '../two-factor-auth-login/two-factor-auth-login.component';
 
 @Component({
   selector: 'app-login',
@@ -43,7 +45,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private errorHandler(error: HttpErrorResponse) {
     switch (error.status) {
       case 400:
-        this.errorMessage = "Invalid email or password.";
+        this.errorMessage = "Invalid credentials.";
         break;
       default:
         this.errorMessage = "Something went wrong. Please try again!";

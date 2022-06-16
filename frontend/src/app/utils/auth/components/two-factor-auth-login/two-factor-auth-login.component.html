@@ -1,0 +1,22 @@
+<div class="content" style="height: 100%; width: 100%;">
+    <form [formGroup]="form">
+        <h1 style="text-align: center">Authentication code:</h1>
+        <div style="text-align: center;margin-inline: 20px;">
+            <mat-form-field appearance="fill">
+                <mat-label>Code</mat-label>
+                <input matInput formControlName="code" placeholder="123456" required>
+                <mat-error *ngIf="code.errors?.['minlength'] || code.errors?.['maxlength'] || code.errors?.['pattern']">
+                    Code must contain 6 digits.</mat-error>
+            </mat-form-field>
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger" role="alert" style="margin-inline: 20px;">
+            {{errorMessage}}
+        </div>
+        <div>
+            <div class="col-xs-12 button-container">
+                <button mat-raised-button class="mat-primary" [disabled]="!form.valid" (click)="send()">Send</button>
+            </div>
+            <br>
+        </div>
+    </form>
+</div>

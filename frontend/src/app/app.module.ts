@@ -24,6 +24,9 @@ import { AccountRecoveryComponent } from './account-recovery/components/account-
 import { PasswordlessLoginComponent } from './utils/auth/components/passwordless-login/passwordless-login.component';
 import { PasswordlessLoginValidationComponent } from './utils/auth/components/passwordless-login-validation/passwordless-login-validation.component';
 import { ChangePasswordComponent } from './utils/auth/components/change-password/change-password.component';
+import { TwoFactorAuthLoginComponent } from './utils/auth/components/two-factor-auth-login/two-factor-auth-login.component';
+import { DisplayTwoFactorAuthSecretComponent } from './utils/auth/components/display-two-factor-auth-secret/display-two-factor-auth-secret.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
   declarations: [
@@ -42,7 +45,9 @@ import { ChangePasswordComponent } from './utils/auth/components/change-password
     AccountRecoveryComponent,
     PasswordlessLoginComponent,
     PasswordlessLoginValidationComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    TwoFactorAuthLoginComponent,
+    DisplayTwoFactorAuthSecretComponent
   ],
   imports: [
     BrowserModule,
@@ -50,6 +55,7 @@ import { ChangePasswordComponent } from './utils/auth/components/change-password
     BrowserAnimationsModule,
     MaterialModule,
     ReactiveFormsModule,
+    QRCodeModule,
     HttpClientModule,
     FormsModule,
     MatDividerModule

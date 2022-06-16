@@ -5,6 +5,7 @@ import bsep.pkiapp.dto.ForgottenPasswordDto;
 import bsep.pkiapp.dto.UserDto;
 import bsep.pkiapp.security.exception.ResourceConflictException;
 import bsep.pkiapp.security.util.JwtAuthenticationRequest;
+import bsep.pkiapp.security.util.TfaAuthenticationRequest;
 import bsep.pkiapp.security.util.UserTokenState;
 import bsep.pkiapp.service.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,25 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.getUser(token.split(" ")[1]));
     }
 
+    @GetMapping(value = "2fa")
+    public ResponseEntity<Boolean> getUsing2fa(@RequestHeader("Authorization") String token) {
+        log.debug("GET request received - /auth/2fa is 2fa enabled");
+        return ResponseEntity.ok(authenticationService.getUsing2fa(token.split(" ")[1]));
+    }
+
+    @GetMapping(value = "2fa/enable")
+    public ResponseEntity<String> enable2fa(@RequestHeader("Authorization") String token) {
+        log.debug("GET request received - /auth/2fa/enable enable 2fa");
+        return new ResponseEntity<>(authenticationService.enable2fa(token.split(" ")[1]), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "2fa/disable")
+    public ResponseEntity<String> disable2fa(@RequestHeader("Authorization") String token) {
+        log.debug("GET request received - /auth/2fa/enable enable 2fa");
+        authenticationService.disable2fa(token.split(" ")[1]);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping(value = "/change-password")
     public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token,
                                                  @RequestBody ChangedPasswordDto passwordDto) {
@@ -67,6 +87,20 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         try{
             UserTokenState userTokenState = authenticationService.login(authenticationRequest);
+            return ResponseEntity.ok(userTokenState);
+        }catch (AuthenticationException e){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/tfa-login")
+    public ResponseEntity<UserTokenState> tfaLogin(@RequestBody TfaAuthenticationRequest authenticationRequest) {
+        if (!authenticationService.isEmailValid(authenticationRequest.getEmail())
+                || !authenticationService.isPasswordValid(authenticationRequest.getPassword())
+                || !authenticationService.isCodeValid(authenticationRequest.getCode()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try{
+            UserTokenState userTokenState = authenticationService.tfaLogin(authenticationRequest);
             return ResponseEntity.ok(userTokenState);
         }catch (AuthenticationException e){
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
