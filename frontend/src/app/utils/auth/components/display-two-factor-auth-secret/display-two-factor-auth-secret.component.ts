@@ -24,9 +24,6 @@ export class DisplayTwoFactorAuthSecretComponent implements OnInit {
       this._snackBar.open("Two-Factor Authentication is enabled.", "OK", {
         panelClass: ["black-snackbar"]
       });
-      //let secret1 = response;
-      //this.secret = response;
-      //this.secretqr = "otpauth://totp/Awesome%20Company%3Atest%40gmail.com?secret="+secret1+"&issuer=Awesome%20Company"
       this.secretqr = response;
       var parts = this.secretqr.split("=", 2);
       this.secret = parts[1].split("&", 2)[0];

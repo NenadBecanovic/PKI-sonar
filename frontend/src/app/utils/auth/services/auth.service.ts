@@ -17,11 +17,6 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 export class AuthService{
   public logInUserChanged = new Subject<UserTokenStateDto>();
   helper = new JwtHelperService();
-  //tfaModal: any | null = null;
-
-  //headers = new HttpHeaders({'Content-Type' : 'application/json', 'Access-Control-Allow-Origin': 'https://localhost:8080'} );
-
-  
 
   constructor(public matDialog: MatDialog, private _http: HttpClient, private router: Router) {
   }
