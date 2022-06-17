@@ -99,6 +99,29 @@
         </rollingPolicy>
     </appender>
 
+    <appender name="ErrorFile"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOGS}/error-logger.log</file>
+        <encoder
+                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/error-logger-%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>50MB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+    </appender>
+
     <root level="info">
         <appender-ref ref="RollingFile"/>
         <appender-ref ref="Console"/>
@@ -108,6 +131,7 @@
         <appender-ref ref="DebugFile"/>
         <appender-ref ref="InfoFile"/>
         <appender-ref ref="WarnFile"/>
+        <appender-ref ref="ErrorFile"/>
     </logger>
 
 </configuration>

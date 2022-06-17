@@ -35,6 +35,9 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if(!localStorage.getItem('token')){
+      return;
+    }
     this._authService.getRole().subscribe((response: string) =>{
       if(response){
         this.isButtonVisible = false;
