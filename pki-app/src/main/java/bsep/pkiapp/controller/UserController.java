@@ -1,14 +1,10 @@
 package bsep.pkiapp.controller;
 
-import bsep.pkiapp.dto.UserDto;
-import bsep.pkiapp.model.User;
 import bsep.pkiapp.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "users")
