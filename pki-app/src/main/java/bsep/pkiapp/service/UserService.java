@@ -2,10 +2,8 @@ package bsep.pkiapp.service;
 
 import bsep.pkiapp.dto.IssuerDto;
 import bsep.pkiapp.dto.SubjectDto;
-import bsep.pkiapp.dto.UserDto;
 import bsep.pkiapp.model.CertificateChain;
 import bsep.pkiapp.model.CertificateType;
-import bsep.pkiapp.model.Role;
 import bsep.pkiapp.model.User;
 import bsep.pkiapp.repository.UserRepository;
 import bsep.pkiapp.security.util.TokenUtils;
