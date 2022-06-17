@@ -1,7 +1,6 @@
 package bsep.pkiapp.service;
 
 import bsep.pkiapp.model.ExtendedKeyUsage;
-import bsep.pkiapp.model.KeyUsage;
 import bsep.pkiapp.repository.ExtendedKeyUsageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
